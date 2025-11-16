@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Suporte";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/suporte.css" />
+}
+
+<!-- BANNER -->
+<div class="suporte-banner fade-in">
+    <img src="~/imgs/carros.jpg" alt="AutoHub Banner">
+    <div class="banner-white-overlay"></div>
+</div>
+
+<div class="container suporte-wrapper">
+
+    <!-- TÍTULO -->
+    <h1 class="suporte-title fade-up">
+        BEM-VINDO À AUTOHUB
+        <span class="suporte-title-line"></span>
+    </h1>
+
+    <!-- TEXTO INSTITUCIONAL -->
+    <section class="intro fade-up">
+        <p>
+            Na AutoHub dedicamo-nos à compra e venda de veículos usados de qualidade,
+            garantindo confiança, segurança e uma experiência que supera as expectativas.
+        </p>
+
+        <p>
+            Localizados em Vila Real, tornámo-nos uma referência para quem procura veículos
+            verificados, bem apresentados e selecionados com rigor.
+        </p>
+    </section>
+
+    <!-- INFO GRID -->
+    <section class="info-grid fade-up">
+
+        <div class="info-card">
+            <h3>Localização</h3>
+            <p><strong>AutoHub — Vila Real</strong></p>
+            <p>Vila Real, Portugal</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Contactos</h3>
+            <p>📞 <strong>+351 123 456 789</strong></p>
+            <p>apoio@autohub.pt</p>
+        </div>
+
+        <div class="info-card">
+            <h3>Horário</h3>
+            <p>Seg–Sex: <strong>09:00–18:00</strong></p>
+            <p>Sábado: <strong>10:00–14:00</strong></p>
+            <p>Domingo: <strong>Fechado</strong></p>
+        </div>
+
+        <div class="info-card">
+            <h3>Termos & Políticas</h3>
+            <a href="/Termos/Index#termos">Termos de Utilização</a><br/>
+            <a href="/Termos/Index#privacidade">Política de Privacidade</a><br />
+            <a href="/Termos/Index#cookies">Política de Cookie</a>
+        </div>
+
+    </section>
+
+    <!-- FAQ + FORMULÁRIO -->
+    <section class="suporte-bottom fade-up">
+
+        <!-- FAQ -->
+        <div class="faq-left">
+            <h2>Perguntas Frequentes</h2>
+
+            <div class="faq-item"><h3>Como posso criar uma conta?</h3><p>Através da página Login / Criar Conta.</p></div>
+            <div class="faq-item"><h3>Posso reservar um veículo?</h3><p>Sim, após iniciares sessão podes reservar diretamente no anúncio.</p></div>
+            <div class="faq-item"><h3>Como publicar um anúncio?</h3><p>Cria a tua conta e, em seguida, solicita o estatuto de vendedor para aprovação.</p></div>
+            <div class="faq-item"><h3>É seguro comprar na AutoHub?</h3><p>Sim. Todas as operações são acompanhadas por verificações.</p></div>
+        </div>
+
+        <!-- FORMULÁRIO -->
+        <div class="faq-form refined fade-up">
+            <h2>Contacta-nos</h2>
+
+            <form>
+                <input type="text" placeholder="Nome" required />
+                <input type="email" placeholder="Email" required />
+                <textarea placeholder="Mensagem" required></textarea>
+                <button type="submit">Enviar Mensagem</button>
+            </form>
+        </div>
+
+    </section>
+
+    <!-- MAPA -->
+    <section class="map-section fade-up">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2962.38!2d-7.7455!3d41.3010!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.8!5e0!3m2!1spt-PT!2spt!4v1700000000000"
+                width="100%" height="280" style="border:0;" loading="lazy">
+        </iframe>
+    </section>
+
+</div>

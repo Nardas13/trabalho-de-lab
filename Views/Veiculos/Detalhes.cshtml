@@ -1,0 +1,161 @@
+﻿@model AutoHubProjeto.Models.Anuncio
+
+@{
+    ViewData["Title"] = "Detalhes do Anúncio";
+
+    // texto seguro para o tipo de vendedor
+    var textoVendedor = Model.IdVendedorNavigation == null
+        ? "Vendedor não definido"
+        : (Model.IdVendedorNavigation.Tipo == "empresa"
+            ? "Stand / Profissional"
+            : "Vendedor particular");
+
+    // imagem principal (se não houver na BD, usa carros.jpg)
+    var imagensOrdenadas = Model.AnuncioImagems
+        .OrderBy(i => i.Ordem)
+        .ToList();
+
+    var urlImagemPrincipal = imagensOrdenadas.Any()
+        ? Url.Content("~/" + imagensOrdenadas.First().Url)
+        : Url.Content("~/imgs/carros.jpg");
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/detalhes.css" />
+}
+
+<main class="page">
+    <div class="container">
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb">
+            <a href="/Anuncios/Index">Anúncios</a> ›
+            <span>@Model.Titulo</span>
+        </div>
+
+        <div class="details-grid">
+            <!-- GALERIA -->
+            <section class="soft-card gallery">
+                <!-- FOTO PRINCIPAL -->
+                <img id="mainPhoto"
+                     class="main-photo"
+                     src="@urlImagemPrincipal"
+                     alt="Foto principal do veículo">
+
+                <!-- MINIATURAS -->
+                <div class="thumbs" id="thumbs">
+                    @foreach (var img in imagensOrdenadas)
+                    {
+                        var url = Url.Content("~/" + img.Url);
+                        var isActive = img == imagensOrdenadas.First();
+
+                        <img class="@(isActive ? "active" : "")"
+                             src="@url"
+                             data-photo="@url"
+                             alt="Foto @img.Ordem" />
+                    }
+                </div>
+            </section>
+
+            <!-- PAINEL INFO -->
+            <aside class="soft-card info">
+                <div class="title-row">
+                    <h1>@Model.Titulo</h1>
+
+                    <button class="fav" id="favBtn" aria-label="Favoritar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 21s-6.716-4.297-9.428-7.01A5.988 5.988 0 0 1 12 5a5.988 5.988 0 0 1 9.428 8.99C18.716 16.703 12 21 12 21z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="price">
+                    € @Model.Preco.ToString("N0")
+                </div>
+
+                <div class="seller">
+                    👤 @textoVendedor
+                </div>
+
+                <div class="cta-row">
+                    <button class="btn">Agendar Visita</button>
+                    <button class="btn btn-outline">Reservar</button>
+                    <button class="btn btn-outline">Comprar</button>
+                </div>
+
+                <div class="soft-card overview">
+                    <h3>Especificações</h3>
+                    <table class="ov-table">
+                        <tr>
+                            <td class="ov-left">Ano</td>
+                            <td class="ov-right">@Model.IdVeiculoNavigation.Ano</td>
+                        </tr>
+                        <tr>
+                            <td class="ov-left">Marca / Modelo</td>
+                            <td class="ov-right">
+                                @Model.IdVeiculoNavigation.Marca @Model.IdVeiculoNavigation.Modelo
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ov-left">Quilometragem</td>
+                            <td class="ov-right">
+                                @Model.IdVeiculoNavigation.Quilometragem.ToString("N0") km
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ov-left">Caixa</td>
+                            <td class="ov-right">@Model.IdVeiculoNavigation.Caixa</td>
+                        </tr>
+                        <tr>
+                            <td class="ov-left">Combustível</td>
+                            <td class="ov-right">@Model.IdVeiculoNavigation.Combustivel</td>
+                        </tr>
+                        <tr>
+                            <td class="ov-left">Localização</td>
+                            <td class="ov-right">@Model.IdVeiculoNavigation.Localizacao</td>
+                        </tr>
+                    </table>
+                </div>
+            </aside>
+        </div>
+
+        <!-- DESCRIÇÃO E EXTRAS -->
+        <div class="below">
+            <section class="soft-card card-pad">
+                <h3>Descrição</h3>
+                <p style="color:var(--txt-700);margin-top:8px">
+                    @Model.IdVeiculoNavigation.Descricao
+                </p>
+            </section>
+
+            <aside class="soft-card card-pad">
+                <h3>Extras & Destaques</h3>
+                <ul class="features" style="margin-top:8px">
+                    <li>Ar condicionado automático</li>
+                    <li>Bluetooth</li>
+                    <li>Bancos em pele</li>
+                    <li>Sistema de navegação</li>
+                    <li>Computador de bordo</li>
+                    <li>Direção assistida</li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        // galeria
+        const main = document.getElementById('mainPhoto');
+        document.querySelectorAll('#thumbs img').forEach(el => {
+            el.addEventListener('click', () => {
+                document.querySelectorAll('#thumbs img').forEach(t => t.classList.remove('active'));
+                el.classList.add('active');
+                main.src = el.dataset.photo;
+            });
+        });
+
+        // favorito
+        const fav = document.getElementById('favBtn');
+        fav.addEventListener('click', () => fav.classList.toggle('active'));
+    </script>
+}

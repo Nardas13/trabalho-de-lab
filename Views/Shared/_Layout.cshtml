@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - AutoHub de Veículos Usados</title>
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- CSS global -->
+    <link rel="stylesheet" href="~/css/variables.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+
+    <!-- CSS específico da página (ex: home.css, anuncios.css, etc.) -->
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="nav">
+        <div class="container nav-inner">
+            <div class="brand">
+                <img src="~/imgs/logotipo.jpg" alt="AutoHub" class="logo-img" />
+                <div>AutoHub de Veículos Usados</div>
+            </div>
+            <nav class="menu">
+                <a href="/Home/Index">Início</a>
+                <a href="/Anuncios/Index">Anúncios</a>
+                <a href="/Suporte/Index">Suporte</a>
+                <a href="/Auth/Login">Login / Criar Conta</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO DAS PÁGINAS -->
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container footer-sections">
+
+            <!-- COLUNA 1 — CONTACTOS -->
+            <div class="footer-section">
+                <h4>Contacte-nos</h4>
+                <p>📞 +351 123 456 789</p>
+                <p>Serviço de Apoio ao Cliente:</p>
+                <p><strong>apoio@autohub.pt</strong></p>
+            </div>
+
+            <!-- COLUNA 2 — HORÁRIO -->
+            <div class="footer-section">
+                <h4>Horário de Suporte</h4>
+                <p>Seg–Sex: 9h – 18h</p>
+                <p>Sáb: 10h – 14h</p>
+                <p>Dom: Fechado</p>
+            </div>
+
+            <!-- COLUNA 3 — SOBRE NÓS (COM QUEBRA MANUAL EM 2 LINHAS) -->
+            <div class="footer-section">
+                <h4>Sobre Nós</h4>
+                <p class="about-text">
+                    Na AutoHub conectamos compradores e vendedores<br>
+                    de carros usados com segurança e confiança.
+                </p>
+
+                <div class="socials">
+                    <a href="/Home/Index"><img src="~/imgs/icons/icon-web.png" alt="Website" /></a>
+                    <a href="#"><img src="~/imgs/icons/icon-facebook.png" alt="Facebook" /></a>
+                    <a href="#"><img src="~/imgs/icons/icon-instagram.png" alt="Instagram" /></a>
+                    <a href="#"><img src="~/imgs/icons/icon-twitter.png" alt="Twitter" /></a>
+                </div>
+            </div>
+
+            <!-- COLUNA 4 — TERMOS -->
+            <div class="footer-section">
+                <h4>Termos & Políticas</h4>
+                <a href="/Termos/Index#termos">Termos de Utilização</a><br>
+                <a href="/Termos/Index#privacidade">Política de Privacidade</a><br>
+                <a href="/Termos/Index#cookies">Política de Cookies</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">© 2025 AutoHub. Todos os direitos reservados.</div>
+    </footer>
+
+
+
+
+    <!-- JS global -->
+    <script src="~/js/site.js"></script>
+
+    <!-- JS específico da página -->
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

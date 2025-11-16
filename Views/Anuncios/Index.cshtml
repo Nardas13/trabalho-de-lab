@@ -1,0 +1,140 @@
+﻿@model List<AutoHubProjeto.Models.Anuncio>
+
+@{
+    ViewData["Title"] = "Anúncios";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/anuncios.css" />
+}
+
+<section class="hero">
+    <div class="container">
+        <h1>Explora o Nosso Stock Atual</h1>
+
+        <!-- SEARCH BAR (mantemos o teu HTML) -->
+        <div class="search">
+            <div class="filters-row">
+                <div class="pill cat">
+                    <span>Categoria</span>
+                    <div class="custom-select">
+                        <div class="selected">Todas</div><span class="arrow">▾</span>
+                        <div class="custom-options">
+                            <div>Sedan</div><div>SUV</div><div>Desportivo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill brand">
+                    <span>Marca</span>
+                    <div class="custom-select">
+                        <div class="selected">Todas</div><span class="arrow">▾</span>
+                        <div class="custom-options">
+                            <div>Audi</div><div>BMW</div><div>Mercedes</div><div>Range Rover</div>
+                            <div>Bentley</div><div>Jeep</div><div>Nissan</div><div>Jaguar</div><div>Porsche</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill year">
+                    <span>Ano</span>
+                    <div class="custom-select">
+                        <div class="selected">Todos</div><span class="arrow">▾</span>
+                        <div class="custom-options"><div>2025</div><div>2024</div><div>2023</div></div>
+                    </div>
+                </div>
+
+                <div class="pill price">
+                    <span>Preço</span>
+                    <div class="custom-select">
+                        <div class="selected">Todos</div><span class="arrow">▾</span>
+                        <div class="custom-options"><div>Até 50.000€</div><div>Até 100.000€</div><div>Até 200.000€</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters-row">
+                <div class="pill fuel">
+                    <span>Combustível</span>
+                    <div class="custom-select">
+                        <div class="selected">Todos</div><span class="arrow">▾</span>
+                        <div class="custom-options">
+                            <div>Gasolina</div><div>Diesel</div><div>Híbrido</div><div>Elétrico</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill km">
+                    <span>Quilometragem</span>
+                    <div class="custom-select">
+                        <div class="selected">Todos</div><span class="arrow">▾</span>
+                        <div class="custom-options">
+                            <div>Até 10.000 km</div><div>Até 25.000 km</div><div>Até 50.000 km</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill box">
+                    <span>Caixa</span>
+                    <div class="custom-select">
+                        <div class="selected">Todas</div><span class="arrow">▾</span>
+                        <div class="custom-options"><div>Manual</div><div>Automática</div></div>
+                    </div>
+                </div>
+
+                <button class="btn">Pesquisar</button>
+            </div>
+        </div>
+
+        <!-- ORDENAR POR -->
+        <div class="order-box">
+            <span class="order-label">Ordenar por</span>
+
+            <div class="order-card">
+                <div class="custom-select order-select">
+                    <div class="selected">Relevância</div>
+                    <span class="arrow">▾</span>
+                    <div class="custom-options">
+                        <div>Relevância</div>
+                        <div>Preço mais alto</div>
+                        <div>Preço mais baixo</div>
+                        <div>Ano mais recente</div>
+                        <div>Ano mais antigo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID DE ANÚNCIOS (DINÂMICO) -->
+        <div class="grid">
+            @foreach (var anuncio in Model)
+            {
+                var primeiraImg = anuncio.AnuncioImagems
+                .OrderBy(i => i.Ordem)
+                .FirstOrDefault()?.Url ?? "imgs/carros.jpg";
+
+                <article class="card">
+                    <img src="~/@primeiraImg" alt="@anuncio.Titulo">
+                    <div class="card-body">
+                        <h3 class="card-title">@anuncio.Titulo</h3>
+                        <p class="meta">€ @anuncio.Preco.ToString("N0")</p>
+
+                        <p class="details">
+                            @anuncio.IdVeiculoNavigation.Quilometragem.ToString("N0") KM |
+                            @anuncio.IdVeiculoNavigation.Combustivel |
+                            @anuncio.IdVeiculoNavigation.Caixa
+                        </p>
+
+                        <div class="actions">
+                            <a href="/Veiculos/Detalhes/@anuncio.IdAnuncio" class="btn">Ver Detalhes</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/custom-select.js"></script>
+}

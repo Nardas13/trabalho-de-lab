@@ -11,9 +11,9 @@
     <!-- CSS global -->
     <link rel="stylesheet" href="~/css/variables.css" />
     <link rel="stylesheet" href="~/css/style.css" />
+    @RenderSection("Styles", required: false)
 
     <!-- CSS específico da página (ex: home.css, anuncios.css, etc.) -->
-    @RenderSection("Styles", required: false)
 </head>
 <body>
     <!-- HEADER -->
@@ -84,9 +84,6 @@
 
         <div class="footer-bottom">© 2025 AutoHub. Todos os direitos reservados.</div>
     </footer>
-
-
-
 
     <!-- JS global -->
     <script src="~/js/site.js"></script>

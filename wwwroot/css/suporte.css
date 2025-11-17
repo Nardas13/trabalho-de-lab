@@ -61,34 +61,30 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* TERMOS & POLÍTICAS */
-    .info-card a,
-    .info-card a:visited {
-        color: var(--txt-500); 
+    /* LINKS */
+    .info-card a {
+        color: var(--txt-500);
         text-decoration: none;
-        font-weight: 600; 
-        transition: color .2s ease;
+        font-weight: 600;
+        transition: color .2s;
     }
 
         .info-card a:hover {
-            color: var(--txt-900); 
+            color: var(--txt-900);
         }
-
 
 /* FAQ + FORM */
 .suporte-bottom {
     display: grid;
     grid-template-columns: 1.2fr 0.55fr;
     gap: 40px;
-    justify-content: space-between;
     align-items: flex-start;
 }
 
-/* FORMULÁRIO */
 .faq-form {
     background: #fff;
     padding: 20px;
-    border-radius: 10px; 
+    border-radius: 10px;
     border: 1px solid var(--stroke);
     box-shadow: 0 6px 18px rgba(16,24,40,.08);
     max-width: 290px;
@@ -146,13 +142,12 @@
 /* MAPA */
 .map-section iframe {
     border-radius: 12px;
-    overflow: hidden;
     box-shadow: 0 6px 18px rgba(16,24,40,.08);
 }
 
 .map-section {
     margin-top: 20px;
-    margin-bottom: 8px !important;
+    margin-bottom: 60px !important;
 }
 
 /* ANIMAÇÕES */

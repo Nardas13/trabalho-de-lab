@@ -1,4 +1,4 @@
-﻿@model List<AutoHubProjeto.Models.Anuncio>
+﻿@model AutoHubProjeto.Models.FiltroAnunciosViewModel
 
 @{
     ViewData["Title"] = "Anúncios";
@@ -12,79 +12,150 @@
     <div class="container">
         <h1>Explora o Nosso Stock Atual</h1>
 
-        <!-- SEARCH BAR (mantemos o teu HTML) -->
-        <div class="search">
+        <!-- FORM DE FILTRO -->
+        <form method="get" class="search" id="filtrosForm">
+
+            <!-- PRIMEIRA LINHA -->
             <div class="filters-row">
+
+                <!-- CATEGORIA -->
                 <div class="pill cat">
                     <span>Categoria</span>
                     <div class="custom-select">
-                        <div class="selected">Todas</div><span class="arrow">▾</span>
+                        <div class="selected">@(!string.IsNullOrEmpty(Model.Categoria) ? Model.Categoria : "Todas")</div>
+                        <span class="arrow">▾</span>
+
                         <div class="custom-options">
-                            <div>Sedan</div><div>SUV</div><div>Desportivo</div>
+                            <div data-value="">Todas</div>
+
+                            @foreach (var categoria in Model.Categorias)
+                            {
+                                <div data-value="@categoria">@categoria</div>
+                            }
                         </div>
                     </div>
+
+                    <input type="hidden" name="Categoria" value="@Model.Categoria" />
                 </div>
 
+                <!-- MARCA -->
                 <div class="pill brand">
                     <span>Marca</span>
                     <div class="custom-select">
-                        <div class="selected">Todas</div><span class="arrow">▾</span>
+                        <div class="selected">@(!string.IsNullOrEmpty(Model.Marca) ? Model.Marca : "Todas")</div>
+                        <span class="arrow">▾</span>
+
                         <div class="custom-options">
-                            <div>Audi</div><div>BMW</div><div>Mercedes</div><div>Range Rover</div>
-                            <div>Bentley</div><div>Jeep</div><div>Nissan</div><div>Jaguar</div><div>Porsche</div>
+                            <div data-value="">Todas</div>
+
+                            @foreach (var marca in Model.Marcas)
+                            {
+                                <div data-value="@marca">@marca</div>
+                            }
                         </div>
                     </div>
+
+                    <input type="hidden" name="Marca" value="@Model.Marca" />
                 </div>
 
+                <!-- ANO MIN -->
                 <div class="pill year">
-                    <span>Ano</span>
-                    <div class="custom-select">
-                        <div class="selected">Todos</div><span class="arrow">▾</span>
-                        <div class="custom-options"><div>2025</div><div>2024</div><div>2023</div></div>
-                    </div>
+                    <span>Ano (mín.)</span>
+                    <input type="number" name="AnoMin"
+                           placeholder="Ex: 2015"
+                           value="@(Model.AnoMin ?? null)">
                 </div>
 
-                <div class="pill price">
-                    <span>Preço</span>
-                    <div class="custom-select">
-                        <div class="selected">Todos</div><span class="arrow">▾</span>
-                        <div class="custom-options"><div>Até 50.000€</div><div>Até 100.000€</div><div>Até 200.000€</div></div>
-                    </div>
+                <!-- ANO MAX -->
+                <div class="pill year">
+                    <span>Ano (máx.)</span>
+                    <input type="number" name="AnoMax"
+                           placeholder="Ex: 2024"
+                           value="@(Model.AnoMax ?? null)">
                 </div>
+
             </div>
 
+            <!-- SEGUNDA LINHA -->
             <div class="filters-row">
+
+                <!-- PREÇO MIN -->
+                <div class="pill price">
+                    <span>Preço mín.</span>
+                    <input type="number"
+                           name="PrecoMin"
+                           placeholder="€"
+                           value="@(Model.PrecoMin ?? null)">
+                </div>
+
+                <!-- PREÇO MAX -->
+                <div class="pill price">
+                    <span>Preço máx.</span>
+                    <input type="number"
+                           name="PrecoMax"
+                           placeholder="€"
+                           value="@(Model.PrecoMax ?? null)">
+                </div>
+
+                <!-- COMBUSTIVEL -->
                 <div class="pill fuel">
                     <span>Combustível</span>
                     <div class="custom-select">
-                        <div class="selected">Todos</div><span class="arrow">▾</span>
+                        <div class="selected">@(!string.IsNullOrEmpty(Model.Combustivel) ? Model.Combustivel : "Todos")</div>
+                        <span class="arrow">▾</span>
                         <div class="custom-options">
-                            <div>Gasolina</div><div>Diesel</div><div>Híbrido</div><div>Elétrico</div>
+                            <div data-value="">Todos</div>
+                            <div data-value="Gasolina">Gasolina</div>
+                            <div data-value="Diesel">Diesel</div>
+                            <div data-value="Híbrido">Híbrido</div>
+                            <div data-value="Elétrico">Elétrico</div>
                         </div>
                     </div>
+
+                    <input type="hidden" name="Combustivel" value="@Model.Combustivel" />
                 </div>
 
+                <!-- QUILOMETRAGEM MAX (ATÉ) -->
                 <div class="pill km">
-                    <span>Quilometragem</span>
+                    <span>Km máx.</span>
                     <div class="custom-select">
-                        <div class="selected">Todos</div><span class="arrow">▾</span>
+                        <div class="selected">
+                            @(Model.KmMax.HasValue ? $"Até {Model.KmMax.Value:N0} km" : "Todos")
+                        </div>
+                        <span class="arrow">▾</span>
+
                         <div class="custom-options">
-                            <div>Até 10.000 km</div><div>Até 25.000 km</div><div>Até 50.000 km</div>
+                            <div data-value="">Todos</div>
+                            <div data-value="10000">Até 10.000 km</div>
+                            <div data-value="25000">Até 25.000 km</div>
+                            <div data-value="50000">Até 50.000 km</div>
                         </div>
                     </div>
+
+                    <input type="hidden" name="KmMax" value="@Model.KmMax" />
                 </div>
 
+                <!-- CAIXA -->
                 <div class="pill box">
                     <span>Caixa</span>
                     <div class="custom-select">
-                        <div class="selected">Todas</div><span class="arrow">▾</span>
-                        <div class="custom-options"><div>Manual</div><div>Automática</div></div>
+                        <div class="selected">@(!string.IsNullOrEmpty(Model.Caixa) ? Model.Caixa : "Todas")</div>
+                        <span class="arrow">▾</span>
+
+                        <div class="custom-options">
+                            <div data-value="">Todas</div>
+                            <div data-value="Manual">Manual</div>
+                            <div data-value="Automática">Automática</div>
+                        </div>
                     </div>
+
+                    <input type="hidden" name="Caixa" value="@Model.Caixa" />
                 </div>
 
-                <button class="btn">Pesquisar</button>
+                <!-- BOTÃO PESQUISAR -->
+                <button type="submit" class="btn">Pesquisar</button>
             </div>
-        </div>
+        </form>
 
         <!-- ORDENAR POR -->
         <div class="order-box">
@@ -92,31 +163,48 @@
 
             <div class="order-card">
                 <div class="custom-select order-select">
-                    <div class="selected">Relevância</div>
+                    <div class="selected">
+                        @(Model.Ordenar switch {
+                            "preco-desc" => "Preço mais alto",
+                            "preco-asc"  => "Preço mais baixo",
+                            "ano-desc"   => "Ano mais recente",
+                            "ano-asc"    => "Ano mais antigo",
+                            "km-asc"     => "Menos quilómetros",
+                            "km-desc"    => "Mais quilómetros",
+                            _ => "Relevância"
+                        })
+                    </div>
                     <span class="arrow">▾</span>
+
                     <div class="custom-options">
-                        <div>Relevância</div>
-                        <div>Preço mais alto</div>
-                        <div>Preço mais baixo</div>
-                        <div>Ano mais recente</div>
-                        <div>Ano mais antigo</div>
+                        <div data-value="relevancia">Relevância</div>
+                        <div data-value="preco-desc">Preço mais alto</div>
+                        <div data-value="preco-asc">Preço mais baixo</div>
+                        <div data-value="ano-desc">Ano mais recente</div>
+                        <div data-value="ano-asc">Ano mais antigo</div>
+                        <div data-value="km-asc">Menos quilómetros</div>
+                        <div data-value="km-desc">Mais quilómetros</div>
                     </div>
                 </div>
+
+                <input type="hidden" name="Ordenar" value="@Model.Ordenar" form="filtrosForm" />
             </div>
         </div>
 
-        <!-- GRID DE ANÚNCIOS (DINÂMICO) -->
+        <!-- GRID DE ANÚNCIOS -->
         <div class="grid">
-            @foreach (var anuncio in Model)
+            @foreach (var anuncio in Model.Resultados)
             {
-                var primeiraImg = anuncio.AnuncioImagems
-                .OrderBy(i => i.Ordem)
-                .FirstOrDefault()?.Url ?? "imgs/carros.jpg";
+                var img = anuncio.AnuncioImagems
+                    .OrderBy(i => i.Ordem)
+                    .FirstOrDefault()?.Url ?? "imgs/carros.jpg";
 
                 <article class="card">
-                    <img src="~/@primeiraImg" alt="@anuncio.Titulo">
+                    <img src="~/@img" alt="@anuncio.Titulo">
+
                     <div class="card-body">
                         <h3 class="card-title">@anuncio.Titulo</h3>
+
                         <p class="meta">€ @anuncio.Preco.ToString("N0")</p>
 
                         <p class="details">
@@ -136,5 +224,68 @@
 </section>
 
 @section Scripts {
-    <script src="~/js/custom-select.js"></script>
+    <script>
+        // custom-select genérico para filtros (categoria, marca, combustível, km, caixa)
+        document.querySelectorAll(".pill .custom-select").forEach(select => {
+            const selected = select.querySelector(".selected");
+            const options = select.querySelectorAll(".custom-options div");
+            const hiddenInput = select.parentElement.querySelector("input[type='hidden']");
+
+            selected.addEventListener("click", () => {
+                document.querySelectorAll(".custom-select")
+                    .forEach(s => s !== select && s.classList.remove("active"));
+                select.classList.toggle("active");
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener("click", () => {
+                    const value = opt.dataset.value ?? "";
+                    selected.textContent = opt.textContent;
+
+                    if (hiddenInput) {
+                        hiddenInput.value = value;
+                    }
+
+                    select.classList.remove("active");
+                });
+            });
+        });
+
+        // custom-select específico para ORDENAR POR
+        const orderSelect = document.querySelector(".order-select");
+        if (orderSelect) {
+            const selected = orderSelect.querySelector(".selected");
+            const options = orderSelect.querySelectorAll(".custom-options div");
+            const ordenarInput = document.querySelector("input[name='Ordenar']");
+
+            selected.addEventListener("click", () => {
+                document.querySelectorAll(".custom-select")
+                    .forEach(s => s !== orderSelect && s.classList.remove("active"));
+                orderSelect.classList.toggle("active");
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener("click", () => {
+                    const value = opt.dataset.value ?? "";
+                    selected.textContent = opt.textContent;
+
+                    if (ordenarInput) {
+                        ordenarInput.value = value;
+                    }
+
+                    orderSelect.classList.remove("active");
+
+                    // OPCIONAL: submeter logo após escolher a ordenação
+                    // document.getElementById("filtrosForm").submit();
+                });
+            });
+        }
+
+        // fechar todos os dropdowns ao clicar fora
+        window.addEventListener("click", e => {
+            if (!e.target.closest(".custom-select")) {
+                document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
+            }
+        });
+    </script>
 }

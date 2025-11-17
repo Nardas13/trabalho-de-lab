@@ -8,35 +8,34 @@
     <link rel="stylesheet" href="~/css/home.css" />
 }
 
-<section class="hero-light">
-    <div class="overlay"></div>
-    <div class="hero-content">
+<section class="home-hero">
+    <div class="home-hero-content">
         <h1>O teu próximo carro está à distância de um clique</h1>
         <p>Explora a nossa seleção de veículos usados de qualidade premium.</p>
-        <a href="/Anuncios/Index" class="btn-hero">Ver Anúncios</a>
+        <a href="/Anuncios/Index" class="btn-home-hero">Ver Anúncios</a>
     </div>
 </section>
 
-<section class="featured">
+<section class="home-featured">
     <div class="container">
         <h2 class="section-title">Anúncios em destaque</h2>
 
-        <div class="grid">
+        <div class="home-grid">
             @foreach (var anuncio in Model)
             {
                 var img = anuncio.AnuncioImagems
                 .OrderBy(i => i.Ordem)
                 .FirstOrDefault()?.Url ?? "imgs/carros.jpg";
 
-                <article class="card">
+                <article class="home-card">
                     <img src="~/@img" alt="@anuncio.Titulo">
-                    <div class="card-body">
-                        <h3 class="card-title">
+                    <div class="home-card-body">
+                        <h3 class="home-card-title">
                             @anuncio.IdVeiculoNavigation.Marca
                             @anuncio.IdVeiculoNavigation.Modelo
                         </h3>
 
-                        <p class="meta">€ @anuncio.Preco.ToString("N0")</p>
+                        <p class="home-card-meta">€ @anuncio.Preco.ToString("N0")</p>
 
                         <div class="actions">
                             <a href="/Veiculos/Detalhes/@anuncio.IdAnuncio" class="btn">Ver Detalhes</a>
@@ -47,3 +46,4 @@
         </div>
     </div>
 </section>
+

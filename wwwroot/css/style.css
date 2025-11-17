@@ -1,10 +1,25 @@
-
-/* BASE RESET */
+/* ================================
+   RESET & BASE
+================================ */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* (se quiseres, podes copiar o font-size do site.css para aqui também) */
+/*
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html { font-size: 16px; }
+}
+*/
 
 body {
     font-family: 'Inter',sans-serif;
@@ -20,7 +35,7 @@ body {
 }
 
 /* ================================
-   NAVBAR
+   NAVBAR GLOBAL
 ================================ */
 .nav {
     position: sticky;
@@ -90,53 +105,28 @@ body {
     }
 
 /* ================================
-   HERO ZONAS (aplicado no index)
+   FOOTER GLOBAL
 ================================ */
-.hero-light {
-    position: relative;
-    height: 420px;
-    background: url("../imgs/hero.jpg") center/cover no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+footer {
+    margin-top: 60px; /* espaço SEMPRE antes do rodapé */
+    padding: 40px 0 20px;
+    border-top: 1px solid var(--stroke);
+    background: #f9fafc;
+    color: var(--txt-500);
 }
-
-    .hero-light .overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0,0,0,.15);
-    }
-
-.hero-content {
-    position: relative;
-    color: white;
-    max-width: 600px;
-    padding: 20px;
-}
-
-    .hero-content h1 {
-        font-size: clamp(28px,6vw,48px);
-        font-weight: 800;
-        margin-bottom: 14px;
-    }
-
-/* =======================================
-   FOOTER 
-========================================= */
 
 .footer-sections {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 40px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 }
 
 .footer-section {
     flex: 1;
-    min-width: 180px; 
-    max-width: 250px; 
+    min-width: 180px;
+    max-width: 250px;
 }
 
     .footer-section h4 {
@@ -157,14 +147,12 @@ body {
             color: var(--txt-900);
         }
 
-/* Texto do Sobre Nós */
 .about-text {
     line-height: 1.45;
     margin-bottom: 12px;
-    max-width: 210px; 
+    max-width: 210px;
 }
 
-/* Redes sociais */
 .socials {
     display: flex;
     gap: 10px;
@@ -190,7 +178,7 @@ body {
     color: var(--txt-500);
 }
 
-/* RESPONSIVO */
+/* RESPONSIVO FOOTER */
 @media(max-width:992px) {
     .footer-sections {
         flex-wrap: wrap;
@@ -202,8 +190,4 @@ body {
     .about-text {
         max-width: 100%;
     }
-}
-
-html {
-    scroll-behavior: smooth;
 }

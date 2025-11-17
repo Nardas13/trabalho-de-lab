@@ -191,3 +191,12 @@ footer {
         max-width: 100%;
     }
 }
+
+.btn {
+    text-decoration: none !important;
+}
+
+.actions a {
+    text-decoration: none !important;
+}
+

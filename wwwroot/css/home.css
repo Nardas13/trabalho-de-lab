@@ -1,8 +1,7 @@
 /* =============================
-   HOME — ISOLATED STYLES
+   HOME — HERO
    ============================= */
 
-/* HERO CLARO */
 .home-hero {
     position: relative;
     height: 70vh;
@@ -19,7 +18,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient( to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 30%, rgba(255, 255, 255, 0.45) 70%, rgba(255, 255, 255, 0.25) 100% );
+        background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 30%, rgba(255,255,255,0.45) 70%, rgba(255,255,255,0.25) 100%);
         backdrop-filter: blur(3px);
         z-index: 0;
     }
@@ -27,7 +26,6 @@
 .home-hero-content {
     position: relative;
     z-index: 2;
-    color: #1f2937;
     max-width: 700px;
     padding: 0 20px;
     animation: fadeUp 1.2s ease-out;
@@ -43,7 +41,7 @@
 
     .home-hero-content p {
         font-size: 1.15rem;
-        color: rgba(30, 41, 59, 0.85);
+        color: rgba(30,41,59,0.85);
         margin-bottom: 1.5rem;
     }
 
@@ -55,7 +53,7 @@
     padding: 12px 32px;
     border-radius: 10px;
     text-decoration: none;
-    transition: transform 0.25s, background 0.25s;
+    transition: transform .25s, background .25s;
 }
 
     .btn-home-hero:hover {
@@ -64,11 +62,15 @@
     }
 
 /* =============================
-   HOME — GRID DESTACADA
+   HOME — CARDS DESTACADOS
    ============================= */
 
 .home-featured {
-    padding: 16px 0 56px;
+    padding: 10px 0 10px;
+}
+
+.section-title {
+    margin-bottom: 18px;
 }
 
 .home-grid {
@@ -77,12 +79,16 @@
     gap: 18px;
 }
 
+/* CARD */
 .home-card {
     background: #fff;
     border: 1px solid var(--stroke);
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     transition: transform .15s, box-shadow .15s;
 }
 
@@ -91,6 +97,7 @@
         box-shadow: var(--shadow-md);
     }
 
+    /* IMAGEM */
     .home-card img {
         width: 100%;
         height: 230px;
@@ -98,21 +105,43 @@
         border-bottom: 1px solid var(--stroke);
     }
 
+/* CONTEÚDO DO CARD */
 .home-card-body {
-    padding: 16px;
+    padding: 14px 16px; /* mais compacto */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 105px; 
 }
 
+/* TÍTULO */
 .home-card-title {
-    margin: 0 0 6px;
+    margin: 0 0 4px;
     font-weight: 700;
+    line-height: 1.25; 
 }
 
+/* PREÇO */
 .home-card-meta {
     color: var(--txt-700);
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
-/* animação */
+/* BOTÃO */
+.home-card .actions {
+    margin-top: auto; /* botão SEMPRE alinhado */
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .home-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animação */
 @keyframes fadeUp {
     from {
         opacity: 0;
@@ -124,35 +153,3 @@
         transform: translateY(0);
     }
 }
-
-@media (max-width: 768px) {
-    .home-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.featured {
-    padding-bottom: 80px !important;
-}
-
-    .featured .card {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-        .featured .card img {
-            height: 220px;
-            object-fit: cover;
-        }
-
-    .featured .card-body {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .featured .actions {
-        margin-top: auto;
-    }
-

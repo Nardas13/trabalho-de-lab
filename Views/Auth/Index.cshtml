@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Login / Criar Conta";
+}
+@{
+    Layout = "_Layout";
+    ViewBag.AuthPage = true;
+}
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css?v=@DateTime.Now.Ticks" />
+}
+
+<div class="auth-page">
+    <div class="auth-wrapper fade-up">
+
+        <!-- LOGIN -->
+        <div id="login-box" class="auth-card active">
+            <h1 class="auth-title">Iniciar Sessão</h1>
+
+            <form method="post" action="/Auth/Login">
+                <input type="email" name="Email" placeholder="Email" required />
+                <input type="password" name="Password" placeholder="Password" required />
+
+                <a class="forgot" href="/Auth/ForgotPassword">Esqueceste-te da palavra-passe?</a>
+
+                <button type="submit" class="auth-btn">Iniciar Sessão</button>
+            </form>
+
+            <div class="auth-divider"><span>ou</span></div>
+
+            <button type="button" class="social-btn google-btn">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+                Continuar com Google
+            </button>
+
+            <p class="auth-switch">
+                Não tens conta?
+                <a href="#" onclick="showRegister()">Criar Conta</a>
+            </p>
+        </div>
+
+        <!-- REGISTO -->
+        <div id="register-box" class="auth-card">
+            <p class="step-indicator">Passo 1 de 2</p>
+            <h1 class="auth-title">Criar Conta</h1>
+
+            <form method="post" action="/Auth/Register" class="form-grid">
+
+                <input type="text" name="Nome" placeholder="Nome completo" required />
+                <input type="email" name="Email" placeholder="Email" required />
+
+                <input type="text" name="Username" placeholder="Username" required />
+                <input type="text" name="Contacto" placeholder="Contacto" required />
+
+                <input type="password" name="Password" placeholder="Password" required />
+                <input type="password" name="ConfirmPassword" placeholder="Confirmar Password" required />
+
+                <div class="full-row">
+                    <input type="text" name="Morada" placeholder="Morada" required />
+                </div>
+
+                <p class="legal-text full-row">
+                    Ao criares conta, concordas com os
+                    <a href="/Termos#termos">Termos & Políticas</a>
+                    e com a nossa
+                    <a href="/Termos#privacidade">Política de Privacidade</a>.
+                </p>
+
+                <div class="full-row">
+                    <button type="submit" class="auth-btn">Criar Conta</button>
+                </div>
+
+            </form>
+
+            <p class="auth-switch">
+                Já tens conta? <a href="#" onclick="showLogin()">Fazer Login</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function showRegister() {
+        document.getElementById("login-box").classList.remove("active");
+        document.getElementById("register-box").classList.add("active");
+    }
+
+    function showLogin() {
+        document.getElementById("register-box").classList.remove("active");
+        document.getElementById("login-box").classList.add("active");
+    }
+</script>

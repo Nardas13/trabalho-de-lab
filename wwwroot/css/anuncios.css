@@ -320,7 +320,6 @@
     gap: 10px;
 }
 
-/* Ajuste do dropdown dentro da order-card */
 .order-select {
     width: 170px;
 }
@@ -340,10 +339,6 @@
     font-weight: 600 !important; 
     color: var(--txt-900);
 }
-
-/* ================================
-   REFINO DROPDOWNS 
-   ================================ */
 
 /* Texto da opção selecionada */
 .pill .selected {

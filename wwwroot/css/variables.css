@@ -1,21 +1,23 @@
 :root {
-  /* Cores principais */
-  --primary:#2f6dff;
-  --primary-700:#2558cc;
-  --bg-000:#ffffff;
-  --bg-050:#f7f8fb;
-  --stroke:#e6e9f2;
+    /* Cores principais */
+    --primary: #2f6dff;
+    --primary-700: #2558cc;
+    --bg-000: #ffffff;
+    --bg-050: #f7f8fb;
+    --stroke: #e6e9f2;
+    /* Texto */
+    --txt-900: #0f172a;
+    --txt-700: #344256;
+    --txt-500: #64748b;
+    /* Sombras e radius */
+    --shadow-sm: 0 6px 18px rgba(16,24,40,.06);
+    --shadow-md: 0 16px 34px rgba(16,24,40,.10);
+    --radius: 12px;
+    /* Container padrão */
+    --container: 1200px;
+    /* ===========================
+       NOVOS GRADIENTES GLOBAIS
+     =========================== */
 
-  /* Texto */
-  --txt-900:#0f172a;
-  --txt-700:#344256;
-  --txt-500:#64748b;
-
-  /* Sombras e radius */
-  --shadow-sm:0 6px 18px rgba(16,24,40,.06);
-  --shadow-md:0 16px 34px rgba(16,24,40,.10);
-  --radius:12px;
-
-  /* Container padrão */
-  --container:1200px;
+    --bg-gradient-vertical: linear-gradient(to bottom, #ffffff 0%, #f7f8fa 40%, #f2f3f7 100%);
 }

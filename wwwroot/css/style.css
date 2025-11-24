@@ -1,6 +1,7 @@
 /* ================================
    RESET & BASE
 ================================ */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -11,19 +12,9 @@ html {
     scroll-behavior: smooth;
 }
 
-/* (se quiseres, podes copiar o font-size do site.css para aqui também) */
-/*
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html { font-size: 16px; }
-}
-*/
-
 body {
-    font-family: 'Inter',sans-serif;
-    background: var(--bg-050);
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient-vertical);
     color: var(--txt-900);
     line-height: 1.5;
 }
@@ -35,58 +26,105 @@ body {
 }
 
 /* ================================
-   NAVBAR GLOBAL
+   NAVBAR 
 ================================ */
+
+/* HEADER */
 .nav {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(255,255,255,.9);
-    backdrop-filter: saturate(130%) blur(6px);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--stroke);
 }
 
 .nav-inner {
-    height: 68px;
-    display: flex;
+    max-width: 1250px;
+    margin: 0 auto;
+    height: 65px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    padding: 0 24px;
     align-items: center;
-    justify-content: space-between;
 }
 
+/* LOGO + NOME */
 .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
+}
+
+.logo-dourado {
+    height: 42px;
+}
+
+/* AUTOHUB */
+.brand-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
     font-weight: 700;
+    color: #0a0a0a;
+    letter-spacing: 0.13rem;
 }
 
-.logo-img {
-    width: 46px;
-    height: auto;
-    object-fit: contain;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.menu {
+/* MENU CENTRAL */
+.menu-center {
     display: flex;
-    gap: 28px;
-    align-items: center;
+    justify-content: center;
+    gap: 40px;
 }
 
-    .menu a {
-        color: var(--txt-700);
-        font-weight: 600;
+    .menu-center a {
+        font-family: 'Inter', sans-serif;
+        font-size: 17px;
+        font-weight: 700; 
+        color: #111;
         text-decoration: none;
     }
 
-        .menu a:hover {
-            color: var(--txt-900);
+        /* hover */
+        .menu-center a:hover {
+            color: #000;
+        }
+
+/* ICONES */
+.menu-right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 18px;
+    align-items: center;
+}
+
+    .menu-right img {
+        width: 21px;
+        opacity: 0.85;
+        transition: 0.2s;
+    }
+
+        .menu-right img:hover {
+            opacity: 1;
+        }
+
+    .menu-right svg {
+        width: 20px;
+        height: 20px;
+        opacity: 0.85;
+        transition: 0.2s;
+        display: block; 
+        margin-top: 1px; 
+    }
+
+
+        .menu-right svg:hover {
+            opacity: 1;
         }
 
 /* ================================
    BOTÕES GLOBAIS
 ================================ */
+
 .btn {
     background: var(--primary);
     color: #fff;
@@ -96,7 +134,8 @@ body {
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 6px 14px rgba(47,109,255,.25);
-    transition: .2s;
+    transition: 0.2s;
+    text-decoration: none !important;
 }
 
     .btn:hover {
@@ -105,10 +144,11 @@ body {
     }
 
 /* ================================
-   FOOTER GLOBAL
-================================ */
+    FOOTER
+    ================================ */
+
 footer {
-    margin-top: 60px; /* espaço SEMPRE antes do rodapé */
+    margin-top: 60px;
     padding: 40px 0 20px;
     border-top: 1px solid var(--stroke);
     background: #f9fafc;
@@ -178,25 +218,25 @@ footer {
     color: var(--txt-500);
 }
 
-/* RESPONSIVO FOOTER */
-@media(max-width:992px) {
-    .footer-sections {
-        flex-wrap: wrap;
-        justify-content: center;
-        text-align: center;
-        gap: 40px;
-    }
 
-    .about-text {
-        max-width: 100%;
-    }
-}
 
-.btn {
-    text-decoration: none !important;
-}
+/* ================================
+   OUTROS AJUSTES GERAIS
+================================ */
 
+/* links em botões/ações sem sublinhado */
 .actions a {
     text-decoration: none !important;
 }
 
+body.auth-layout main {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* ===========================================
+   BACKGROUND GLOBAL
+=========================================== */
+.bg-global {
+    background: var(--bg-gradient-vertical);
+}

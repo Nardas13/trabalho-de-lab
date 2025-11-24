@@ -32,15 +32,16 @@
 }
 
     .home-hero-content h1 {
-        font-size: 2.4rem;
-        font-weight: 800;
+        font-size: 2.15rem;
+        font-weight: 700;
         margin-bottom: 0.6rem;
         line-height: 1.2;
         color: #0f172a;
+        letter-spacing: -0.5px;
     }
 
     .home-hero-content p {
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         color: rgba(30,41,59,0.85);
         margin-bottom: 1.5rem;
     }
@@ -107,7 +108,7 @@
 
 /* CONTEÚDO DO CARD */
 .home-card-body {
-    padding: 14px 16px; /* mais compacto */
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -129,7 +130,7 @@
 
 /* BOTÃO */
 .home-card .actions {
-    margin-top: auto; /* botão SEMPRE alinhado */
+    margin-top: auto;
     display: flex;
     justify-content: flex-end;
 }

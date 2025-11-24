@@ -1,5 +1,62 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Login / Criar Conta";
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" />
+}
+
+<div class="auth-container fade-up">
+
+    <!-- LOGIN -->
+    <div id="login-box" class="auth-box active">
+        <h1 class="auth-title">Iniciar Sessão</h1>
+
+        <form method="post" action="/Auth/Login">
+            <input type="text" name="Username" placeholder="Username ou Email" required />
+            <input type="password" name="Password" placeholder="Password" required />
+
+            <button type="submit" class="auth-btn">Entrar</button>
+        </form>
+
+        <p class="auth-switch">
+            Ainda não tens conta?
+            <a href="#" onclick="showRegister()">Criar Conta</a>
+        </p>
+    </div>
+
+
+    <!-- REGISTO -->
+    <div id="register-box" class="auth-box">
+        <h1 class="auth-title">Criar Conta</h1>
+
+        <form method="post" action="/Auth/Register">
+            <input type="text" name="Nome" placeholder="Nome completo" required />
+            <input type="email" name="Email" placeholder="Email" required />
+            <input type="text" name="Username" placeholder="Username" required />
+            <input type="password" name="Password" placeholder="Password" required />
+            <input type="text" name="Morada" placeholder="Morada" required />
+            <input type="text" name="Contacto" placeholder="Contacto" required />
+
+            <button type="submit" class="auth-btn">Criar Conta</button>
+        </form>
+
+        <p class="auth-switch">
+            Já tens conta?
+            <a href="#" onclick="showLogin()">Fazer Login</a>
+        </p>
+    </div>
+
+</div>
+
+<script>
+    function showRegister() {
+        document.getElementById("login-box").classList.remove("active");
+        document.getElementById("register-box").classList.add("active");
+    }
+
+    function showLogin() {
+        document.getElementById("register-box").classList.remove("active");
+        document.getElementById("login-box").classList.add("active");
+    }
+</script>

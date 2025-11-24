@@ -10,7 +10,7 @@
             ? "Stand / Profissional"
             : "Vendedor particular");
 
-    // imagem principal (se não houver na BD, usa carros.jpg)
+    // imagem principal
     var imagensOrdenadas = Model.AnuncioImagems
         .OrderBy(i => i.Ordem)
         .ToList();

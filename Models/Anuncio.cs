@@ -31,5 +31,5 @@ public partial class Anuncio
 
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 
-    public virtual ICollection<Visita> Visita { get; set; } = new List<Visita>();
+    public virtual ICollection<Visitum> Visita { get; set; } = new List<Visitum>();
 }

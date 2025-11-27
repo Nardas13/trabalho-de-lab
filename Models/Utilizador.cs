@@ -23,6 +23,12 @@ public partial class Utilizador
 
     public string EstadoConta { get; set; } = null!;
 
+    public bool EmailConfirmado { get; set; }
+
+    public string? CodigoConfirmacao { get; set; }
+
+    public string? ResetPasswordCode { get; set; }
+
     public virtual Administrador? Administrador { get; set; }
 
     public virtual Comprador? Comprador { get; set; }

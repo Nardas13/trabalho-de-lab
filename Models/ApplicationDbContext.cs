@@ -35,7 +35,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Vendedor> Vendedors { get; set; }
 
-    public virtual DbSet<Visita> Visita { get; set; }
+    public virtual DbSet<Visitum> Visita { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -197,6 +197,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.HasIndex(e => e.Username, "UQ_Utilizador_Username").IsUnique();
 
+            entity.Property(e => e.CodigoConfirmacao).HasMaxLength(50);
             entity.Property(e => e.DataCriacao)
                 .HasPrecision(0)
                 .HasDefaultValueSql("(sysutcdatetime())");
@@ -208,6 +209,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Morada).HasMaxLength(250);
             entity.Property(e => e.Nome).HasMaxLength(150);
             entity.Property(e => e.PasswordHash).HasMaxLength(128);
+            entity.Property(e => e.ResetPasswordCode).HasMaxLength(50);
             entity.Property(e => e.Telefone).HasMaxLength(30);
             entity.Property(e => e.Username).HasMaxLength(100);
         });
@@ -256,7 +258,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("FK__Vendedor__IdVend__4222D4EF");
         });
 
-        modelBuilder.Entity<Visita>(entity =>
+        modelBuilder.Entity<Visitum>(entity =>
         {
             entity.HasKey(e => e.IdVisita).HasName("PK__Visita__020AC8276F4BA839");
 

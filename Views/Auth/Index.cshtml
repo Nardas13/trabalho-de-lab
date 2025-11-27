@@ -1,11 +1,17 @@
 ﻿@{
     ViewData["Title"] = "Login / Criar Conta";
-}
-@{
     Layout = "_Layout";
     ViewBag.AuthPage = true;
 }
 
+@if (TempData["AuthError"] is string err)
+{
+    <div class="inline-msg inline-error">@err</div>
+}
+@if (TempData["AuthSuccess"] is string ok)
+{
+    <div class="inline-msg inline-success">@ok</div>
+}
 
 @section Styles {
     <link rel="stylesheet" href="~/css/auth.css?v=@DateTime.Now.Ticks" />
@@ -15,12 +21,15 @@
     <div class="auth-wrapper fade-up">
 
         <!-- LOGIN -->
-        <div id="login-box" class="auth-card active">
+        <div id="login-box" class="auth-card @(TempData["AuthErrorSource"]?.ToString() == "register" ? "" : "active")">
             <h1 class="auth-title">Iniciar Sessão</h1>
 
             <form method="post" action="/Auth/Login">
                 <input type="email" name="Email" placeholder="Email" required />
-                <input type="password" name="Password" placeholder="Password" required />
+                <div class="pwd-wrapper">
+                    <input type="password" id="login-password" name="Password" placeholder="Password" required />
+                    <img src="@Url.Content("~/imgs/eye-off.jpg")" class="eye-icon" onclick="togglePwd('login-password', this)" />
+                </div>
 
                 <a class="forgot" href="/Auth/ForgotPassword">Esqueceste-te da palavra-passe?</a>
 
@@ -41,24 +50,30 @@
         </div>
 
         <!-- REGISTO -->
-        <div id="register-box" class="auth-card">
+        <div id="register-box" class="auth-card @(TempData["AuthErrorSource"]?.ToString() == "register" ? "active" : "")">
             <p class="step-indicator">Passo 1 de 2</p>
             <h1 class="auth-title">Criar Conta</h1>
 
             <form method="post" action="/Auth/Register" class="form-grid">
 
-                <input type="text" name="Nome" placeholder="Nome completo" required />
-                <input type="email" name="Email" placeholder="Email" required />
+                <input type="text" name="Nome" placeholder="Nome completo" required value="@(TempData["Nome"] ?? "")" />
+                <input type="email" name="Email" placeholder="Email" required value="@(TempData["Email"] ?? "")" />
+                <input type="text" name="Username" placeholder="Username" required value="@(TempData["Username"] ?? "")" />
+                <input type="text" name="Contacto" placeholder="Contacto" required value="@(TempData["Contacto"] ?? "")" />
 
-                <input type="text" name="Username" placeholder="Username" required />
-                <input type="text" name="Contacto" placeholder="Contacto" required />
-
-                <input type="password" name="Password" placeholder="Password" required />
-                <input type="password" name="ConfirmPassword" placeholder="Confirmar Password" required />
-
-                <div class="full-row">
-                    <input type="text" name="Morada" placeholder="Morada" required />
+                <div class="pwd-wrapper">
+                    <input type="password" id="reg-password" name="Password" placeholder="Password" required />
+                    <img src="@Url.Content("~/imgs/eye-off.jpg")" class="eye-icon" onclick="togglePwd('reg-password', this)" />
                 </div>
+
+                <div class="pwd-wrapper">
+                    <input type="password" id="reg-confirm" name="ConfirmPassword" placeholder="Confirmar Pass" required />
+                    <img src="@Url.Content("~/imgs/eye-off.jpg")" class="eye-icon" onclick="togglePwd('reg-confirm', this)" />
+                </div>
+
+                <input type="text" name="Morada" placeholder="Morada" required
+                       class="full-row"
+                       value="@(TempData["Morada"] ?? "")" />
 
                 <p class="legal-text full-row">
                     Ao criares conta, concordas com os
@@ -91,4 +106,37 @@
         document.getElementById("register-box").classList.remove("active");
         document.getElementById("login-box").classList.add("active");
     }
+
+    // FINAL, 100% FUNCIONAL
+    function togglePwd(id, icon) {
+        const input = document.getElementById(id);
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.src = "@Url.Content("~/imgs/eye.jpg")";     
+        } else {
+            input.type = "password";
+            icon.src = "@Url.Content("~/imgs/eye-off.jpg")"; 
+        }
+    }
 </script>
+
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.inline-msg').forEach(m => {
+            m.style.opacity = "0";
+            m.style.transition = "0.4s";
+        });
+    }, 2800);
+</script>
+
+@if (TempData["AuthErrorSource"]?.ToString() == "register"
+    && TempData["AuthError"]?.ToString() == "As passwords não coincidem.")
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("reg-password").classList.add("input-error");
+            document.getElementById("reg-confirm").classList.add("input-error");
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Confirmar Email";
+    Layout = "_Layout";
+    ViewBag.AuthPage = true;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css?v=@DateTime.Now.Ticks" />
+}
+
+@if (TempData["AuthError"] is string err)
+{
+    <div class="auth-alert error">@err</div>
+}
+
+<div class="auth-page">
+    <div class="auth-wrapper fade-up">
+
+        <div class="auth-card active verify-card">
+
+            <!-- Step -->
+            <p class="verify-step">Passo 2 de 2</p>
+
+            <h1 class="verify-title">Verifique o seu e-mail</h1>
+
+            <p class="verify-sub">
+                Introduz o código enviado para<br>
+                <strong>@ViewBag.Email</strong>
+            </p>
+
+            <form method="post" action="/Auth/ConfirmEmail" class="verify-form">
+
+                <input type="hidden" name="Email" value="@ViewBag.Email" />
+
+                <div class="code-boxes">
+                    <input maxlength="1" class="code-digit" oninput="moveNext(this, 0)" />
+                    <input maxlength="1" class="code-digit" oninput="moveNext(this, 1)" />
+                    <input maxlength="1" class="code-digit" oninput="moveNext(this, 2)" />
+                    <input maxlength="1" class="code-digit" oninput="moveNext(this, 3)" />
+                    <input maxlength="1" class="code-digit" oninput="moveNext(this, 4)" />
+                    <input maxlength="1" class="code-digit" oninput="moveNext(this, 5)" />
+                </div>
+
+                <input type="hidden" id="Codigo" name="Codigo" />
+
+                <button type="submit" class="auth-btn verify-btn">Confirmar</button>
+
+            </form>
+
+            <p class="verify-resend">
+                Não recebeste o código?
+                <a href="/Auth/ResendCode?email=@ViewBag.Email">Reenviar</a>
+            </p>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const digits = document.querySelectorAll(".code-digit");
+    const hidden = document.getElementById("Codigo");
+
+    function moveNext(el, index) {
+        if (el.value.length === 1 && index < 5) {
+            digits[index + 1].focus();
+        }
+
+        hidden.value = [...digits].map(d => d.value).join('');
+    }
+</script>

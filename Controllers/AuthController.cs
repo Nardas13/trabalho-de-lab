@@ -3,8 +3,11 @@ using AutoHubProjeto.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AutoHubProjeto.Controllers
 {
@@ -61,6 +64,15 @@ namespace AutoHubProjeto.Controllers
             string Nome, string Email, string Username, string Contacto,
             string Password, string ConfirmPassword, string Morada)
         {
+
+            //if (!Regex.IsMatch(Contacto ?? "", @"^(91|92|93|96)\d{6}$"))
+            //{
+            //    TempData["AuthError"] = "Número inválido.";
+            //    TempData["AuthErrorSource"] = "register";
+            //    return RedirectToAction("Index");
+            //}
+
+
             if (Password != ConfirmPassword)
             {
                 TempData["AuthError"] = "As passwords não coincidem.";
@@ -206,10 +218,15 @@ namespace AutoHubProjeto.Controllers
         {
             var user = await _db.Utilizadors.FirstOrDefaultAsync(u => u.Email == Email);
 
-            if (user == null || !user.EmailConfirmado)
+            if (user == null)
             {
-                TempData["AuthError"] =
-                    "Se o email existir e estiver confirmado, receberás um código.";
+                TempData["EmailStatus"] = "notfound";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            if (!user.EmailConfirmado)
+            {
+                TempData["EmailStatus"] = "notfound";
                 return RedirectToAction("ForgotPassword");
             }
 
@@ -221,53 +238,128 @@ namespace AutoHubProjeto.Controllers
 
             TempData["ResetEmail"] = Email;
             TempData["AuthSuccess"] = "Código enviado!";
-            return RedirectToAction("ResetPassword");
+            return RedirectToAction("ResetPasswordCode");
         }
 
         [HttpGet]
-        public IActionResult ResetPassword()
+        public IActionResult ResetPasswordCode()
         {
-            var email = TempData["ResetEmail"] as string
-                        ?? Request.Query["email"].ToString();
-
-            if (email == null)
-                return RedirectToAction("Index");
+            var email = TempData["ResetEmail"] as string ?? Request.Query["email"].ToString();
+            if (string.IsNullOrWhiteSpace(email))
+                return RedirectToAction("ForgotPassword");
 
             ViewBag.Email = email;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(
-            string Email, string Codigo, string Password, string ConfirmPassword)
+        public async Task<IActionResult> ResetPasswordCode(string Email, string Codigo)
         {
-            if (Password != ConfirmPassword)
-            {
-                TempData["AuthError"] = "As passwords não coincidem.";
-                TempData["ResetEmail"] = Email;
-                return RedirectToAction("ResetPassword");
-            }
-
-            var user = await _db.Utilizadors
-                .FirstOrDefaultAsync(u => u.Email == Email);
+            var user = await _db.Utilizadors.FirstOrDefaultAsync(u => u.Email == Email);
 
             if (user == null || user.ResetPasswordCode != Codigo)
             {
                 TempData["AuthError"] = "Código inválido.";
                 TempData["ResetEmail"] = Email;
-                return RedirectToAction("ResetPassword");
+                return RedirectToAction("ResetPasswordCode");
             }
 
+            // Código correto -> avançar para criar nova password
+            TempData["ResetEmail"] = Email;
+            return RedirectToAction("NewPassword");
+        }
+
+        private static string GenerateCode() =>
+            RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
+        [HttpGet]
+        public async Task<IActionResult> ResendResetCode(string email)
+        {
+            var user = await _db.Utilizadors.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null || !user.EmailConfirmado)
+            {
+                TempData["AuthError"] = "Email inválido.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            var code = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+            user.ResetPasswordCode = code;
+
+            await _db.SaveChangesAsync();
+
+            await _email.SendResetPasswordEmail(email, code);
+
+            TempData["AuthSuccess"] = "Código reenviado!";
+            TempData["ResetEmail"] = email;
+
+            return RedirectToAction("ResetPasswordCode");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> CheckExists(string field, string value)
+        {
+            if (string.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(value))
+                return Json(false);
+
+            bool exists = field.ToLower() switch
+            {
+                "email" => await _db.Utilizadors.AnyAsync(u => u.Email == value),
+                "username" => await _db.Utilizadors.AnyAsync(u => u.Username == value),
+                "contacto" => await _db.Utilizadors.AnyAsync(u => u.Telefone == value),
+                _ => false
+            };
+
+            return Json(exists);
+        }
+
+        [HttpGet]
+        public IActionResult NewPassword()
+        {
+            var email = TempData["ResetEmail"] as string;
+            if (email == null) return RedirectToAction("ForgotPassword");
+
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> NewPassword(string Email, string Password, string ConfirmPassword)
+        {
+            // valida confirmação
+            if (Password != ConfirmPassword)
+            {
+                TempData["AuthError"] = "As passwords não coincidem.";
+                TempData["ResetEmail"] = Email;
+                return RedirectToAction("NewPassword");
+            }
+
+            // buscar utilizador
+            var user = await _db.Utilizadors.FirstOrDefaultAsync(u => u.Email == Email);
+            if (user == null)
+                return RedirectToAction("ForgotPassword");
+
+            // dif. da antiga
+            if (PasswordHelper.VerifyPassword(Password, user.PasswordHash))
+            {
+                TempData["AuthError"] = "A nova password não pode ser igual à anterior.";
+                TempData["ResetEmail"] = Email;
+                return RedirectToAction("NewPassword");
+            }
+
+            // guarda
             user.PasswordHash = PasswordHelper.HashPassword(Password);
             user.ResetPasswordCode = null;
 
             await _db.SaveChangesAsync();
 
-            TempData["AuthSuccess"] = "Password alterada!";
+            TempData["AuthSuccess"] = "Password alterada com sucesso!";
             return RedirectToAction("Index");
         }
 
-        private static string GenerateCode() =>
-            RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
     }
 }
+

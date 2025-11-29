@@ -8,6 +8,7 @@
 {
     <div class="inline-msg inline-error">@err</div>
 }
+
 @if (TempData["AuthSuccess"] is string ok)
 {
     <div class="inline-msg inline-success">@ok</div>
@@ -21,14 +22,19 @@
     <div class="auth-wrapper fade-up">
 
         <!-- LOGIN -->
-        <div id="login-box" class="auth-card @(TempData["AuthErrorSource"]?.ToString() == "register" ? "" : "active")">
+        <div id="login-box"
+             class="auth-card @(TempData["AuthErrorSource"]?.ToString() == "register" ? "" : "active")">
+
             <h1 class="auth-title">Iniciar Sessão</h1>
 
             <form method="post" action="/Auth/Login">
                 <input type="email" name="Email" placeholder="Email" required />
+
                 <div class="pwd-wrapper">
                     <input type="password" id="login-password" name="Password" placeholder="Password" required />
-                    <img src="@Url.Content("~/imgs/eye-off.jpg")" class="eye-icon" onclick="togglePwd('login-password', this)" />
+                    <img src="@Url.Content("~/imgs/eye-off.jpg")"
+                         class="eye-icon"
+                         onclick="togglePwd('login-password', this)" />
                 </div>
 
                 <a class="forgot" href="/Auth/ForgotPassword">Esqueceste-te da palavra-passe?</a>
@@ -39,7 +45,7 @@
             <div class="auth-divider"><span>ou</span></div>
 
             <button type="button" class="social-btn google-btn">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
                 Continuar com Google
             </button>
 
@@ -47,28 +53,44 @@
                 Não tens conta?
                 <a href="#" onclick="showRegister()">Criar Conta</a>
             </p>
+
         </div>
 
         <!-- REGISTO -->
-        <div id="register-box" class="auth-card @(TempData["AuthErrorSource"]?.ToString() == "register" ? "active" : "")">
+        <div id="register-box"
+             class="auth-card @(TempData["AuthErrorSource"]?.ToString() == "register" ? "active" : "")">
+
             <p class="step-indicator">Passo 1 de 2</p>
             <h1 class="auth-title">Criar Conta</h1>
 
             <form method="post" action="/Auth/Register" class="form-grid">
 
-                <input type="text" name="Nome" placeholder="Nome completo" required value="@(TempData["Nome"] ?? "")" />
-                <input type="email" name="Email" placeholder="Email" required value="@(TempData["Email"] ?? "")" />
-                <input type="text" name="Username" placeholder="Username" required value="@(TempData["Username"] ?? "")" />
-                <input type="text" name="Contacto" placeholder="Contacto" required value="@(TempData["Contacto"] ?? "")" />
+                <input type="text" name="Nome" placeholder="Nome completo" required
+                       value="@(TempData["Nome"] ?? "")" />
+
+                <input type="email" id="email" name="Email" placeholder="Email"
+                       required oninput="checkExists('email')" />
+
+                <input type="text" id="username" name="Username" placeholder="Username"
+                       required oninput="checkExists('username')" />
+
+                <input type="text" id="contacto" name="Contacto" placeholder="Contacto"
+                       required oninput="restrictPhone(this); checkExists('contacto')" />
 
                 <div class="pwd-wrapper">
-                    <input type="password" id="reg-password" name="Password" placeholder="Password" required />
-                    <img src="@Url.Content("~/imgs/eye-off.jpg")" class="eye-icon" onclick="togglePwd('reg-password', this)" />
+                    <input type="password" id="reg-password" name="Password"
+                           placeholder="Password" required oninput="validatePasswordRealtime()" />
+                    <img src="@Url.Content("~/imgs/eye-off.jpg")"
+                         class="eye-icon"
+                         onclick="togglePwd('reg-password', this)" />
                 </div>
 
                 <div class="pwd-wrapper">
-                    <input type="password" id="reg-confirm" name="ConfirmPassword" placeholder="Confirmar Pass" required />
-                    <img src="@Url.Content("~/imgs/eye-off.jpg")" class="eye-icon" onclick="togglePwd('reg-confirm', this)" />
+                    <input type="password" id="reg-confirm" name="ConfirmPassword"
+                           placeholder="Confirmar Pass" required oninput="validatePasswordRealtime()" />
+                    <img src="@Url.Content("~/imgs/eye-off.jpg")"
+                         class="eye-icon"
+                         onclick="togglePwd('reg-confirm', this)" />
                 </div>
 
                 <input type="text" name="Morada" placeholder="Morada" required
@@ -85,16 +107,19 @@
                 <div class="full-row">
                     <button type="submit" class="auth-btn">Criar Conta</button>
                 </div>
-
             </form>
 
             <p class="auth-switch">
-                Já tens conta? <a href="#" onclick="showLogin()">Fazer Login</a>
+                Já tens conta?
+                <a href="#" onclick="showLogin()">Fazer Login</a>
             </p>
         </div>
 
     </div>
 </div>
+
+
+<!-- ========================= SCRIPTS ========================= -->
 
 <script>
     function showRegister() {
@@ -107,36 +132,102 @@
         document.getElementById("login-box").classList.add("active");
     }
 
-    // FINAL, 100% FUNCIONAL
     function togglePwd(id, icon) {
         const input = document.getElementById(id);
+        const show = "@Url.Content("~/imgs/eye.jpg")";
+        const hide = "@Url.Content("~/imgs/eye-off.jpg")";
 
-        if (input.type === "password") {
-            input.type = "text";
-            icon.src = "@Url.Content("~/imgs/eye.jpg")";     
-        } else {
-            input.type = "password";
-            icon.src = "@Url.Content("~/imgs/eye-off.jpg")"; 
-        }
+        const showing = input.type === "password";
+        input.type = showing ? "text" : "password";
+        icon.src = showing ? show : hide;
     }
-</script>
 
-<script>
+    // desaparecer avisos
     setTimeout(() => {
         document.querySelectorAll('.inline-msg').forEach(m => {
             m.style.opacity = "0";
             m.style.transition = "0.4s";
         });
     }, 2800);
-</script>
 
-@if (TempData["AuthErrorSource"]?.ToString() == "register"
-    && TempData["AuthError"]?.ToString() == "As passwords não coincidem.")
-{
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("reg-password").classList.add("input-error");
-            document.getElementById("reg-confirm").classList.add("input-error");
-        });
-    </script>
-}
+    // limitar telefone a 9 dígitos
+    function restrictPhone(input) {
+        input.value = input.value.replace(/\D/g, "");
+        if (input.value.length > 9)
+            input.value = input.value.substring(0, 9);
+    }
+
+    // remover espaços do contacto antes de submeter
+    document.querySelector("#register-box form").addEventListener("submit", function () {
+        const c = document.getElementById("contacto");
+        c.value = c.value.replace(/\s/g, ""); 
+    });
+
+
+    // validar password = confirmar
+    function validatePasswordRealtime() {
+        const pass = document.getElementById("reg-password");
+        const confirm = document.getElementById("reg-confirm");
+
+        if (confirm.value.length === 0) return;
+
+        if (pass.value !== confirm.value)
+            confirm.classList.add("input-error");
+        else
+            confirm.classList.remove("input-error");
+    }
+
+    // verificar email / username / contacto existentes
+        async function checkExists(field) {
+        const input = document.getElementById(field);
+        const value = input.value.trim();
+
+        if (value.length < 3) {
+            input.classList.remove("input-exists");
+            updateRegisterButton();
+            return;
+        }
+
+        const res = await fetch(`/Auth/CheckExists?field=${field}&value=${value}`);
+        const exists = await res.json();
+
+        if (exists)
+            input.classList.add("input-exists");
+        else
+            input.classList.remove("input-exists");
+
+        updateRegisterButton(); 
+    }
+
+
+    // atualizar estado do botão de registo
+    function updateRegisterButton() {
+        const fields = [
+            document.getElementById("email"),
+            document.getElementById("username"),
+            document.getElementById("contacto"),
+            document.getElementById("reg-password"),
+            document.getElementById("reg-confirm")
+        ];
+
+        const hasError = fields.some(f =>
+            f.classList.contains("input-exists") ||
+            f.classList.contains("input-error")
+        );
+
+        const btn = document.querySelector("#register-box .auth-btn");
+
+        if (hasError) {
+            btn.classList.add("disabled");
+            btn.disabled = true;
+            btn.setAttribute("data-tooltip", "Verifique os seus dados...");
+        } else {
+            btn.classList.remove("disabled");
+            btn.disabled = false;
+            btn.removeAttribute("data-tooltip");
+        }
+    }
+    // monitorizar em tempo real
+    document.addEventListener("input", updateRegisterButton);
+
+</script>

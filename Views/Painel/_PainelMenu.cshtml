@@ -1,0 +1,106 @@
+﻿@model AutoHubProjeto.ViewModels.PainelMenuVM
+<link rel="stylesheet" href="/css/painelMenu.css" />
+
+<aside class="painel-sidebar">
+
+    <!-- HEADER DO MENU -->
+    <div class="menu-title">
+        <div class="menu-title-main">Área Pessoal</div>
+        <div class="menu-title-sub">Gerir compras, vendas e conta</div>
+    </div>
+
+    <!-- ========================= -->
+    <!--      ÁREA DE COMPRAS      -->
+    <!-- ========================= -->
+    @if (Model.IsComprador)
+    {
+        <div class="menu-group hover-expand">
+            <div class="menu-item">
+                <span class="menu-item-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="6" x2="20" y2="6" />
+                        <line x1="4" y1="12" x2="16" y2="12" />
+                        <line x1="4" y1="18" x2="12" y2="18" />
+                    </svg>
+                </span>
+                <span class="menu-item-text">Área de Compras</span>
+            </div>
+
+            <ul class="submenu">
+                <li><a href="/Painel/Comprador">Painel do Comprador</a></li>
+                <li><a href="/Painel/Favoritos">Favoritos</a></li>
+                <li><a href="/Painel/Filtros">Filtros Guardados</a></li>
+                <li><a href="/Painel/Marcas">Marcas Favoritas</a></li>
+                <li><a href="/Painel/Reservas">Minhas Reservas</a></li>
+                <li><a href="/Painel/Visitas">Minhas Visitas</a></li>
+                <li><a href="/Painel/Compras">Minhas Compras</a></li>
+            </ul>
+        </div>
+    }
+
+    <!-- ========================= -->
+    <!--      ÁREA DE VENDAS       -->
+    <!-- ========================= -->
+    @if (Model.IsVendedor)
+    {
+        <div class="menu-group hover-expand">
+            <div class="menu-item">
+                <span class="menu-item-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 14.5 8 10 12 13 20 6" />
+                        <line x1="20" y1="6" x2="20" y2="14.5" />
+                    </svg>
+                </span>
+                <span class="menu-item-text">Área de Vendas</span>
+            </div>
+
+            <ul class="submenu">
+                <li><a href="/Vendedor">Painel do Vendedor</a></li>
+                <li><a href="/Anuncios/Criar">Criar Anúncio</a></li>
+                <li><a href="/Anuncios/Meus">Meus Veículos</a></li>
+                <li><a href="/Vendedor/Estatisticas">Estatísticas</a></li>
+                <li><a href="/Vendedor/Visitas">Visitas Agendadas</a></li>
+                <li><a href="/Vendedor/Reservas">Reservas</a></li>
+            </ul>
+        </div>
+    }
+    else
+    {
+        <!-- CARD TORNAR VENDEDOR -->
+        <a class="become-seller-card" href="/Vendedor/Tornar">
+            <div class="become-seller-icon">★</div>
+            <div class="become-seller-text">
+                <div class="become-seller-title">Tornar-me Vendedor</div>
+                <div class="become-seller-sub">Começa a publicar veículos na AutoHub</div>
+            </div>
+            <div class="become-seller-arrow">›</div>
+        </a>
+    }
+
+    <!-- DIVISOR VISUAL -->
+    <div class="menu-divider"></div>
+
+    <!-- ========================= -->
+    <!--          CONTA            -->
+    <!-- ========================= -->
+    <div class="menu-group hover-expand">
+        <div class="menu-item">
+            <span class="menu-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3.3" />
+                    <path d="M19 12a7 7 0 0 0-.2-1.5l2-1.6-2-3.3-2.4 1a7.2 7.2 0 0 0-2.2-1.3L14 3h-4l-.4 2.3a7.2 7.2 0 0 0-2.2 1.3l-2.4-1-2 3.3 2 1.6A7 7 0 0 0 5 12c0 .5 0 1 .2 1.5l-2 1.6 2 3.3 2.4-1a7.2 7.2 0 0 0 2.2 1.3l.4 2.3h4l.4-2.3a7.2 7.2 0 0 0 2.2-1.3l2.4 1 2-3.3-2-1.6c.2-.5.2-1 .2-1.5Z" />
+                </svg>
+            </span>
+            <span class="menu-item-text">Conta</span>
+        </div>
+
+        <ul class="submenu">
+            <li><a href="/Conta/Perfil">Definições da Conta</a></li>
+            <li><a href="/Auth/Logout" class="logout">Terminar Sessão</a></li>
+        </ul>
+    </div>
+
+</aside>

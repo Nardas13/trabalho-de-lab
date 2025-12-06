@@ -75,7 +75,7 @@
                        required oninput="checkExists('username')" />
 
                 <input type="text" id="contacto" name="Contacto" placeholder="Contacto"
-                       required oninput="restrictPhone(this); checkExists('contacto')" />
+                       required oninput="restrictPhone(this); validatePhone(); checkExists('contacto')" />
 
                 <div class="pwd-wrapper">
                     <input type="password" id="reg-password" name="Password"
@@ -157,12 +157,27 @@
             input.value = input.value.substring(0, 9);
     }
 
+        function validatePhone() {
+        const contacto = document.getElementById("contacto");
+        const btn = document.querySelector("#register-box .auth-btn");
+
+        const value = contacto.value.trim();
+
+        // validar 9 dígitos obrigatórios
+        if (value.length === 9) {
+            contacto.classList.remove("input-error");
+        } else {
+            contacto.classList.add("input-error");
+        }
+
+        updateRegisterButton(); 
+    }
+
     // remover espaços do contacto antes de submeter
     document.querySelector("#register-box form").addEventListener("submit", function () {
         const c = document.getElementById("contacto");
         c.value = c.value.replace(/\s/g, ""); 
     });
-
 
     // validar password = confirmar
     function validatePasswordRealtime() {
@@ -198,7 +213,6 @@
 
         updateRegisterButton(); 
     }
-
 
     // atualizar estado do botão de registo
     function updateRegisterButton() {

@@ -1,5 +1,8 @@
 ﻿using AutoHubProjeto.Models;
 using AutoHubProjeto.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +30,7 @@ namespace AutoHubProjeto.Controllers
         // ---------------------------------------------------------
         // LOGIN
         // ---------------------------------------------------------
+
         [HttpPost]
         public async Task<IActionResult> Login(string Email, string Password)
         {
@@ -52,9 +56,32 @@ namespace AutoHubProjeto.Controllers
                 return RedirectToAction("ConfirmEmail");
             }
 
+            //
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim("UserId", user.Id.ToString())
+    };
+
+            var identity = new ClaimsIdentity(claims, "AuthCookie");
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync("AuthCookie", principal, new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTime.UtcNow.AddHours(6)
+            });
+
             TempData["AuthSuccess"] = "Sessão iniciada com sucesso!";
             return RedirectToAction("Index", "Home");
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("AuthCookie");
+            return RedirectToAction("Index", "Home");
+        }
+
 
         // ---------------------------------------------------------
         // REGISTO – PASSO 1
@@ -161,6 +188,7 @@ namespace AutoHubProjeto.Controllers
 
             var tempUser = JsonSerializer.Deserialize<PendingUser>(dadosUser);
 
+            // Criar utilizador
             var user = new Utilizador
             {
                 Nome = tempUser.Nome,
@@ -169,7 +197,6 @@ namespace AutoHubProjeto.Controllers
                 Telefone = tempUser.Contacto,
                 Morada = tempUser.Morada,
 
-                
                 PasswordHash = Convert.FromBase64String(tempUser.PasswordHash),
 
                 DataCriacao = DateTime.Now,
@@ -177,15 +204,30 @@ namespace AutoHubProjeto.Controllers
                 EmailConfirmado = true
             };
 
+            // Guardar utilizador
             _db.Utilizadors.Add(user);
             await _db.SaveChangesAsync();
 
+            // Criar comprador associado automaticamente
+            var comprador = new Comprador
+            {
+                IdComprador = user.Id,   
+                NotificacoesAtivas = true,
+                MarcaFavorita = null,
+                FiltroFavorito = null
+            };
+
+            _db.Compradors.Add(comprador);
+            await _db.SaveChangesAsync();
+
+            // Limpar sessão
             HttpContext.Session.Remove("PendingUser");
             HttpContext.Session.Remove("PendingCode");
 
             TempData["AuthSuccess"] = "Conta criada com sucesso!";
             return RedirectToAction("Index", "Home");
         }
+
 
         // ---------------------------------------------------------
         // REENVIAR CÓDIGO

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AutoHubProjeto.Models;
 
@@ -32,4 +33,8 @@ public partial class Anuncio
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 
     public virtual ICollection<Visitum> Visita { get; set; } = new List<Visitum>();
+    
+    [NotMapped]
+    public bool IsFavorito { get; set; }
+
 }

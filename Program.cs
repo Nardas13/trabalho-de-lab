@@ -23,6 +23,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Authentication
+builder.Services.AddAuthentication("AuthCookie")
+    .AddCookie("AuthCookie", options =>
+    {
+        options.LoginPath = "/Auth/Index";
+        options.AccessDeniedPath = "/Home/Index";
+    });
+
 var app = builder.Build();
 
 // Middleware
@@ -37,8 +45,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession();  
+app.UseSession();
 
+app.UseAuthentication();  
 app.UseAuthorization();
 
 // Routes

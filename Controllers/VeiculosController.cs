@@ -24,7 +24,24 @@ namespace AutoHubProjeto.Controllers
             if (anuncio == null)
                 return NotFound();
 
+            // verificar se está favoritado
+            if (User.Identity.IsAuthenticated)
+            {
+                var email = User.Identity.Name;
+
+                var user = _db.Utilizadors
+                    .Include(u => u.Comprador)
+                    .FirstOrDefault(u => u.Email == email);
+
+                if (user?.Comprador != null)
+                {
+                    anuncio.IsFavorito = _db.Favoritos
+                        .Any(f => f.IdAnuncio == id && f.IdComprador == user.Comprador.IdComprador);
+                }
+            }
+
             return View(anuncio);
         }
+
     }
 }

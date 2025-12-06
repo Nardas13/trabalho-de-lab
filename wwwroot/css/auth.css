@@ -1,5 +1,5 @@
 ﻿/* ============================================================
-   RESET MARGENS DO MAIN
+   RESET MARGENS DO MAIN PARA AUTH
 ============================================================ */
 main {
     padding-top: 0 !important;
@@ -7,23 +7,21 @@ main {
 }
 
 /* ============================================================
-   FUNDO GERAL DA PÁGINA DE AUTENTICAÇÃO
+   LAYOUT
 ============================================================ */
- body {
-    background: var(--bg-gradient-vertical) !important;
-}
 
 .auth-page {
-    min-height: calc(100vh - 140px); 
+    min-height: calc(100vh - 140px);
     padding: 40px 20px;
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
 }
 
 /* ============================================================
    CARTÕES (LOGIN / REGISTO / CONFIRMAÇÃO)
 ============================================================ */
+
 .auth-card {
     width: 100%;
     max-width: 440px;
@@ -43,6 +41,7 @@ main {
 /* ============================================================
    TÍTULOS
 ============================================================ */
+
 .auth-title {
     text-align: center;
     font-size: 30px;
@@ -54,6 +53,7 @@ main {
 /* ============================================================
    INPUTS
 ============================================================ */
+
 .auth-card input {
     width: 100%;
     padding: 13px 15px;
@@ -83,6 +83,7 @@ main {
 /* ============================================================
    PASSWORD WRAPPER
 ============================================================ */
+
 .pwd-wrapper {
     position: relative;
     display: flex;
@@ -114,33 +115,34 @@ main {
     }
 
 /* ============================================================
-   BOTÕES
+   BOTÕES AUTH
 ============================================================ */
+
 .auth-btn {
     width: 100%;
     padding: 13px;
     border-radius: 10px;
     border: none;
-    background: var(--primary);
+    background: linear-gradient(135deg, #2a3d56 0%, #0b1220 100%);
     color: #fff;
     font-size: 16px;
     font-weight: 700;
     margin-top: 8px;
-    box-shadow: 0 8px 18px rgba(47,109,255,.25);
+    box-shadow: 0 6px 16px rgba(15,23,42,.25);
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.25s ease;
 }
 
     .auth-btn:hover {
-        background: var(--primary-700);
+        filter: brightness(1.08);
         transform: translateY(-2px);
     }
 
     /* Botão desativado */
     .auth-btn.disabled {
-        background: #8cb3ff !important;
+        background: linear-gradient(135deg, #1c2636 0%, #0a0f1c 100%) !important;
         cursor: not-allowed !important;
-        opacity: 0.6;
+        opacity: 0.55;
         box-shadow: none !important;
     }
 
@@ -163,6 +165,7 @@ main {
 /* ============================================================
    LINK "Esqueceste-te da palavra-passe?"
 ============================================================ */
+
 .forgot {
     display: block;
     text-align: right;
@@ -174,6 +177,7 @@ main {
 /* ============================================================
    DIVISOR (ou)
 ============================================================ */
+
 .auth-divider {
     position: relative;
     text-align: center;
@@ -202,6 +206,7 @@ main {
 /* ============================================================
    BOTÃO GOOGLE
 ============================================================ */
+
 .social-btn {
     width: 100%;
     padding: 11px 14px;
@@ -229,6 +234,7 @@ main {
 /* ============================================================
    "Já tens conta?" / "Criar conta"
 ============================================================ */
+
 .auth-switch {
     text-align: center;
     font-size: 14px;
@@ -244,6 +250,7 @@ main {
 /* ============================================================
    GRID DO REGISTO
 ============================================================ */
+
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -255,7 +262,6 @@ main {
         grid-column: 1 / 3;
     }
 
-/* Indicador do passo */
 .step-indicator {
     text-align: center;
     font-size: 14px;
@@ -266,6 +272,7 @@ main {
 /* ============================================================
    TEXTO (Termos & Privacidade)
 ============================================================ */
+
 .legal-text {
     font-size: 13px;
     color: #6b7280 !important;
@@ -287,6 +294,7 @@ main {
 /* ============================================================
    CONFIRMAR EMAIL – Inputs e layout
 ============================================================ */
+
 .auth-subtext {
     text-align: center;
     font-size: 15px;
@@ -336,7 +344,6 @@ main {
     margin-bottom: 25px;
 }
 
-/* Caixa dos dígitos */
 .code-boxes {
     display: flex;
     justify-content: center;
@@ -362,7 +369,6 @@ main {
         box-shadow: 0 0 0 3px rgba(47,109,255,0.18);
     }
 
-/* Reenviar código */
 .verify-resend {
     margin-top: 16px;
     text-align: center;
@@ -378,6 +384,7 @@ main {
 /* ============================================================
    ALERTAS INLINE (Login / Registo)
 ============================================================ */
+
 .inline-msg {
     position: fixed;
     top: 90px;
@@ -409,6 +416,7 @@ main {
 /* ============================================================
    ANIMAÇÕES
 ============================================================ */
+
 @keyframes fadeSlide {
     from {
         opacity: 0;
@@ -438,11 +446,6 @@ main {
         opacity: 0;
         transform: translate(-50%, -10px);
     }
-}
-
-
-.input-error {
-    border: 2px solid #e63946 !important;
 }
 
 .input-tip {

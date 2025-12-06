@@ -111,19 +111,21 @@
     }
 
     .faq-form button {
-        width: 100%;
-        padding: 11px;
-        border-radius: 8px;
-        border: none;
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%);
         color: #fff;
         font-weight: 700;
-        cursor: pointer;
-        transition: .2s;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 26px; 
+        box-shadow: 0 6px 16px rgba(15,23,42,.25);
+        transition: 0.25s ease;
+        display: block;
+        margin: 0 auto; 
     }
 
+
         .faq-form button:hover {
-            background: var(--primary-700);
+            filter: brightness(1.08);
             transform: translateY(-2px);
         }
 

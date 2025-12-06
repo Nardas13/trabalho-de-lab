@@ -1,0 +1,92 @@
+﻿@model AutoHubProjeto.ViewModels.PainelDashboardVM
+<link rel="stylesheet" href="/css/painel.css" />
+
+<div class="painel-wrapper">
+
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <!-- TÍTULO -->
+        <h2 class="painel-title">Visão Geral</h2>
+        <div class="painel-subtitle">Acompanha o teu progresso no AutoHub.</div>
+
+        <!-- CARDS -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <span class="label">Favoritos</span>
+                <span class="value">@Model.FavoritosCount</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="label">Visitas</span>
+                <span class="value">@Model.VisitasCount</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="label">Reservas</span>
+                <span class="value">@Model.ReservasCount</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="label">Compras</span>
+                <span class="value">@Model.ComprasCount</span>
+            </div>
+
+        </div>
+
+        <!-- DIVISOR -->
+        <div class="section-divider"></div>
+
+        <!-- VENDEDOR -->
+        <h3 class="painel-section-title">Ferramentas do Vendedor</h3>
+
+        @if (Model.IsVendedor)
+        {
+            <div class="seller-tools">
+                <a href="/Anuncios/Criar" class="btn mini">Criar Anúncio</a>
+                <a href="/Anuncios/Meus" class="btn mini">Os Meus Veículos</a>
+                <a href="/Vendedor/Estatisticas" class="btn mini">Estatísticas</a>
+            </div>
+        }
+        else
+        {
+            <div class="seller-locked clean">
+                <p>Esta área ficará disponível quando ativares o modo vendedor.</p>
+            </div>
+        }
+
+        <!-- DIVISOR -->
+        <div class="section-divider"></div>
+
+        <!-- ATIVIDADE RECENTE -->
+        <h3 class="painel-section-title">Atividade Recente</h3>
+
+        <div class="activity-box">
+
+            @if (Model.Atividade.Count == 0)
+            {
+                <p>Nada para mostrar por agora.</p>
+            }
+            else
+            {
+                <ul class="activity-list">
+                    @foreach (var item in Model.Atividade)
+                    {
+                        <li>
+                            <span class="act-dot"></span>
+                            <strong>@item.Tipo:</strong>
+                            <span class="activity-title">@item.Titulo</span>
+                            <span class="act-time">@item.TempoDecorrido</span>
+
+                        </li>
+                    }
+                </ul>
+            }
+
+        </div>
+
+
+    </section>
+</div>

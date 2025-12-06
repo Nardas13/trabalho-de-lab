@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Detalhes do Anúncio";
 
-    // texto seguro para o tipo de vendedor
+    // texto para o tipo de vendedor
     var textoVendedor = Model.IdVendedorNavigation == null
         ? "Vendedor não definido"
         : (Model.IdVendedorNavigation.Tipo == "empresa"
@@ -61,11 +61,17 @@
                 <div class="title-row">
                     <h1>@Model.Titulo</h1>
 
-                    <button class="fav" id="favBtn" aria-label="Favoritar">
+                    <button class="fav @(Model.IsFavorito ? "active" : "") @(User.Identity.IsAuthenticated ? "" : "disabled")"
+                             id="favBtn"
+                             data-id="@Model.IdAnuncio"
+                             data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 21s-6.716-4.297-9.428-7.01A5.988 5.988 0 0 1 12 5a5.988 5.988 0 0 1 9.428 8.99C18.716 16.703 12 21 12 21z" />
                         </svg>
                     </button>
+
+
+
                 </div>
 
                 <div class="price">
@@ -77,9 +83,9 @@
                 </div>
 
                 <div class="cta-row">
-                    <button class="btn">Agendar Visita</button>
-                    <button class="btn btn-outline">Reservar</button>
-                    <button class="btn btn-outline">Comprar</button>
+                    <button class="btn requires-auth" data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Agendar Visita</button>
+                    <button class="btn btn-outline requires-auth" data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Reservar</button>
+                    <button class="btn btn-outline requires-auth" data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Comprar</button>
                 </div>
 
                 <div class="soft-card overview">
@@ -144,18 +150,111 @@
 
 @section Scripts {
     <script>
-        // galeria
-        const main = document.getElementById('mainPhoto');
-        document.querySelectorAll('#thumbs img').forEach(el => {
-            el.addEventListener('click', () => {
-                document.querySelectorAll('#thumbs img').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-                main.src = el.dataset.photo;
+        /* ============================================================
+           ALERTA para não autenticados
+        ============================================================ */
+        function showFavAlert(msg) {
+            const div = document.createElement("div");
+            div.className = "inline-msg inline-error";
+            div.innerText = msg;
+
+            document.body.appendChild(div);
+
+            setTimeout(() => div.style.opacity = "0", 2500);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        /* ============================================================
+           GALERIA DE IMAGENS
+        ============================================================ */
+        const main = document.getElementById("mainPhoto");
+
+        if (main) {
+            const thumbs = document.querySelectorAll("#thumbs img");
+
+            thumbs.forEach(el => {
+                el.addEventListener("click", () => {
+                    thumbs.forEach(t => t.classList.remove("active"));
+                    el.classList.add("active");
+                    main.src = el.dataset.photo;
+                });
+            });
+        }
+
+        /* ============================================================
+           FAVORITOS (toggle + proteger não autenticado)
+        ============================================================ */
+
+        const fav = document.getElementById("favBtn");
+
+        if (fav) {
+            fav.addEventListener("click", function () {
+
+                const isAuth = this.dataset.auth === "true";
+
+                if (!isAuth) {
+                    showFavAlert("Precisas de iniciar sessão para favoritar.");
+                    return;
+                }
+
+                const id = this.dataset.id;
+
+                fetch("/Favoritos/Toggle?idAnuncio=" + id, { method: "POST" })
+                    .then(r => r.json())
+                    .then(data => {
+
+                        if (!data.ok) {
+                            showFavAlert("Ocorreu um erro.");
+                            return;
+                        }
+
+                        this.classList.toggle("active");
+
+                        // animação
+                        this.style.transform = "scale(1.18)";
+                        setTimeout(() => this.style.transform = "scale(1)", 150);
+
+                        // atualiza o contador do menu
+                        const counter = document.getElementById("favoritosCounter");
+                        if (counter && data.total !== undefined) {
+                            counter.textContent = data.total;
+                        }
+                    });
+
+
+            });
+        }
+
+            /* ============================================================
+           TOAST premium (para todas as ações bloqueadas)
+        ============================================================ */
+        function showToast(msg) {
+            const box = document.createElement("div");
+            box.className = "toast-auth";
+            box.innerText = msg;
+
+            document.body.appendChild(box);
+
+            setTimeout(() => box.classList.add("show"), 10);
+
+            setTimeout(() => box.classList.remove("show"), 2200);
+            setTimeout(() => box.remove(), 2700);
+        }
+
+        /* ============================================================
+           BLOQUEAR BOTÕES PARA NÃO AUTENTICADOS
+        ============================================================ */
+        document.querySelectorAll(".requires-auth").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                const auth = this.dataset.auth;
+
+                if (auth !== "true") {
+                    e.preventDefault();
+                    showToast("Inicia sessão para usar esta funcionalidade.");
+                }
             });
         });
 
-        // favorito
-        const fav = document.getElementById('favBtn');
-        fav.addEventListener('click', () => fav.classList.toggle('active'));
     </script>
 }
+

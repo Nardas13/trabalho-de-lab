@@ -29,14 +29,13 @@ body {
    NAVBAR 
 ================================ */
 
-/* HEADER */
 .nav {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--stroke);
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(30,41,59,0.12);
 }
 
 .nav-inner {
@@ -49,7 +48,6 @@ body {
     align-items: center;
 }
 
-/* LOGO + NOME */
 .brand {
     display: flex;
     align-items: center;
@@ -60,7 +58,6 @@ body {
     height: 42px;
 }
 
-/* AUTOHUB */
 .brand-name {
     font-family: 'Inter', sans-serif;
     font-size: 17px;
@@ -69,7 +66,6 @@ body {
     letter-spacing: 0.13rem;
 }
 
-/* MENU CENTRAL */
 .menu-center {
     display: flex;
     justify-content: center;
@@ -79,17 +75,15 @@ body {
     .menu-center a {
         font-family: 'Inter', sans-serif;
         font-size: 17px;
-        font-weight: 700; 
-        color: #111;
+        font-weight: 700;
+        color: #0f1627;
         text-decoration: none;
     }
 
-        /* hover */
         .menu-center a:hover {
-            color: #000;
+            color: #2a3d56;
         }
 
-/* ICONES */
 .menu-right {
     display: flex;
     justify-content: flex-end;
@@ -112,10 +106,9 @@ body {
         height: 20px;
         opacity: 0.85;
         transition: 0.2s;
-        display: block; 
-        margin-top: 1px; 
+        display: block;
+        margin-top: 1px;
     }
-
 
         .menu-right svg:hover {
             opacity: 1;
@@ -126,26 +119,28 @@ body {
 ================================ */
 
 .btn {
-    background: var(--primary);
+    background: linear-gradient( 135deg, #2a3d56 0%, 
+    #0b1220 100% 
+    );
     color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
     font-weight: 700;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, .25);
+    text-decoration: none;
     cursor: pointer;
-    box-shadow: 0 6px 14px rgba(47,109,255,.25);
-    transition: 0.2s;
-    text-decoration: none !important;
+    transition: transform 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease;
 }
 
     .btn:hover {
-        background: var(--primary-700);
+        filter: brightness(1.08);
         transform: translateY(-2px);
     }
 
 /* ================================
-    FOOTER
-    ================================ */
+   FOOTER
+================================ */
 
 footer {
     margin-top: 60px;
@@ -218,13 +213,10 @@ footer {
     color: var(--txt-500);
 }
 
-
-
 /* ================================
    OUTROS AJUSTES GERAIS
 ================================ */
 
-/* links em botões/ações sem sublinhado */
 .actions a {
     text-decoration: none !important;
 }
@@ -234,9 +226,11 @@ body.auth-layout main {
     margin-top: 0 !important;
 }
 
-/* ===========================================
-   BACKGROUND GLOBAL
-=========================================== */
+/* wrapper */
 .bg-global {
     background: var(--bg-gradient-vertical);
+}
+
+main {
+    background: transparent !important;
 }

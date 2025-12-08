@@ -1,0 +1,193 @@
+﻿.visitas-wrapper {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+
+.visitas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.visita-card {
+    background: rgba(255,255,255,0.55);
+    padding: 14px;
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.visita-img {
+    width: 90px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.visita-info h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.visita-data {
+    font-size: 13px;
+    color: #475569;
+}
+
+.visita-status {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+    .visita-status.agendada {
+        color: #2563eb;
+    }
+
+    .visita-status.concluida {
+        color: #22c55e;
+    }
+
+.cancel-btn {
+    margin-left: auto;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+    .cancel-btn:hover {
+        background: #ffcaca;
+    }
+
+/* ============================
+   MODAL CANCELAMENTO
+============================ */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+    .modal.hidden {
+        display: none !important;
+    }
+
+.cancel-box {
+    background: white;
+    padding: 28px 26px;
+    border-radius: 18px;
+    width: 380px;
+    max-width: 92vw;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    animation: fadeUp .35s ease;
+}
+
+    .cancel-box h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 12px;
+    }
+
+.cancel-text {
+    font-size: 15px;
+    color: #475569;
+    margin-bottom: 22px;
+}
+
+/* Botões */
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-outline {
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #475569;
+    transition: 0.2s;
+}
+
+    .btn-outline:hover {
+        background: #f1f5f9;
+    }
+
+.btn {
+    padding: 8px 22px;
+    border-radius: 999px;
+    background: #0f172a;
+    color: white;
+    border: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+    .btn:hover {
+        filter: brightness(1.15);
+    }
+
+/* animação */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.empty {
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =====================================
+   VISITAS CANCELADAS 
+===================================== */
+
+.cancelada-card {
+    opacity: .55;
+    filter: grayscale(30%);
+}
+
+.visita-status.cancelada {
+    color: #6b7280;
+    text-decoration: line-through;
+}
+
+/* botão "Cancelado" */
+.btn-cancelado {
+    margin-left: auto;
+    background: #e5e7eb;
+    color: #6b7280; 
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 13px;
+    cursor: default;
+    pointer-events: none;
+}

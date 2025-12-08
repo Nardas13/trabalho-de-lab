@@ -2,6 +2,7 @@
 using AutoHubProjeto.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace AutoHubProjeto.Controllers
 {
@@ -42,7 +43,7 @@ namespace AutoHubProjeto.Controllers
                     await _db.Favoritos.CountAsync(f => f.IdComprador == idComprador),
 
                 VisitasCount = idComprador == 0 ? 0 :
-                    await _db.Visita.CountAsync(v => v.IdComprador == idComprador),
+                    await _db.Visita.CountAsync(v => v.IdComprador == idComprador && v.Estado != "cancelada"),
 
                 ReservasCount = idComprador == 0 ? 0 :
                     await _db.Reservas.CountAsync(r => r.IdComprador == idComprador),
@@ -91,6 +92,7 @@ namespace AutoHubProjeto.Controllers
             atividade.AddRange(
                 await _db.Visita
                     .Where(v => v.IdComprador == idComprador &&
+                                v.Estado != "cancelada" &&   // << IGNORA canceladas
                                 v.DataHora >= limite)
                     .Include(v => v.IdAnuncioNavigation)
                     .Select(v => new PainelAtividadeVM
@@ -101,6 +103,7 @@ namespace AutoHubProjeto.Controllers
                     })
                     .ToListAsync()
             );
+
 
             // COMPRAS
             atividade.AddRange(
@@ -123,5 +126,69 @@ namespace AutoHubProjeto.Controllers
 
             return View(vm);
         }
+        public async Task<IActionResult> MinhasVisitas()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Auth");
+
+            var email = User.Identity.Name;
+
+            var user = await _db.Utilizadors
+                .Include(u => u.Comprador)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user?.Comprador == null)
+                return RedirectToAction("Index");
+
+            int id = user.Comprador.IdComprador;
+            var agora = DateTime.Now;
+
+            var visitas = await _db.Visita
+                .Where(v => v.IdComprador == id)
+                .Include(v => v.IdAnuncioNavigation)
+                .Include(v => v.IdAnuncioNavigation.AnuncioImagems)
+                .OrderBy(v => v.DataHora)
+                .ToListAsync();
+
+            var vm = new MinhasVisitasVM();
+
+            foreach (var v in visitas)
+            {
+                var item = new MinhasVisitasItemVM
+                {
+                    IdVisita = v.IdVisita,
+                    Titulo = v.IdAnuncioNavigation.Titulo,
+                    Imagem = v.IdAnuncioNavigation.AnuncioImagems.FirstOrDefault()?.Url ?? "imgs/carros.jpg",
+                    DataHora = v.DataHora,
+                    Estado = v.Estado == "cancelada"
+                            ? "Cancelada"
+                            : (v.DataHora < agora ? "Concluída" : "Agendada")
+                };
+
+                if (item.Estado == "Agendada")
+                    vm.Futuras.Add(item);
+                else
+                    vm.Passadas.Add(item);
+            }
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult Cancelar([FromBody] JsonElement dados)
+        {
+            int idVisita = dados.GetProperty("idVisita").GetInt32();
+
+            var visita = _db.Visita.FirstOrDefault(v => v.IdVisita == idVisita);
+
+            if (visita == null)
+                return Json(new { ok = false, msg = "Visita não encontrada." });
+
+            visita.Estado = "cancelada";
+            _db.SaveChanges();
+
+            return Json(new { ok = true, msg = "Visita cancelada com sucesso." });
+        }
+
     }
 }

@@ -388,10 +388,10 @@
 /* caixa */
 .modal-content {
     background: white;
-    padding: 32px;
+    padding: 28px 26px;
     border-radius: 18px;
-    width: 650px !important;
-    max-width: 95vw;
+    width: 400px;
+    max-width: 92vw;
     box-shadow: 0 25px 60px rgba(0,0,0,0.25);
     animation: fadeUp .35s ease;
     overflow: visible !important;
@@ -411,8 +411,9 @@
 
 /* Título */
 .modal-content h2 {
-    font-size: 22px;
-    margin-bottom: 18px;
+    font-size: 20px;
+    margin-bottom: 14px;
+    font-weight: 700;
     color: var(--txt-900);
 }
 
@@ -437,10 +438,10 @@
 
     .input-with-icon input {
         width: 100%;
-        padding: 10px 40px 10px 12px;
-        border-radius: 12px;
+        padding: 9px 38px 9px 12px;
+        border-radius: 10px !important;
         border: 1px solid var(--stroke);
-        font-size: 15px;
+        font-size: 14px !important;
         outline: none;
         transition: .2s;
         background: #f8fafc;
@@ -457,10 +458,10 @@
         right: 12px;
         top: 50%;
         transform: translateY(-50%);
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         stroke: #94a3b8;
-        opacity: 0.8;
+        opacity: 0.75;
         stroke-width: 1.6;
         cursor: pointer;
     }
@@ -729,65 +730,64 @@
 .time-columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    margin-top: 16px;
+    gap: 28px;
+    margin-top: 10px;
 }
+
 
 /* título de cada período */
 .time-section-title {
-    font-size: 14px !important;
-    font-weight: 700;
-    color: #1e293b !important;
-    margin-bottom: 10px;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    margin-bottom: 8px !important;
 }
 
 /* cada grupo de horários */
 .time-group {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 6px;
 }
 
 /* botão de hora */
 .time-option {
-    padding: 8px 0 !important;
-    border-radius: 10px !important;
-    border: 1px solid #d3dae5 !important;
-    background: #fff !important;
-    cursor: pointer;
+    background: #f8fafc !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important; 
+    padding: 6px 0 !important;
     font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
     text-align: center;
+    cursor: pointer;
     transition: 0.15s ease;
+    box-shadow: none !important;
 }
 
     /* hover */
     .time-option:hover {
-        background: #f5f7fa !important;
-        border-color: #b8c2d1 !important;
+        background: #eef2f7 !important;
+        border-color: #c7cfd9 !important;
     }
 
-    /* ativo (selecionado) */
+    /* ativo */
     .time-option.active {
         background: var(--primary) !important;
-        color: #fff !important;
         border-color: var(--primary) !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    .time-option.disabled {
-        background: #e5e7eb !important;
-        color: #9ca3af !important;
-        border-color: #d1d5db !important;
-        cursor: not-allowed !important;
-        opacity: 0.6;
-    }
-    .time-option.ocupado {
-        background: #e5e7eb !important;
-        border-color: #cbd5e1 !important;
-        color: #9ca3af !important;
-        cursor: not-allowed !important;
-        opacity: 0.6;
+        color: white !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
     }
 
+    /* desativado */
+    .time-option.disabled,
+    .time-option.ocupado {
+        background: #f1f1f1 !important;
+        color: #9ca3af !important;
+        border-color: #d7d7d7 !important;
+        cursor: not-allowed !important;
+        opacity: 0.6 !important;
+    }
     
 /* separar visualmente manhã / tarde */
 .time-section-title:not(:first-child) {

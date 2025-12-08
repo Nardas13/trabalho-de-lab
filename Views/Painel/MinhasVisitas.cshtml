@@ -1,0 +1,108 @@
+﻿@model AutoHubProjeto.ViewModels.MinhasVisitasVM
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Minhas Visitas</h2>
+        <div class="painel-subtitle">Gere todas as tuas visitas agendadas.</div>
+
+        <!-- FUTURAS -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Próximas Visitas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+                @if (!Model.Futuras.Any())
+                {
+                    <p class="empty">Nenhuma visita futura.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Futuras)
+                    {
+                        <div class="visita-card @(v.Estado == "Cancelada" ? "cancelada-card" : "")">
+
+                            <img src="/@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+                                <span class="visita-data">@v.DataHora.ToString("dd/MM/yyyy HH:mm")</span>
+                                <span class="visita-status @(v.Estado.ToLower())">@v.Estado</span>
+                            </div>
+
+                            @if (v.Estado == "Cancelada")
+                            {
+                                <button class="btn-cancelado" disabled>Cancelado</button>
+                            }
+                            else
+                            {
+                                <button class="btn-cancelar-visita cancel-btn" data-id="@v.IdVisita">Cancelar</button>
+                            }
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- PASSADAS -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Visitas Concluídas / Canceladas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+                @if (!Model.Passadas.Any())
+                {
+                    <p class="empty">Nenhuma visita concluída.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Passadas)
+                    {
+                        <div class="visita-card @(v.Estado == "Cancelada" ? "cancelada-card" : "")">
+
+                            <img src="/@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+                                <span class="visita-data">@v.DataHora.ToString("dd/MM/yyyy HH:mm")</span>
+                                <span class="visita-status @(v.Estado.ToLower())">@v.Estado</span>
+                            </div>
+
+                            @if (v.Estado == "Cancelada")
+                            {
+                                <button class="btn-cancelado" disabled>Cancelado</button>
+                            }
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<!-- MODAL CANCELAMENTO -->
+<div id="cancelModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+
+        <h2>Cancelar Visita</h2>
+
+        <p class="cancel-text">
+            Tens a certeza que queres cancelar esta visita?
+        </p>
+
+        <div class="modal-buttons">
+            <button id="closeCancel" class="btn-outline">Fechar</button>
+            <button id="confirmCancel" class="btn">Confirmar</button>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/painel-visitas.js"></script>

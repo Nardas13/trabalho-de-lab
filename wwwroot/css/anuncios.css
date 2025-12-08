@@ -335,3 +335,29 @@
     font-size: 9px;
     opacity: .8;
 }
+
+/* container da imagem */
+.img-wrapper {
+    position: relative;
+}
+
+/* escurecer apenas SE sold */
+.card.sold .car-image {
+    filter: brightness(0.4);
+}
+
+/* banner VENDIDO */
+.sold-banner {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(220, 38, 38, 0.85);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 800;
+    z-index: 20;
+}
+
+

@@ -11,11 +11,13 @@
     <!-- CSS global -->
     <link rel="stylesheet" href="~/css/variables.css" />
     <link rel="stylesheet" href="~/css/style.css" />
-    @RenderSection("Styles", required: false)
 
-    <!-- CSS específico da página -->
+
+    @RenderSection("Styles", required: false)
 </head>
+
 <body class="@(ViewBag.AuthPage == true ? "auth-layout" : "")">
+
     <!-- HEADER -->
     <header class="nav">
         <div class="nav-inner">
@@ -44,8 +46,6 @@
                     </svg>
                 </a>
 
-
-
                 <!-- Globe -->
                 <a href="/Home/Index" class="icon">
                     <svg width="20" height="20" stroke="#1a1a1a" fill="none" stroke-width="2.2" viewBox="0 0 24 24">
@@ -57,11 +57,9 @@
                     </svg>
                 </a>
 
-
                 <!-- USER ICON -->
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    <!-- Se autenticado -> Vai para o menu painel -->
                     <a href="/Painel/Index" class="icon">
                         <svg width="20" height="20" stroke="#1a1a1a" fill="none" stroke-width="2.2" viewBox="0 0 24 24">
                             <circle cx="12" cy="7" r="4"></circle>
@@ -71,7 +69,6 @@
                 }
                 else
                 {
-                    <!-- Se NÃO estiver autenticado -> Vai para login -->
                     <a href="/Auth/Index" class="icon">
                         <svg width="20" height="20" stroke="#1a1a1a" fill="none" stroke-width="2.2" viewBox="0 0 24 24">
                             <circle cx="12" cy="7" r="4"></circle>
@@ -79,9 +76,6 @@
                         </svg>
                     </a>
                 }
-
-
-
             </div>
 
         </div>
@@ -96,7 +90,6 @@
     <footer>
         <div class="container footer-sections">
 
-            <!-- COLUNA 1 — CONTACTOS -->
             <div class="footer-section">
                 <h4>Contacte-nos</h4>
                 <p>📞 +351 123 456 789</p>
@@ -104,7 +97,6 @@
                 <p><strong>apoio@autohub.pt</strong></p>
             </div>
 
-            <!-- COLUNA 2 — HORÁRIO -->
             <div class="footer-section">
                 <h4>Horário de Suporte</h4>
                 <p>Seg–Sex: 9h – 18h</p>
@@ -112,7 +104,6 @@
                 <p>Dom: Fechado</p>
             </div>
 
-            <!-- COLUNA 3 — SOBRE NÓS -->
             <div class="footer-section">
                 <h4>Sobre Nós</h4>
                 <p class="about-text">
@@ -122,13 +113,12 @@
 
                 <div class="socials">
                     <a href="/Home/Index"><img src="~/imgs/icons/icon-web.png" alt="Website" /></a>
-                    <a href="https://www.facebook.com/Cristiano?locale=pt_PT"><img src="~/imgs/icons/icon-facebook.png" alt="Facebook" /></a>
-                    <a href="https://www.instagram.com/x_clara_pimentel_x"><img src="~/imgs/icons/icon-instagram.png" alt="Instagram" /></a>
-                    <a href="https://www.linkedin.com/in/salomé-batista-49bb04323"><img src="~/imgs/icons/icon-linkedin.png" alt="LinkedIn" /></a>
+                    <a href="#"><img src="~/imgs/icons/icon-facebook.png" /></a>
+                    <a href="#"><img src="~/imgs/icons/icon-instagram.png" /></a>
+                    <a href="#"><img src="~/imgs/icons/icon-linkedin.png" /></a>
                 </div>
             </div>
 
-            <!-- COLUNA 4 — TERMOS -->
             <div class="footer-section">
                 <h4>Termos & Políticas</h4>
                 <a href="/Termos/Index#termos">Termos de Utilização</a><br>
@@ -141,11 +131,9 @@
         <div class="footer-bottom">© 2025 AutoHub. Todos os direitos reservados.</div>
     </footer>
 
-    <!-- JS global -->
+    <!-- JS GLOBAL -->
     <script src="~/js/site.js"></script>
 
-    <!-- JS específico da página -->
     @RenderSection("Scripts", required: false)
 </body>
 </html>
-

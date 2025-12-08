@@ -1,8 +1,13 @@
-﻿.page {
+﻿/* ============================================
+   PÁGINA DETALHES DO VEÍCULO
+============================================ */
+
+.page {
     background: transparent;
     padding: 24px 0 40px;
 }
 
+/* BREADCRUMB */
 .breadcrumb {
     font-size: 14px;
     color: var(--txt-500);
@@ -18,7 +23,9 @@
             color: var(--txt-900);
         }
 
-/* GRID PRINCIPAL */
+/* ============================================
+   GRID PRINCIPAL
+============================================ */
 
 .details-grid {
     display: grid;
@@ -34,7 +41,9 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* GALERIA */
+/* ============================================
+   GALERIA DE FOTOS
+============================================ */
 
 .gallery {
     padding: 14px;
@@ -79,7 +88,9 @@
             outline: 2px solid var(--primary);
         }
 
-/* INFO */
+/* ============================================
+   PAINEL INFO DO VEÍCULO
+============================================ */
 
 .info {
     padding: 20px;
@@ -100,9 +111,15 @@
         line-height: 1.2;
     }
 
-/* ================================
-   FAVORITOS
-================================ */
+.price {
+    font-weight: 800;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+/* ============================================
+   FAVORITOS (CORAÇÃO)
+============================================ */
 
 .fav {
     width: 40px;
@@ -122,7 +139,6 @@
         box-shadow: var(--shadow-md);
     }
 
-    /* Ícone base */
     .fav svg {
         width: 22px;
         height: 22px;
@@ -132,41 +148,77 @@
         transition: .25s ease;
     }
 
-    /* Ativo (favoritado) */
     .fav.active svg {
         fill: #ff3b5c;
         stroke: #ff3b5c;
     }
 
-    /* ================================
-   ESTADO DESATIVADO (NÃO AUTENTICADO)
-================================ */
-
     .fav.disabled {
         cursor: not-allowed !important;
         opacity: 0.45 !important;
-        pointer-events: auto !important; 
-        box-shadow: none !important;
-        background: #f1f5f9; 
+        background: #f1f5f9;
     }
 
-        .fav.disabled:hover {
-            transform: none !important;
-            box-shadow: none !important;
-        }
+/* ============================================
+   ESTADO DO ANÚNCIO (Disponível, Reservado…)
+============================================ */
 
-        /* Ícone do desativado */
-        .fav.disabled svg {
-            stroke: #94a3b8 !important;
-            fill: none !important;
-        }
-
-
-.price {
-    font-weight: 800;
-    font-size: 24px;
-    margin-bottom: 16px;
+.estado-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--txt-700);
+    margin: 4px 0 10px 0;
+    background: none;
+    padding: 0;
+    border-radius: 0;
 }
+
+    .estado-badge::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    /* cores da bolinha */
+    .estado-badge.ativo::before {
+        background-color: #16a34a;
+    }
+
+    .estado-badge.reservado::before {
+        background-color: #f59e0b;
+    }
+
+    .estado-badge.vendido::before {
+        background-color: #dc2626;
+    }
+
+    .estado-badge.pausado::before {
+        background-color: #64748b;
+    }
+
+    .estado-badge.ativo {
+        color: #15803d;
+    }
+
+    .estado-badge.reservado {
+        color: #b45309;
+    }
+
+    .estado-badge.vendido {
+        color: #b91c1c;
+    }
+
+    .estado-badge.pausado {
+        color: #475569;
+    }
+
+/* ============================================
+   VENDEDOR
+============================================ */
 
 .seller {
     display: flex;
@@ -174,32 +226,43 @@
     gap: 8px;
     color: var(--txt-700);
     font-size: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
+
+/* ============================================
+   BOTÕES DE AÇÃO
+============================================ */
 
 .cta-row {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 22px;
 }
 
-/* Outline */
+/* botão outline geral (Reservar / Comprar) */
 .btn-outline {
     background: #fff;
     color: var(--primary);
     border: 1px solid var(--primary);
-    box-shadow: none;
 }
 
     .btn-outline:hover {
         background: #f2f6ff;
-        filter: brightness(1.08);
         transform: translateY(-2px);
     }
 
+/* deixa os 3 botões mais compactos como no layout antigo */
+.cta-row .btn,
+.cta-row .btn-outline {
+    padding: 10px 22px;
+    font-size: 15px;
+    border-radius: 999px;
+}
 
-/* OVERVIEW */
+/* ============================================
+   TABELA DE ESPECIFICAÇÕES
+============================================ */
 
 .overview {
     padding: 18px;
@@ -208,7 +271,17 @@
 
     .overview h3 {
         margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: 700;
     }
+
+/* títulos em baixo iguais */
+.card-pad h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
 
 .ov-table {
     width: 100%;
@@ -233,7 +306,9 @@
     color: var(--txt-900);
 }
 
-/* DESCRIÇÃO + EXTRAS */
+/* ============================================
+   DESCRIÇÃO + EXTRAS
+============================================ */
 
 .below {
     display: grid;
@@ -265,44 +340,203 @@
             margin-right: 2px;
         }
 
-
+/* ============================================
+   TOAST (alerta premium / mensagens gerais)
+============================================ */
 
 .toast-auth {
     position: fixed;
     bottom: 28px;
     right: 28px;
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15,23,42,0.85);
     color: white;
     padding: 14px 20px;
     border-radius: 12px;
     font-size: 14px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     opacity: 0;
     transform: translateY(15px);
     transition: .35s ease;
-    backdrop-filter: blur(6px);
     z-index: 99999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    backdrop-filter: blur(6px);
 }
 
     .toast-auth.show {
         opacity: 1;
-        transform: translateY(0px);
+        transform: translateY(0);
     }
 
+/* ============================================
+   MODAL (Agendar Visita)
+============================================ */
 
-/* RESPONSIVO */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+    .modal.hidden {
+        display: none;
+    }
+
+/* caixa */
+.modal-content {
+    background: white;
+    padding: 32px;
+    border-radius: 18px;
+    width: 650px !important;
+    max-width: 95vw;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    animation: fadeUp .35s ease;
+    overflow: visible !important;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Título */
+.modal-content h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+    color: var(--txt-900);
+}
+
+/* Field genérico */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+    .form-field label {
+        font-weight: 600;
+        color: var(--txt-800);
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+/* input com ícone (data / hora) */
+.input-with-icon {
+    position: relative;
+}
+
+    .input-with-icon input {
+        width: 100%;
+        padding: 10px 40px 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--stroke);
+        font-size: 15px;
+        outline: none;
+        transition: .2s;
+        background: #f8fafc;
+    }
+
+        .input-with-icon input:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+
+    .input-with-icon svg {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        stroke: #94a3b8;
+        opacity: 0.8;
+        stroke-width: 1.6;
+        cursor: pointer;
+    }
+
+/* lista de horas em pills bonitos */
+.time-options {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.time-option {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--stroke);
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+    .time-option:hover {
+        background: #f1f5f9;
+    }
+
+    .time-option.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+/* Botões alinhados */
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+    /* tamanho / pill apenas dentro do modal */
+    .modal-buttons .btn,
+    .modal-buttons .btn-outline {
+        padding: 9px 24px;
+        font-size: 15px;
+        border-radius: 999px;
+    }
+
+/* mensagem de erro */
+.error-msg {
+    color: #dc2626;
+    background: #fee2e2;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ============================================
+   RESPONSIVO
+============================================ */
 
 @media (max-width:1100px) {
     .details-grid {
         grid-template-columns: 1fr;
     }
 
-    .gallery {
-        height: auto;
-    }
-
     .main-photo {
         height: 420px;
+    }
+
+    .gallery {
+        height: auto;
     }
 
     .below {
@@ -324,3 +558,238 @@
     }
 }
 
+/* Botões compactos */
+.cta-row .btn,
+.cta-row .btn-outline {
+    padding: 8px 18px !important; 
+    font-size: 14px !important; 
+    border-radius: 8px !important;
+    height: 38px !important; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ================================
+   CALENDÁRIO POPUP CUSTOM
+================================ */
+
+.calendar-popup {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: #fff;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+    width: 250px;
+    z-index: 999999;
+    animation: fadeCalendar .25s ease;
+}
+
+@keyframes fadeCalendar {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+    .calendar-header h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+.cal-nav {
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+    .cal-nav:hover {
+        background: #f1f5f9;
+    }
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.calendar-day {
+    text-align: center;
+    font-size: 12px;
+    padding: 4px;
+    cursor: default;
+    color: #64748b;
+}
+
+.calendar-cell {
+    padding: 6px 0;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+    .calendar-cell:hover {
+        background: #e7edf7;
+    }
+
+    .calendar-cell.disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .calendar-cell.active {
+        background: #1e293b;
+        color: #fff;
+    }
+
+
+/* ================================
+   POPUP DE HORAS CUSTOM
+================================*/
+
+.time-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: #fff;
+    padding: 12px;
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+    width: 210px;
+    z-index: 999999;
+    animation: fadeCalendar .25s ease;
+}
+
+    .time-popup:not(.hidden) {
+        display: block;
+    }
+
+.time-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    margin: 8px 0 4px;
+}
+
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.time-cell {
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+    .time-cell.disabled {
+        background: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+        opacity: .6;
+    }
+
+    .time-cell.active {
+        background: #1e293b;
+        color: white;
+        border-color: #1e293b;
+    }
+
+    .time-cell:hover {
+        background: #e7edf7;
+    }
+
+/* ============================================================
+   MELHORIA VISUAL
+============================================================ */
+
+/* container principal vindo do JS */
+.time-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 16px;
+}
+
+/* título de cada período */
+.time-section-title {
+    font-size: 14px !important;
+    font-weight: 700;
+    color: #1e293b !important;
+    margin-bottom: 10px;
+}
+
+/* cada grupo de horários */
+.time-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+/* botão de hora */
+.time-option {
+    padding: 8px 0 !important;
+    border-radius: 10px !important;
+    border: 1px solid #d3dae5 !important;
+    background: #fff !important;
+    cursor: pointer;
+    font-size: 13px !important;
+    text-align: center;
+    transition: 0.15s ease;
+}
+
+    /* hover */
+    .time-option:hover {
+        background: #f5f7fa !important;
+        border-color: #b8c2d1 !important;
+    }
+
+    /* ativo (selecionado) */
+    .time-option.active {
+        background: var(--primary) !important;
+        color: #fff !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .time-option.disabled {
+        background: #e5e7eb !important;
+        color: #9ca3af !important;
+        border-color: #d1d5db !important;
+        cursor: not-allowed !important;
+        opacity: 0.6;
+    }
+    .time-option.ocupado {
+        background: #e5e7eb !important;
+        border-color: #cbd5e1 !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+        opacity: 0.6;
+    }
+
+    
+/* separar visualmente manhã / tarde */
+.time-section-title:not(:first-child) {
+    margin-top: 8px;
+}

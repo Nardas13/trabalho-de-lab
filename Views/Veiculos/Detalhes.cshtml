@@ -3,14 +3,12 @@
 @{
     ViewData["Title"] = "Detalhes do Anúncio";
 
-    // texto para o tipo de vendedor
     var textoVendedor = Model.IdVendedorNavigation == null
         ? "Vendedor não definido"
         : (Model.IdVendedorNavigation.Tipo == "empresa"
             ? "Stand / Profissional"
             : "Vendedor particular");
 
-    // imagem principal
     var imagensOrdenadas = Model.AnuncioImagems
         .OrderBy(i => i.Ordem)
         .ToList();
@@ -35,13 +33,11 @@
         <div class="details-grid">
             <!-- GALERIA -->
             <section class="soft-card gallery">
-                <!-- FOTO PRINCIPAL -->
                 <img id="mainPhoto"
                      class="main-photo"
                      src="@urlImagemPrincipal"
                      alt="Foto principal do veículo">
 
-                <!-- MINIATURAS -->
                 <div class="thumbs" id="thumbs">
                     @foreach (var img in imagensOrdenadas)
                     {
@@ -62,30 +58,62 @@
                     <h1>@Model.Titulo</h1>
 
                     <button class="fav @(Model.IsFavorito ? "active" : "") @(User.Identity.IsAuthenticated ? "" : "disabled")"
-                             id="favBtn"
-                             data-id="@Model.IdAnuncio"
-                             data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">
+                            id="favBtn"
+                            data-id="@Model.IdAnuncio"
+                            data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 21s-6.716-4.297-9.428-7.01A5.988 5.988 0 0 1 12 5a5.988 5.988 0 0 1 9.428 8.99C18.716 16.703 12 21 12 21z" />
                         </svg>
                     </button>
-
-
-
                 </div>
 
                 <div class="price">
                     € @Model.Preco.ToString("N0")
                 </div>
 
-                <div class="seller">
-                    👤 @textoVendedor
+                <!-- NÃO mexer no disponível visual -->
+                <div class="estado-badge @Model.Estado">
+                    @(
+                        Model.Estado switch {
+                            "ativo"     => "Disponível",
+                            "reservado" => "Reservado",
+                            "vendido"   => "Vendido",
+                            "pausado"   => "Anúncio Pausado",
+                            _           => "Indefinido"
+                        }
+                    )
                 </div>
 
                 <div class="cta-row">
-                    <button class="btn requires-auth" data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Agendar Visita</button>
-                    <button class="btn btn-outline requires-auth" data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Reservar</button>
-                    <button class="btn btn-outline requires-auth" data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Comprar</button>
+                    @if (Model.Estado == "vendido")
+                    {
+                        <div class="info-msg error">Este veículo já foi vendido.</div>
+                    }
+                    else if (Model.Estado == "pausado")
+                    {
+                        <div class="info-msg warn">Este anúncio está temporariamente pausado.</div>
+                    }
+                    else if (Model.IdVendedorNavigation?.IdVendedor == ViewBag.UserVendedorId)
+                    {
+                        <div class="info-msg warn">Não podes efetuar ações sobre o teu próprio veículo.</div>
+                    }
+                    else if (Model.Estado == "reservado")
+                    {
+                        <div class="info-msg warn">Este veículo está reservado. Agendamentos indisponíveis.</div>
+                    }
+                    else
+                    {
+                        <button class="btn requires-auth"
+                                data-action="visita"
+                                data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Agendar Visita</button>
+
+                        <button class="btn btn-outline requires-auth" data-action="reserva">Reservar</button>
+                        <button class="btn btn-outline requires-auth" data-action="comprar">Comprar</button>
+                    }
+                </div>
+
+                <div class="seller">
+                    👤 @textoVendedor
                 </div>
 
                 <div class="soft-card overview">
@@ -145,116 +173,409 @@
                 </ul>
             </aside>
         </div>
-    </div>
+
+                <!-- MODAL AGENDA VISITA -->
+                <div id="modalAgendar" class="modal hidden">
+                    <div class="modal-content">
+
+                        <h2>Agendar Visita</h2>
+
+                        <!-- Campo Data -->
+                        <div class="form-field">
+                            <label for="dataVisita">Data:</label>
+
+                            <div class="input-with-icon">
+                                <input id="dataVisita"
+                                       type="text"
+                                       placeholder="dd/mm/aaaa"
+                                       autocomplete="off" />
+
+                                <svg id="calendarIcon" viewBox="0 0 24 24">
+                                    <path d="M3 8h18M8 2v4m8-4v4M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                                </svg>
+
+                                <div id="calendarPopup" class="calendar-popup hidden"></div>
+                            </div>
+                        </div>
+                        <!-- Campo Hora -->
+                        <div class="form-field">
+                            <label for="horaVisita">Hora:</label>
+
+                            <div class="input-with-icon">
+                                <input id="horaVisita"
+                                       type="text"
+                                       placeholder="hh:mm"
+                                       autocomplete="off" />
+
+                                <svg id="timeIconModal" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <path d="M12 6v6l4 2"></path>
+                                </svg>
+                            </div>
+
+                            <div id="listaHoras" class="time-options hidden"></div>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button class="btn-outline" id="cancelarModal">Cancelar</button>
+                            <button class="btn" id="confirmarVisita">Confirmar</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 </main>
 
 @section Scripts {
-    <script>
-        /* ============================================================
-           ALERTA para não autenticados
-        ============================================================ */
-        function showFavAlert(msg) {
-            const div = document.createElement("div");
-            div.className = "inline-msg inline-error";
-            div.innerText = msg;
+<script>
+/* ============================================================
+   TOAST
+============================================================ */
+function showToast(msg) {
+    const box = document.createElement("div");
+    box.className = "toast-auth";
+    box.innerText = msg;
+    document.body.appendChild(box);
 
-            document.body.appendChild(div);
-
-            setTimeout(() => div.style.opacity = "0", 2500);
-            setTimeout(() => div.remove(), 3000);
-        }
-
-        /* ============================================================
-           GALERIA DE IMAGENS
-        ============================================================ */
-        const main = document.getElementById("mainPhoto");
-
-        if (main) {
-            const thumbs = document.querySelectorAll("#thumbs img");
-
-            thumbs.forEach(el => {
-                el.addEventListener("click", () => {
-                    thumbs.forEach(t => t.classList.remove("active"));
-                    el.classList.add("active");
-                    main.src = el.dataset.photo;
-                });
-            });
-        }
-
-        /* ============================================================
-           FAVORITOS (toggle + proteger não autenticado)
-        ============================================================ */
-
-        const fav = document.getElementById("favBtn");
-
-        if (fav) {
-            fav.addEventListener("click", function () {
-
-                const isAuth = this.dataset.auth === "true";
-
-                if (!isAuth) {
-                    showFavAlert("Precisas de iniciar sessão para favoritar.");
-                    return;
-                }
-
-                const id = this.dataset.id;
-
-                fetch("/Favoritos/Toggle?idAnuncio=" + id, { method: "POST" })
-                    .then(r => r.json())
-                    .then(data => {
-
-                        if (!data.ok) {
-                            showFavAlert("Ocorreu um erro.");
-                            return;
-                        }
-
-                        this.classList.toggle("active");
-
-                        // animação
-                        this.style.transform = "scale(1.18)";
-                        setTimeout(() => this.style.transform = "scale(1)", 150);
-
-                        // atualiza o contador do menu
-                        const counter = document.getElementById("favoritosCounter");
-                        if (counter && data.total !== undefined) {
-                            counter.textContent = data.total;
-                        }
-                    });
-
-
-            });
-        }
-
-            /* ============================================================
-           TOAST premium (para todas as ações bloqueadas)
-        ============================================================ */
-        function showToast(msg) {
-            const box = document.createElement("div");
-            box.className = "toast-auth";
-            box.innerText = msg;
-
-            document.body.appendChild(box);
-
-            setTimeout(() => box.classList.add("show"), 10);
-
-            setTimeout(() => box.classList.remove("show"), 2200);
-            setTimeout(() => box.remove(), 2700);
-        }
-
-        /* ============================================================
-           BLOQUEAR BOTÕES PARA NÃO AUTENTICADOS
-        ============================================================ */
-        document.querySelectorAll(".requires-auth").forEach(btn => {
-            btn.addEventListener("click", function (e) {
-                const auth = this.dataset.auth;
-
-                if (auth !== "true") {
-                    e.preventDefault();
-                    showToast("Inicia sessão para usar esta funcionalidade.");
-                }
-            });
-        });
-
-    </script>
+    setTimeout(() => box.classList.add("show"), 10);
+    setTimeout(() => box.classList.remove("show"), 2200);
+    setTimeout(() => box.remove(), 2700);
 }
 
+/* ============================================================
+   GALERIA
+============================================================ */
+const main = document.getElementById("mainPhoto");
+if (main) {
+    const thumbs = document.querySelectorAll("#thumbs img");
+    thumbs.forEach(el => {
+        el.addEventListener("click", () => {
+            thumbs.forEach(t => t.classList.remove("active"));
+            el.classList.add("active");
+            main.src = el.dataset.photo;
+        });
+    });
+}
+
+/* ============================================================
+   FAVORITOS
+============================================================ */
+const fav = document.getElementById("favBtn");
+if (fav) {
+    fav.addEventListener("click", function () {
+        const isAuth = this.dataset.auth === "true";
+        if (!isAuth) return showToast("Precisas de iniciar sessão.");
+
+        fetch("/Favoritos/Toggle?idAnuncio=" + this.dataset.id, { method: "POST" })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok) return showToast("Ocorreu um erro.");
+
+                this.classList.toggle("active");
+                this.style.transform = "scale(1.2)";
+                setTimeout(() => this.style.transform = "scale(1)", 150);
+            });
+    });
+}
+
+/* ============================================================
+   BLOQUEAR BOTÕES NÃO AUTENTICADOS
+============================================================ */
+document.querySelectorAll(".requires-auth").forEach(btn => {
+    btn.addEventListener("click", function (e) {
+        if (this.dataset.auth !== "true") {
+            e.preventDefault();
+            showToast("Inicia sessão para usar esta funcionalidade.");
+        }
+    });
+});
+
+/* ============================================================
+   MODAL – AGENDAR VISITA
+============================================================ */
+const modal      = document.getElementById("modalAgendar");
+const dateInput  = document.getElementById("dataVisita");
+const timeInput  = document.getElementById("horaVisita");
+const listaHoras = document.getElementById("listaHoras");
+
+const btnVisita = document.querySelector("[data-action='visita']");
+
+if (btnVisita) {
+    btnVisita.addEventListener("click", function () {
+
+        if (this.dataset.auth !== "true") {
+            return showToast("Inicia sessão para usar esta funcionalidade.");
+        }
+
+        modal.classList.remove("hidden");
+
+        if (!dateInput.dataset.initialized) {
+            new Datepicker(dateInput, { autohide: true, format: "dd/mm/yyyy" });
+            dateInput.dataset.initialized = "true";
+        }
+
+        if (dateInput.value) carregarHorasOcupadas();
+    });
+}
+
+document.getElementById("cancelarModal")
+    ?.addEventListener("click", () => modal.classList.add("hidden"));
+
+modal.addEventListener("click", e => {
+    if (e.target === modal) modal.classList.add("hidden");
+});
+
+/* ============================================================
+   INPUT MASK
+============================================================ */
+dateInput.addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "").slice(0, 8);
+    if (v.length >= 5) v = v.replace(/(\d{2})(\d{2})(\d+)/, "$1/$2/$3");
+    else if (v.length >= 3) v = v.replace(/(\d{2})(\d+)/, "$1/$2");
+    e.target.value = v;
+});
+
+dateInput.addEventListener("keypress", e => {
+    if (!/[0-9]/.test(e.key)) e.preventDefault();
+});
+
+timeInput.readOnly = true;
+
+/* ============================================================
+   LISTA DE HORÁRIOS (Manhã / Tarde)
+============================================================ */
+
+const horarios = {
+    "Manhã": ["08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00"],
+    "Tarde": ["14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00"]
+};
+
+// construir visual de horários
+(function buildHorarios() {
+    listaHoras.innerHTML = "";
+    const wrap = document.createElement("div");
+    wrap.className = "time-columns";
+
+    for (const periodo in horarios) {
+
+        const col = document.createElement("div");
+        col.innerHTML = `<div class="time-section-title">${periodo}</div>`;
+
+        const grid = document.createElement("div");
+        grid.className = "time-group";
+
+        horarios[periodo].forEach(h => {
+            const btn = document.createElement("button");
+            btn.className = "time-option";
+            btn.textContent = h;
+
+            btn.addEventListener("click", () => {
+                if (btn.disabled) return;
+                timeInput.value = h;
+
+                document.querySelectorAll(".time-option")
+                    .forEach(o => o.classList.remove("active"));
+                
+                btn.classList.add("active");
+                listaHoras.classList.add("hidden");
+            });
+
+            grid.appendChild(btn);
+        });
+
+        col.appendChild(grid);
+        wrap.appendChild(col);
+    }
+
+    listaHoras.appendChild(wrap);
+})();
+
+/* ============================================================
+   HORAS OCUPADAS
+============================================================ */
+dateInput.addEventListener("change", carregarHorasOcupadas);
+
+function carregarHorasOcupadas() {
+    // quando muda de data -> limpar hora escolhida
+    timeInput.value = "";
+    document.querySelectorAll(".time-option").forEach(btn => btn.classList.remove("active"));
+
+    const data = dateInput.value;
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) return;
+
+    const iso = toIsoFromPt(data);
+
+    fetch(`/Visitas/HorasOcupadas?idAnuncio=@Model.IdAnuncio&data=${iso}`)
+        .then(r => r.json())
+        .then(horas => marcarHorasOcupadas(horas));
+}
+
+function marcarHorasOcupadas(ocupadas) {
+
+    document.querySelectorAll(".time-option").forEach(btn => {
+        btn.classList.remove("disabled");
+        btn.disabled = false;
+    });
+
+    ocupadas.forEach(hora => {
+        const btn = [...document.querySelectorAll(".time-option")]
+            .find(b => b.textContent.trim() === hora.trim());
+
+        if (btn) {
+            btn.classList.add("disabled");
+            btn.disabled = true;
+        }
+    });
+}
+
+/* abrir popup horas */
+document.getElementById("timeIconModal")?.addEventListener("click", e => {
+    e.stopPropagation();
+
+    if (!dateInput.value)
+        return showToast("Seleciona primeiro uma data.");
+
+    carregarHorasOcupadas(); 
+    listaHoras.classList.toggle("hidden");
+});
+
+document.addEventListener("click", e => {
+    if (!listaHoras.contains(e.target) && !timeIconModal.contains(e.target)) {
+        listaHoras.classList.add("hidden");
+    }
+});
+
+/* ============================================================
+   PARSE DATA / FUTURO
+============================================================ */
+function toIsoFromPt(dateStr) {
+    const m = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
+}
+
+function isPast(dateStr, timeStr) {
+    const iso = toIsoFromPt(dateStr);
+    const dt  = new Date(`${iso}T${timeStr}:00`);
+    return dt <= new Date();
+}
+
+/* ============================================================
+   SUBMIT — AGENDAR VISITA
+============================================================ */
+document.getElementById("confirmarVisita")
+    .addEventListener("click", function () {
+
+        const date = dateInput.value;
+        const time = timeInput.value;
+
+        if (!date || !time) return showToast("Seleciona data e hora.");
+        if (isPast(date, time)) return showToast("A data/hora deve ser futura.");
+
+        fetch("/Visitas/Agendar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                idAnuncio: @Model.IdAnuncio,
+                data: toIsoFromPt(date),
+                hora: time
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            showToast(data.msg);
+            if (data.ok) setTimeout(() => location.reload(), 1200);
+        });
+    });
+
+/* ============================================================
+   CALENDÁRIO POPUP — SEM ALTERAR
+============================================================ */
+const calIcon = document.getElementById("calendarIcon");
+const calPopup = document.getElementById("calendarPopup");
+const dateInput2 = dateInput;
+
+let currentMonth = new Date().getMonth();
+let currentYear  = new Date().getFullYear();
+
+calIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    calPopup.classList.toggle("hidden");
+    buildCalendar(currentMonth, currentYear);
+});
+
+document.addEventListener("click", (e) => {
+    if (e.target.closest(".cal-nav")) return;
+    if (calPopup.contains(e.target)) return;
+    if (e.target !== calIcon) calPopup.classList.add("hidden");
+});
+
+function buildCalendar(month, year) {
+    calPopup.innerHTML = "";
+
+    const today = new Date();
+
+    const header = document.createElement("div");
+    header.className = "calendar-header";
+    header.innerHTML = `
+        <div class="cal-nav" id="prevMonth">◀</div>
+        <h4>${year} - ${String(month + 1).padStart(2, "0")}</h4>
+        <div class="cal-nav" id="nextMonth">▶</div>`;
+    calPopup.appendChild(header);
+
+    document.getElementById("prevMonth").onclick = () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        buildCalendar(currentMonth, currentYear);
+    };
+
+    document.getElementById("nextMonth").onclick = () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        buildCalendar(currentMonth, currentYear);
+    };
+
+    const daysRow = document.createElement("div");
+    daysRow.className = "calendar-grid";
+
+    ["D","S","T","Q","Q","S","S"].forEach(d => {
+        const div = document.createElement("div");
+        div.className = "calendar-day";
+        div.textContent = d;
+        daysRow.appendChild(div);
+    });
+
+    calPopup.appendChild(daysRow);
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    const grid = document.createElement("div");
+    grid.className = "calendar-grid";
+
+    for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement("div"));
+
+    for (let d = 1; d <= totalDays; d++) {
+
+        const cell = document.createElement("div");
+        cell.className = "calendar-cell";
+        cell.textContent = d;
+
+        const cellDate = new Date(year, month, d);
+
+        if (cellDate < today.setHours(0,0,0,0)) {
+            cell.classList.add("disabled");
+        } else {
+            cell.addEventListener("click", () => {
+                dateInput2.value = `${String(d).padStart(2,"0")}/${String(month+1).padStart(2,"0")}/${year}`;
+                calPopup.classList.add("hidden");
+                carregarHorasOcupadas();
+            });
+        }
+
+        grid.appendChild(cell);
+    }
+
+    calPopup.appendChild(grid);
+}
+</script>
+}

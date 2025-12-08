@@ -199,8 +199,16 @@
                     .OrderBy(i => i.Ordem)
                     .FirstOrDefault()?.Url ?? "imgs/carros.jpg";
 
-                <article class="card">
-                    <img src="~/@img" alt="@anuncio.Titulo">
+                <article class="card @(anuncio.Estado == "vendido" ? "sold" : "")">
+                    <div class="img-wrapper">
+                        <img src="~/@img" alt="@anuncio.Titulo" class="car-image" />
+
+                        @if (anuncio.Estado == "vendido")
+                        {
+                            <div class="sold-banner">VENDIDO</div>
+                        }
+                    </div>
+
 
                     <div class="card-body">
                         <h3 class="card-title">@anuncio.Titulo</h3>
@@ -225,7 +233,7 @@
 
 @section Scripts {
     <script>
-        // custom-select genérico para filtros (categoria, marca, combustível, km, caixa)
+        // custom-select para filtros (categoria, marca, combustível, km, caixa)
         document.querySelectorAll(".pill .custom-select").forEach(select => {
             const selected = select.querySelector(".selected");
             const options = select.querySelectorAll(".custom-options div");

@@ -72,7 +72,7 @@ namespace AutoHubProjeto.Controllers
                 ExpiresUtc = DateTime.UtcNow.AddHours(6)
             });
 
-            TempData["AuthSuccess"] = "Sessão iniciada com sucesso!";
+            //TempData["AuthSuccess"] = "Sessão iniciada com sucesso!";
             return RedirectToAction("Index", "Home");
         }
 

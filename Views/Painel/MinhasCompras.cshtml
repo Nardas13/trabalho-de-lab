@@ -1,0 +1,130 @@
+﻿@model AutoHubProjeto.ViewModels.MinhasComprasVM
+
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Minhas Compras</h2>
+        <div class="painel-subtitle">
+            Consulta o estado das tuas compras.
+        </div>
+
+        <!-- PENDENTES -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Compras Pendentes</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Pendentes.Any())
+                {
+                    <p class="empty">Não tens compras pendentes.</p>
+                }
+                else
+                {
+                    foreach (var c in Model.Pendentes)
+                    {
+                        <div class="visita-card">
+
+                            <img src="/@c.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@c.Titulo</h4>
+
+                                <span class="visita-data">
+                                    @c.DataCompra.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+
+                                <span class="visita-data">
+                                    Método: @c.MetodoPagamento
+                                </span>
+
+                                <span class="visita-status agendada">
+                                    Pendente
+                                </span>
+                            </div>
+
+                            <button class="btn-cancelar-compra cancel-btn"
+                                    data-id="@c.IdCompra">
+                                Cancelar
+                            </button>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Compras Concluídas / Canceladas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Historico.Any())
+                {
+                    <p class="empty">Ainda não realizaste compras.</p>
+                }
+                else
+                {
+                    foreach (var c in Model.Historico)
+                    {
+                        <div class="visita-card cancelada-card">
+
+                            <img src="/@c.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@c.Titulo</h4>
+
+                                <span class="visita-data">
+                                    @c.DataCompra.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+
+                                <span class="visita-data">
+                                    Método: @c.MetodoPagamento
+                                </span>
+
+                                <span class="visita-status cancelada">
+                                    @c.Estado
+                                </span>
+                            </div>
+
+                            <button class="btn-cancelado" disabled>
+                                @c.Estado
+                            </button>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<!-- MODAL CANCELAMENTO -->
+<div id="cancelModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+
+        <h2>Cancelar Compra</h2>
+
+        <p class="cancel-text">
+            Tens a certeza que queres cancelar esta compra?
+        </p>
+
+        <div class="modal-buttons">
+            <button id="closeCancel" class="btn-outline">Fechar</button>
+            <button id="confirmCancel" class="btn">Confirmar</button>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/painel-compras.js"></script>

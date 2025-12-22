@@ -30,6 +30,7 @@ namespace AutoHubProjeto.Controllers
 
             var user = _db.Utilizadors
                 .Include(u => u.Comprador)
+                .Include(u => u.Vendedor)
                 .FirstOrDefault(u => u.Email == email);
 
             if (user?.Comprador == null)
@@ -41,6 +42,27 @@ namespace AutoHubProjeto.Controllers
 
             if (anuncio.Estado != "ativo" && anuncio.Estado != "reservado")
                 return Json(new { ok = false, msg = "Este veículo não está disponível." });
+
+            // bloquear compra pendente duplicada
+            bool compraPendente = _db.Compras.Any(c =>
+                c.IdAnuncio == idAnuncio &&
+                c.IdComprador == user.Comprador.IdComprador &&
+                c.EstadoPagamento == "pendente");
+
+            if (compraPendente)
+                return Json(new { ok = false, msg = "Já tens um pedido de compra pendente para este veículo." });
+
+            // bloquear se já foi vendido (comentado a pedido)
+            //bool vendido = _db.Compras.Any(c =>
+            //    c.IdAnuncio == idAnuncio &&
+            //    c.EstadoPagamento == "pago");
+            //
+            //if (vendido)
+            //    return Json(new { ok = false, msg = "Este veículo já foi vendido." });
+
+            // bloquear vendedor a comprar
+            if (user.Vendedor != null && user.Vendedor.IdVendedor == anuncio.IdVendedor)
+                return Json(new { ok = false, msg = "Não podes comprar o teu próprio veículo." });
 
             var compra = new Compra
             {

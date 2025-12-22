@@ -1,0 +1,143 @@
+﻿@model AutoHubProjeto.ViewModels.MinhasReservasVM
+
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Minhas Reservas</h2>
+        <div class="painel-subtitle">
+            Gere todas as tuas reservas de veículos.
+        </div>
+
+        <!-- ATIVAS / PENDENTES -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Reservas Ativas / Pendentes</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.AtivasEPendentes.Any())
+                {
+                    <p class="empty">Não tens reservas ativas ou pendentes.</p>
+                }
+                else
+                {
+                    foreach (var r in Model.AtivasEPendentes)
+                    {
+                        <div class="visita-card">
+
+                            <img src="/@r.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@r.Titulo</h4>
+
+                                @if (r.Estado == "Pendente")
+                                {
+                                    <span class="visita-data">
+                                        Pedido em @r.DataReserva.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                    <span class="visita-status agendada">
+                                        Pendente de confirmação
+                                    </span>
+                                }
+                                else if (r.Estado == "Ativa")
+                                {
+                                    <span class="visita-data">
+                                        Expira em @r.ExpiraEm?.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                    <span class="visita-status confirmada">
+                                        Ativa
+                                    </span>
+                                }
+                            </div>
+
+                            <button class="btn-cancelar-reserva cancel-btn"
+                                    data-id="@r.IdReserva">
+                                Cancelar
+                            </button>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <!-- EXPIRADAS / CANCELADAS -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Reservas Expiradas / Canceladas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.ExpiradasECanceladas.Any())
+                {
+                    <p class="empty">Nenhuma reserva expirada ou cancelada.</p>
+                }
+                else
+                {
+                    foreach (var r in Model.ExpiradasECanceladas)
+                    {
+                        <div class="visita-card cancelada-card">
+
+                            <img src="/@r.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@r.Titulo</h4>
+
+                                @if (r.Estado == "Expirada")
+                                {
+                                    <span class="visita-data">
+                                        @r.DataReserva.ToString("dd/MM/yyyy HH:mm")
+                                        →
+                                        @r.ExpiraEm?.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                    <span class="visita-status cancelada">
+                                        Expirada
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="visita-status cancelada">
+                                        Cancelada
+                                    </span>
+                                }
+                            </div>
+
+                            <button class="btn-cancelado" disabled>
+                                @r.Estado
+                            </button>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<!-- MODAL CANCELAMENTO -->
+<div id="cancelModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+
+        <h2>Cancelar Reserva</h2>
+
+        <p class="cancel-text">
+            Tens a certeza que queres cancelar esta reserva?
+        </p>
+
+        <div class="modal-buttons">
+            <button id="closeCancel" class="btn-outline">Fechar</button>
+            <button id="confirmCancel" class="btn">Confirmar</button>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/painel-reservas.js"></script>

@@ -66,6 +66,33 @@ namespace AutoHubProjeto.Controllers
             if (user.Vendedor != null && user.Vendedor.IdVendedor == anuncio.IdVendedor)
                 return Json(new { ok = false, msg = "Não podes reservar o teu próprio veículo." });
 
+            // bloquear se já existir reserva ativa 
+            bool existeReservaAtiva = _db.Reservas.Any(r =>
+                r.IdAnuncio == idAnuncio &&
+                (r.Estado == "confirmada" || r.Estado == "ativada") &&
+                r.ExpiraEm > DateTime.Now);
+
+            if (existeReservaAtiva)
+                return Json(new { ok = false, msg = "Este veículo encontra-se atualmente reservado." });
+
+            // bloquear se já estiver vendido
+            //bool jaVendido = _db.Compras.Any(c =>
+            //    c.IdAnuncio == idAnuncio &&
+            //    c.EstadoPagamento == "pago");
+
+            //if (jaVendido)
+            //    return Json(new { ok = false, msg = "Este veículo já foi vendido." });
+
+            // impedir reserva duplicada pelo mesmo comprador para o mesmo anúncio
+            bool jaTemReserva = _db.Reservas.Any(r =>
+                r.IdAnuncio == idAnuncio &&
+                r.IdComprador == user.Comprador.IdComprador &&
+                r.Estado != "cancelada" &&
+                r.Estado != "expirada");
+
+            if (jaTemReserva)
+                return Json(new { ok = false, msg = "Já fizeste um pedido de reserva para este veículo." });
+
             var reserva = new Reserva
             {
                 IdAnuncio = idAnuncio,

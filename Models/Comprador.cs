@@ -20,4 +20,6 @@ public partial class Comprador
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 
     public virtual ICollection<Visitum> Visita { get; set; } = new List<Visitum>();
+
+    public virtual ICollection<FiltroFavorito> FiltroFavoritos { get; set; } = new List<FiltroFavorito>();
 }

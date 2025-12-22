@@ -17,12 +17,17 @@ namespace AutoHubProjeto.Models
 
         public int? KmMax { get; set; }
 
-
         public string Combustivel { get; set; }
         public string Caixa { get; set; }
         public string Localizacao { get; set; }
 
         public string Ordenar { get; set; }
+
+        // ----- ESTADO -----
+        public bool TemFiltrosAtivos { get; set; }
+        public List<FiltroFavorito>? FiltrosGuardados { get; set; }
+        public int? FiltroAtivoId { get; set; }
+
 
         // ----- RESULTADOS -----
         public List<Anuncio> Resultados { get; set; }

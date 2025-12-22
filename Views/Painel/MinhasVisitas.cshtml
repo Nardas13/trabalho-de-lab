@@ -34,13 +34,15 @@
                                 <span class="visita-status @(v.Estado.ToLower())">@v.Estado</span>
                             </div>
 
-                            @if (v.Estado == "Cancelada")
+                            @if (v.Estado == "Pendente" || v.Estado == "Confirmada")
                             {
-                                <button class="btn-cancelado" disabled>Cancelado</button>
+                                <button class="btn-cancelar-visita cancel-btn" data-id="@v.IdVisita">
+                                    Cancelar
+                                </button>
                             }
                             else
                             {
-                                <button class="btn-cancelar-visita cancel-btn" data-id="@v.IdVisita">Cancelar</button>
+                                <button class="btn-cancelado" disabled>@v.Estado</button>
                             }
 
                         </div>

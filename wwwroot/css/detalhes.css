@@ -341,7 +341,7 @@
         }
 
 /* ============================================
-   TOAST (alerta premium / mensagens gerais)
+   TOAST 
 ============================================ */
 
 .toast-auth {
@@ -792,4 +792,186 @@
 /* separar visualmente manhã / tarde */
 .time-section-title:not(:first-child) {
     margin-top: 8px;
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--stroke);
+    background: #f8fafc;
+    font-size: 14px;
+}
+
+
+.pill-group {
+    display: flex;
+    gap: 8px;
+}
+
+.pill-option {
+    border: 1px solid var(--stroke);
+    background: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--txt-700);
+    transition: .15s;
+}
+
+    .pill-option:hover {
+        background: #eef3ff;
+    }
+
+    .pill-option.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+
+/* ============================================
+   CUSTOM SELECT
+============================================ */
+
+/* pill container */
+.pill {
+    background: #fff;
+    border: 1px solid var(--stroke);
+    border-radius: 8px;
+    padding: 6px 10px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+    /* label da pill */
+    .pill > span {
+        font-weight: 600;
+        color: var(--txt-900);
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+/* custom select */
+.custom-select {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+    /* texto selecionado */
+    .custom-select .selected {
+        color: #9aa6b2;
+        font-weight: 400;
+    }
+
+    /* seta */
+    .custom-select .arrow {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 9px;
+        color: var(--txt-500);
+        pointer-events: none;
+        transition: .25s;
+    }
+
+    /* rodar seta */
+    .custom-select.active .arrow {
+        transform: translateY(-50%) rotate(180deg);
+    }
+
+/* dropdown */
+.custom-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    padding: 6px 4px;
+}
+
+    /* opções */
+    .custom-options div {
+        padding: 8px 10px;
+        cursor: pointer;
+        color: var(--txt-900);
+        font-size: 14px;
+        border-radius: 8px;
+        transition: background .15s ease, transform .12s ease;
+    }
+
+        /* hover opção */
+        .custom-options div:hover {
+            background: #eef3ff;
+            transform: translateY(-1px);
+        }
+
+/* animação */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   CUSTOM SELECT — (MODAL RESERVA)
+============================================ */
+
+/* garante que as opções começam FECHADAS */
+.custom-select .custom-options {
+    display: none !important;
+}
+
+/* abrir só quando active */
+.custom-select.active .custom-options {
+    display: block !important;
+}
+
+.custom-select.compact {
+    display: flex;
+    align-items: center;
+    height: 42px;
+    width: 100%;
+}
+
+/* texto selecionado ocupa espaço */
+.custom-select.compact .selected {
+    flex: 1;
+    font-size: 14px;
+    color: var(--txt-700);
+}
+
+/* seta */
+.custom-select.compact .arrow {
+    font-size: 8px;       
+    margin-left: 6px;
+    line-height: 1;
+    opacity: .7;
+}
+
+/* dropdown */
+.custom-select.compact .custom-options {
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    z-index: 999999;
 }

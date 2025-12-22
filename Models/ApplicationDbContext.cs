@@ -38,6 +38,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Visitum> Visita { get; set; }
 
     public DbSet<Favorito> Favoritos { get; set; }
+    public virtual DbSet<FiltroFavorito> FiltroFavoritos { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -297,6 +298,30 @@ public partial class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(f => f.IdAnuncio)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<FiltroFavorito>(entity =>
+        {
+            entity.HasKey(e => e.IdFiltro);
+
+            entity.ToTable("FiltroFavorito");
+
+            entity.Property(e => e.Nome)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.FiltrosJson)
+                .IsRequired();
+
+            entity.Property(e => e.DataCriacao)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(e => e.Comprador)
+                .WithMany(c => c.FiltroFavoritos)
+                .HasForeignKey(e => e.IdComprador)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Filtro_Comprador");
         });
 
         OnModelCreatingPartial(modelBuilder);

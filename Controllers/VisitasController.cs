@@ -25,8 +25,11 @@ namespace AutoHubProjeto.Controllers
 
             // pega todas as visitas do dia
             var horas = _db.Visita
-                .Where(v => v.IdAnuncio == idAnuncio &&
-                            v.DataHora.Date == parsedDate.Date)
+                .Where(v =>
+                    v.IdAnuncio == idAnuncio &&
+                    v.DataHora.Date == parsedDate.Date &&
+                    v.Estado == "confirmada"
+                )
                 .Select(v => v.DataHora.ToString("HH:mm"))
                 .ToList();
 
@@ -66,7 +69,7 @@ namespace AutoHubProjeto.Controllers
 
             int compradorId = user.Comprador.IdComprador;
 
-            // buscar anuncio
+            //  
             var anuncio = _db.Anuncios
                 .Include(a => a.IdVendedorNavigation)
                 .Include(a => a.Visita)
@@ -99,7 +102,10 @@ namespace AutoHubProjeto.Controllers
             // verificar ocupação -> inclui marcadas e pendentes
             bool ocupada = _db.Visita.Any(v =>
                 v.IdAnuncio == idAnuncio &&
-                v.DataHora == dataHora);
+                v.DataHora == dataHora &&
+                v.Estado == "confirmada"
+            );
+
 
             if (ocupada)
                 return Json(new { ok = false, msg = "Esse horário já está ocupado." });
@@ -110,7 +116,7 @@ namespace AutoHubProjeto.Controllers
                 IdComprador = compradorId,
                 IdAnuncio = idAnuncio,
                 DataHora = dataHora,
-                Estado = "marcada" 
+                Estado = "pendente" 
             };
 
             _db.Visita.Add(visita);
@@ -122,5 +128,168 @@ namespace AutoHubProjeto.Controllers
                 msg = $"Pedido de visita enviado para {dataHora:dd/MM/yyyy HH:mm}."
             });
         }
+
+        // ================================================================
+        //  VISITAS PENDENTES PARA O VENDEDOR
+        // ================================================================
+        [HttpGet]
+        public IActionResult PendentesVendedor()
+        {
+            if (!User.Identity!.IsAuthenticated)
+                return Unauthorized();
+
+            var email = User.Identity.Name;
+
+            var vendedor = _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefault(u => u.Email == email)
+                ?.Vendedor;
+
+            if (vendedor == null)
+                return Unauthorized();
+
+            var visitas = _db.Visita
+                .Include(v => v.IdAnuncioNavigation)
+                .Include(v => v.IdCompradorNavigation)
+                    .ThenInclude(c => c.IdCompradorNavigation)
+                .Where(v =>
+                    v.IdAnuncioNavigation.IdVendedor == vendedor.IdVendedor &&
+                    v.Estado == "pendente")
+                .OrderBy(v => v.DataHora)
+                .Select(v => new
+                {
+                    v.IdVisita,
+                    v.DataHora,
+                    Anuncio = v.IdAnuncioNavigation.Titulo,
+                    Comprador = v.IdCompradorNavigation.IdCompradorNavigation.Nome,
+                    Email = v.IdCompradorNavigation.IdCompradorNavigation.Email,
+                    Telefone = v.IdCompradorNavigation.IdCompradorNavigation.Telefone
+                })
+                .ToList();
+
+            return Json(visitas);
+        }
+
+        // ================================================================
+        //  CONFIRMAR VISITA (VENDEDOR)
+        // ================================================================
+        [HttpPost]
+        public IActionResult Confirmar(int id)
+        {
+            if (!User.Identity!.IsAuthenticated)
+                return Unauthorized();
+
+            var email = User.Identity.Name;
+
+            var vendedor = _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefault(u => u.Email == email)
+                ?.Vendedor;
+
+            if (vendedor == null)
+                return Unauthorized();
+
+            var visita = _db.Visita
+                .Include(v => v.IdAnuncioNavigation)
+                .FirstOrDefault(v => v.IdVisita == id);
+
+            if (visita == null)
+                return Json(new { ok = false, msg = "Visita não encontrada." });
+
+            if (visita.IdAnuncioNavigation.IdVendedor != vendedor.IdVendedor)
+                return Unauthorized();
+
+            visita.Estado = "confirmada";
+            var conflitos = _db.Visita.Where(v =>
+                v.IdAnuncio == visita.IdAnuncio &&
+                v.DataHora == visita.DataHora &&
+                v.IdVisita != visita.IdVisita &&
+                v.Estado == "pendente"
+            );
+
+            foreach (var v in conflitos)
+            {
+                v.Estado = "cancelada";
+            }
+
+            _db.SaveChanges();
+
+            return Json(new { ok = true, msg = "Visita confirmada." });
+        }
+
+        // ================================================================
+        //  RECUSAR VISITA (VENDEDOR)
+        // ================================================================
+        [HttpPost]
+        public IActionResult Recusar(int id)
+        {
+            if (!User.Identity!.IsAuthenticated)
+                return Unauthorized();
+
+            var email = User.Identity.Name;
+
+            var vendedor = _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefault(u => u.Email == email)
+                ?.Vendedor;
+
+            if (vendedor == null)
+                return Unauthorized();
+
+            var visita = _db.Visita
+                .Include(v => v.IdAnuncioNavigation)
+                .FirstOrDefault(v => v.IdVisita == id);
+
+            if (visita == null)
+                return Json(new { ok = false, msg = "Visita não encontrada." });
+
+            if (visita.IdAnuncioNavigation.IdVendedor != vendedor.IdVendedor)
+                return Unauthorized();
+
+            visita.Estado = "cancelada";
+            _db.SaveChanges();
+
+            return Json(new { ok = true, msg = "Visita cancelada." });
+        }
+
+        // ================================================================
+        //  MARCAR VISITA COMO REALIZADA (VENDEDOR)
+        // ================================================================
+        [HttpPost]
+        public IActionResult MarcarRealizada(int id)
+        {
+            if (!User.Identity!.IsAuthenticated)
+                return Unauthorized();
+
+            var email = User.Identity.Name;
+
+            var vendedor = _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefault(u => u.Email == email)
+                ?.Vendedor;
+
+            if (vendedor == null)
+                return Unauthorized();
+
+            var visita = _db.Visita
+                .Include(v => v.IdAnuncioNavigation)
+                .FirstOrDefault(v => v.IdVisita == id);
+
+            if (visita == null)
+                return Json(new { ok = false, msg = "Visita não encontrada." });
+
+            if (visita.IdAnuncioNavigation.IdVendedor != vendedor.IdVendedor)
+                return Unauthorized();
+
+            if (visita.Estado != "confirmada")
+                return Json(new { ok = false, msg = "Só visitas confirmadas podem ser concluídas." });
+
+            visita.Estado = "realizada";
+            _db.SaveChanges();
+
+            return Json(new { ok = true, msg = "Visita marcada como realizada." });
+        }
+
+
     }
 }

@@ -1,17 +1,15 @@
 ﻿.visitas-wrapper {
-    max-height: 200px;
+    max-height: 220px; 
     overflow-y: auto;
     padding-right: 6px;
 }
-
 
 .visitas-list {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    max-height: 420px;
-    overflow-y: auto;
 }
+
 
 .visita-card {
     background: rgba(255,255,255,0.55);

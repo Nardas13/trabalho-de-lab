@@ -23,9 +23,22 @@ namespace AutoHubProjeto.Controllers
             string? Combustivel,
             int? KmMax,
             string? Caixa,
-            string? Ordenar
+            string? Ordenar,
+            int? filtroAtivo
         )
         {
+            // flag para verificar se há filtros aplicados
+            bool temFiltros =
+            !string.IsNullOrEmpty(Categoria) ||
+            !string.IsNullOrEmpty(Marca) ||
+            AnoMin.HasValue ||
+            AnoMax.HasValue ||
+            PrecoMin.HasValue ||
+            PrecoMax.HasValue ||
+            !string.IsNullOrEmpty(Combustivel) ||
+            KmMax.HasValue ||
+            !string.IsNullOrEmpty(Caixa);
+
             // Query base
             var query = _db.Anuncios
                 .Include(a => a.IdVeiculoNavigation)
@@ -89,6 +102,8 @@ namespace AutoHubProjeto.Controllers
                 KmMax = KmMax,
                 Caixa = Caixa,
                 Ordenar = Ordenar,
+                TemFiltrosAtivos = temFiltros,
+                FiltrosGuardados = new List<FiltroFavorito>(),
 
                 Categorias = _db.Veiculos
                     .Select(v => v.Categoria)
@@ -102,6 +117,26 @@ namespace AutoHubProjeto.Controllers
                     .Distinct()
                     .ToList()
             };
+
+            // carregar filtros guardados do utilizador
+            if (User.Identity!.IsAuthenticated)
+            {
+                var email = User.Identity.Name;
+
+                var comprador = _db.Utilizadors
+                    .Include(u => u.Comprador)
+                    .FirstOrDefault(u => u.Email == email)
+                    ?.Comprador;
+
+                if (comprador != null)
+                {
+                    vm.FiltrosGuardados = _db.FiltroFavoritos
+                        .Where(f => f.IdComprador == comprador.IdComprador)
+                        .OrderByDescending(f => f.DataCriacao)
+                        .ToList();
+                }
+                vm.FiltroAtivoId = filtroAtivo;
+            }
 
             return View(vm);
         }

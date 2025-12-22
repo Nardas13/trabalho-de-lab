@@ -71,7 +71,7 @@
                     € @Model.Preco.ToString("N0")
                 </div>
 
-                <!-- NÃO mexer no disponível visual -->
+                <!-- estado do veiculo -->
                 <div class="estado-badge @Model.Estado">
                     @(
                         Model.Estado switch {
@@ -107,8 +107,13 @@
                                 data-action="visita"
                                 data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()">Agendar Visita</button>
 
-                        <button class="btn btn-outline requires-auth" data-action="reserva">Reservar</button>
-                        <button class="btn btn-outline requires-auth" data-action="comprar">Comprar</button>
+                        <button class="btn btn-outline requires-auth" 
+                            data-action="reserva" 
+                            data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()"> Reservar </button>
+
+                        <button class="btn btn-outline requires-auth"
+                            data-action="comprar"
+                            data-auth="@User.Identity.IsAuthenticated.ToString().ToLower()"> Comprar </button>
                     }
                 </div>
 
@@ -223,6 +228,95 @@
 
                     </div>
                 </div>
+
+                <!-- MODAL RESERVAR VEÍCULO -->
+                <div id="modalReservar" class="modal hidden">
+                    <div class="modal-content">
+
+                        <h2>Reservar Veículo</h2>
+
+                        <p style="font-size:14px;color:var(--txt-700);margin-bottom:14px">
+                            Esta reserva garante prioridade sobre o veículo durante um período limitado.
+                        </p>
+                        <div class="form-field">
+                            <div class="pill">
+                                <span>Duração</span>
+
+                                <div class="custom-select compact" id="selectDuracao">
+                                    <div class="selected" data-value="48">48 horas</div>
+                                    <span class="arrow">▾</span>
+
+                                    <div class="custom-options">
+                                        <div data-value="24">24 horas</div>
+                                        <div data-value="48">48 horas</div>
+                                        <div data-value="72">72 horas</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- aviso -->
+                        <!---<div class="error-msg" style="background:#fffbeb;color:#92400e">
+                            Durante este período, outros utilizadores não poderão comprar este veículo.
+                        </div>-->
+
+                        <div class="modal-buttons">
+                            <button class="btn-outline" id="cancelarReserva">Cancelar</button>
+                            <button class="btn" id="confirmarReserva">Confirmar Reserva</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- MODAL COMPRAR VEÍCULO -->
+                <div id="modalComprar" class="modal hidden">
+                    <div class="modal-content">
+
+                        <h2>Comprar Veículo</h2>
+
+                        <!-- MÉTODO DE PAGAMENTO -->
+                        <div class="form-field">
+                            <label>Método de pagamento</label>
+
+                            <div class="pill-group" id="metodoPagamento">
+                                <button class="pill-option active" data-metodo="cartao">
+                                    Cartão
+                                </button>
+                                <button class="pill-option" data-metodo="transferencia">
+                                    Transferência
+                                </button>
+                                <button class="pill-option" data-metodo="stand">
+                                    No stand
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CONTACTO -->
+                        <div class="form-field">
+                            <label>Contacto associado à compra</label>
+
+                            <p style="font-size:11px;color:var(--txt-700);margin-bottom:8px">
+                                O vendedor irá utilizar estes dados para entrar em contacto contigo após a confirmação da compra.
+                            </p>
+
+                            <div class="soft-card" style="padding:12px">
+                                <div style="font-size:14px">
+                                    <strong>Email:</strong> @ViewBag.UserEmail
+                                </div>
+                                <div style="font-size:14px;color:var(--txt-700)">
+                                    <strong>Telefone:</strong> @(ViewBag.UserTelefone ?? "—")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button class="btn-outline" id="cancelarCompra">Cancelar</button>
+                            <button class="btn" id="confirmarCompra">Confirmar Pedido de Compra</button>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 </main>
 
@@ -291,6 +385,77 @@ document.querySelectorAll(".requires-auth").forEach(btn => {
 });
 
 /* ============================================================
+   MODAIS — RESERVAR / COMPRAR
+============================================================ */
+
+// elementos dos modais
+const modalReservar = document.getElementById("modalReservar");
+const modalComprar  = document.getElementById("modalComprar");
+
+// botões
+const btnReserva = document.querySelector("[data-action='reserva']");
+const btnComprar = document.querySelector("[data-action='comprar']");
+
+/* ======================
+   ABRIR MODAL RESERVA
+====================== */
+if (btnReserva && modalReservar) {
+    btnReserva.addEventListener("click", function () {
+
+        if (this.dataset.auth !== "true") {
+            return showToast("Inicia sessão para usar esta funcionalidade.");
+        }
+
+        modalReservar.classList.remove("hidden");
+    });
+}
+
+/* ======================
+   ABRIR MODAL COMPRA
+====================== */
+if (btnComprar && modalComprar) {
+    btnComprar.addEventListener("click", function () {
+
+        if (this.dataset.auth !== "true") {
+            return showToast("Inicia sessão para usar esta funcionalidade.");
+        }
+
+        modalComprar.classList.remove("hidden");
+    });
+}
+
+/* ======================
+   CANCELAR / FECHAR
+====================== */
+document.getElementById("cancelarReserva")
+    ?.addEventListener("click", () => modalReservar.classList.add("hidden"));
+
+document.getElementById("cancelarCompra")
+    ?.addEventListener("click", () => modalComprar.classList.add("hidden"));
+
+/* ======================
+   FECHAR AO CLICAR FORA
+====================== */
+modalReservar?.addEventListener("click", e => {
+    if (e.target === modalReservar) modalReservar.classList.add("hidden");
+});
+
+modalComprar?.addEventListener("click", e => {
+    if (e.target === modalComprar) modalComprar.classList.add("hidden");
+});
+
+document.querySelectorAll(".pill-group").forEach(group => {
+    group.querySelectorAll(".pill-option").forEach(btn => {
+        btn.addEventListener("click", () => {
+            group.querySelectorAll(".pill-option")
+                .forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
+    });
+});
+
+
+/* ============================================================
    MODAL – AGENDAR VISITA
 ============================================================ */
 const modal      = document.getElementById("modalAgendar");
@@ -325,6 +490,7 @@ modal.addEventListener("click", e => {
     if (e.target === modal) modal.classList.add("hidden");
 });
 
+
 /* ============================================================
    INPUT MASK
 ============================================================ */
@@ -346,8 +512,8 @@ timeInput.readOnly = true;
 ============================================================ */
 
 const horarios = {
-    "Manhã": ["08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00"],
-    "Tarde": ["14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00"]
+    "Manhã": ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00"],
+    "Tarde": ["14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00"]
 };
 
 // construir visual de horários
@@ -412,11 +578,46 @@ function carregarHorasOcupadas() {
 
 function marcarHorasOcupadas(ocupadas) {
 
+    // limpar 
     document.querySelectorAll(".time-option").forEach(btn => {
         btn.classList.remove("disabled");
         btn.disabled = false;
     });
 
+    // descobrir dia da semana da data selecionada
+    const data = dateInput.value;
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) return;
+
+    const iso = toIsoFromPt(data);
+    const diaSemana = new Date(iso).getDay(); 
+    // 0 = Domingo | 6 = Sábado
+
+    // regras fixas de horário
+    document.querySelectorAll(".time-option").forEach(btn => {
+        const hora = btn.textContent.trim();
+
+        //  DOMINGO → tudo bloqueado
+        if (diaSemana === 0) {
+            btn.classList.add("disabled");
+            btn.disabled = true;
+        }
+
+        // SÁBADO → só 10:00–14:00
+        if (diaSemana === 6) {
+            if (
+                hora === "09:00" ||
+                hora === "09:30" ||
+                hora > "14:00"
+            ) {
+                btn.classList.add("disabled");
+                btn.disabled = true;
+            }
+        }
+
+        // SEG–SEX 
+    });
+
+    //bloquear horas já ocupadas
     ocupadas.forEach(hora => {
         const btn = [...document.querySelectorAll(".time-option")]
             .find(b => b.textContent.trim() === hora.trim());
@@ -488,7 +689,7 @@ document.getElementById("confirmarVisita")
     });
 
 /* ============================================================
-   CALENDÁRIO POPUP — SEM ALTERAR
+   CALENDÁRIO 
 ============================================================ */
 const calIcon = document.getElementById("calendarIcon");
 const calPopup = document.getElementById("calendarPopup");
@@ -562,11 +763,14 @@ function buildCalendar(month, year) {
 
         const cellDate = new Date(year, month, d);
 
-        if (cellDate < today.setHours(0,0,0,0)) {
+        const isSunday = cellDate.getDay() === 0; // 0 = Domingo
+
+        if (cellDate < today.setHours(0,0,0,0) || isSunday) {
             cell.classList.add("disabled");
         } else {
             cell.addEventListener("click", () => {
-                dateInput2.value = `${String(d).padStart(2,"0")}/${String(month+1).padStart(2,"0")}/${year}`;
+                dateInput2.value =
+                    `${String(d).padStart(2,"0")}/${String(month+1).padStart(2,"0")}/${year}`;
                 calPopup.classList.add("hidden");
                 carregarHorasOcupadas();
             });
@@ -577,5 +781,97 @@ function buildCalendar(month, year) {
 
     calPopup.appendChild(grid);
 }
+
+document.querySelectorAll("#selectDuracao").forEach(select => {
+    const selected = select.querySelector(".selected");
+    const options = select.querySelectorAll(".custom-options div");
+
+    select.addEventListener("click", e => {
+        e.stopPropagation();
+        select.classList.toggle("active");
+    });
+
+    options.forEach(opt => {
+        opt.addEventListener("click", e => {
+            e.stopPropagation();
+            selected.textContent = opt.textContent;
+            selected.dataset.value = opt.dataset.value;
+            select.classList.remove("active");
+        });
+    });
+});
+
+/* fechar ao clicar fora */
+document.addEventListener("click", () => {
+    document
+        .querySelectorAll(".custom-select.active")
+        .forEach(s => s.classList.remove("active"));
+});
+
+
+/* ============================================================
+   SUBMIT — RESERVAR VEÍCULO
+============================================================ */
+document.getElementById("confirmarReserva")
+    ?.addEventListener("click", function () {
+
+        const duracao = Number(
+        document.querySelector("#selectDuracao .selected")?.dataset.value
+        );
+
+
+        if (!duracao) {
+            return showToast("Seleciona a duração da reserva.");
+        }
+
+        fetch("/Reservas/Criar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                idAnuncio: @Model.IdAnuncio,
+                horas: duracao
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            showToast(data.msg ?? "Reserva criada.");
+            if (data.ok) {
+                setTimeout(() => location.reload(), 1200);
+            }
+        });
+    });
+
+    /* ============================================================
+   SUBMIT — COMPRAR VEÍCULO
+============================================================ */
+document.getElementById("confirmarCompra")
+    ?.addEventListener("click", function () {
+
+        const metodo = document
+            .querySelector("#metodoPagamento .pill-option.active")
+            ?.dataset.metodo;
+
+        if (!metodo) {
+            return showToast("Seleciona o método de pagamento.");
+        }
+
+        fetch("/Compras/Criar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                idAnuncio: @Model.IdAnuncio,
+                metodoPagamento: metodo
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            showToast(data.msg ?? "Compra registada.");
+            if (data.ok) {
+                setTimeout(() => location.reload(), 1200);
+            }
+        });
+    });
+
+
 </script>
 }

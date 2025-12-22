@@ -324,24 +324,38 @@
     width: 170px;
 }
 
+.filter-select {
+    width: 220px; 
+}
+
+.order-card .custom-select {
+    min-width: 200px;
+}
+
 /* texto da opção selecionada nas pills */
 .pill .selected {
     font-weight: 400;
     color: #9aa6b2;
 }
 
-/* Setinha mais discreta */
+/* Setinha  */
 .custom-select .arrow {
-    font-size: 9px;
+    font-size: 10px;
     opacity: .8;
 }
+
+.custom-select .selected {
+    color: #9aa6b2;
+    font-weight: 400;
+}
+
 
 /* container da imagem */
 .img-wrapper {
     position: relative;
 }
 
-/* escurecer apenas SE sold */
+/* escurecer */
 .card.sold .car-image {
     filter: brightness(0.4);
 }
@@ -360,4 +374,114 @@
     z-index: 20;
 }
 
+/* Filtros favoritos */
+#aplicarFiltro {
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid var(--stroke);
+    padding: 0 12px;
+    font-size: 13px;
+    background: white;
+    min-width: 200px;
+}
 
+/* botão guardar filtros */
+#guardarFiltroBtn {
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+
+
+
+.btn-outline {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #cfd6e0;
+    background: white;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+    .btn-outline:hover {
+        background: #f5f7fa;
+    }
+
+
+/* --- Row de Ordenar + Filtros Guardados --- */
+.order-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.order-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* tamanhos consistentes */
+.order-select {
+    width: 220px;
+}
+
+.filter-select {
+    width: 260px;
+}
+
+/* botão guardar filtros */
+#guardarFiltroBtn.btn-outline {
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.order-btn {
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, transform .12s ease;
+}
+
+    .order-btn:hover {
+        background: #f5f7fa;
+        transform: translateY(-1px);
+    }
+
+
+/* ============================================
+   TOAST 
+============================================ */
+
+.toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: rgba(15,23,42,0.85);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: .35s ease;
+    z-index: 99999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    backdrop-filter: blur(6px);
+}
+
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }

@@ -39,6 +39,12 @@ namespace AutoHubProjeto.Controllers
                     .Include(u => u.Vendedor)
                     .FirstOrDefault(u => u.Email == email);
 
+                if (user != null)
+                {
+                    ViewBag.UserEmail = user.Email;
+                    ViewBag.UserTelefone = user.Telefone;
+                }
+
                 // Preencher favoritos
                 if (user?.Comprador != null)
                 {

@@ -43,7 +43,11 @@ namespace AutoHubProjeto.Controllers
                     await _db.Favoritos.CountAsync(f => f.IdComprador == idComprador),
 
                 VisitasCount = idComprador == 0 ? 0 :
-                    await _db.Visita.CountAsync(v => v.IdComprador == idComprador && v.Estado != "cancelada"),
+                    await _db.Visita.CountAsync(v =>
+                        v.IdComprador == idComprador &&
+                        v.Estado == "confirmada" &&
+                        v.DataHora > DateTime.Now),
+
 
                 ReservasCount = idComprador == 0 ? 0 :
                     await _db.Reservas.CountAsync(r => r.IdComprador == idComprador),
@@ -91,9 +95,10 @@ namespace AutoHubProjeto.Controllers
             // VISITAS
             atividade.AddRange(
                 await _db.Visita
-                    .Where(v => v.IdComprador == idComprador &&
-                                v.Estado != "cancelada" &&   // << IGNORA canceladas
-                                v.DataHora >= limite)
+                    .Where(v =>
+                        v.IdComprador == idComprador &&
+                        v.Estado == "confirmada" &&
+                        v.DataHora > DateTime.Now)
                     .Include(v => v.IdAnuncioNavigation)
                     .Select(v => new PainelAtividadeVM
                     {
@@ -103,7 +108,6 @@ namespace AutoHubProjeto.Controllers
                     })
                     .ToListAsync()
             );
-
 
             // COMPRAS
             atividade.AddRange(
@@ -154,21 +158,35 @@ namespace AutoHubProjeto.Controllers
 
             foreach (var v in visitas)
             {
+                string estadoTexto = v.Estado switch
+                {
+                    "pendente" => "Pendente",
+                    "confirmada" => "Confirmada",
+                    "cancelada" => "Cancelada",
+                    "realizada" => "Concluída",
+                    _ => "Indefinido"
+                };
+
                 var item = new MinhasVisitasItemVM
                 {
                     IdVisita = v.IdVisita,
                     Titulo = v.IdAnuncioNavigation.Titulo,
                     Imagem = v.IdAnuncioNavigation.AnuncioImagems.FirstOrDefault()?.Url ?? "imgs/carros.jpg",
                     DataHora = v.DataHora,
-                    Estado = v.Estado == "cancelada"
-                            ? "Cancelada"
-                            : (v.DataHora < agora ? "Concluída" : "Agendada")
+                    Estado = estadoTexto
                 };
 
-                if (item.Estado == "Agendada")
+                if (
+                    (v.Estado == "pendente" || v.Estado == "confirmada") &&
+                    v.DataHora > agora
+                )
+                {
                     vm.Futuras.Add(item);
-                else
+                }
+                else if (v.Estado == "realizada" || v.Estado == "cancelada")
+                {
                     vm.Passadas.Add(item);
+                }
             }
 
             return View(vm);

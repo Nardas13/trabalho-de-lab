@@ -17,6 +17,7 @@ namespace AutoHubProjeto.Controllers
         [HttpPost]
         public async Task<IActionResult> Toggle(int idAnuncio)
         {
+
             if (!User.Identity.IsAuthenticated)
                 return Json(new { ok = false, mensagem = "login" });
 

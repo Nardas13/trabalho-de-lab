@@ -158,7 +158,9 @@
         </form>
 
         <!-- ORDENAR POR -->
-        <div class="order-box">
+        <div class="order-row">
+            <div class="order-left">
+                
             <span class="order-label">Ordenar por</span>
 
             <div class="order-card">
@@ -188,6 +190,40 @@
                 </div>
 
                 <input type="hidden" name="Ordenar" value="@Model.Ordenar" form="filtrosForm" />
+            </div>
+
+            @if (User.Identity.IsAuthenticated && Model.FiltrosGuardados?.Any() == true)
+            {
+                <div class="order-card">
+                    <div class="custom-select filter-select">
+                        <div class="selected">
+                            @{
+                                var ativo = Model.FiltrosGuardados?
+                                    .FirstOrDefault(f => f.IdFiltro == Model.FiltroAtivoId);
+                            }
+
+                            @(ativo != null ? ativo.Nome : "Aplicar filtro guardado")
+                        </div>
+                        <span class="arrow">▾</span>
+
+                        <div class="custom-options">
+                            @foreach (var f in Model.FiltrosGuardados)
+                            {
+                                <div data-value="@f.IdFiltro">@f.Nome</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (User.Identity.IsAuthenticated && Model.TemFiltrosAtivos)
+            {
+                <button id="guardarFiltroBtn" class="order-btn">
+                    Guardar filtros
+                </button>
+            }
+
+
             </div>
         </div>
 
@@ -233,6 +269,22 @@
 
 @section Scripts {
     <script>
+
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add("show"), 10);
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // custom-select para filtros (categoria, marca, combustível, km, caixa)
         document.querySelectorAll(".pill .custom-select").forEach(select => {
             const selected = select.querySelector(".selected");
@@ -295,5 +347,95 @@
                 document.querySelectorAll(".custom-select").forEach(s => s.classList.remove("active"));
             }
         });
+
+        // Guardar filtro atual
+        document.getElementById("guardarFiltroBtn")?.addEventListener("click", () => {
+            const params = Object.fromEntries(new URLSearchParams(window.location.search));
+
+            if (Object.keys(params).length === 0) {
+                showToast("Aplica pelo menos um filtro antes de guardar.");
+                return;
+            }
+
+            fetch("/FiltrosFavoritos/Guardar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    filtros: params
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (!d.ok) {
+                    showToast(d.msg ?? "Erro ao guardar filtro.");
+                    return;
+                }
+                location.reload();
+            });
+        });
+
+        // custom-select para aplicar filtro guardado
+        document.querySelectorAll(".filter-select").forEach(select => {
+            const selected = select.querySelector(".selected");
+            const options = select.querySelectorAll(".custom-options div");
+
+            selected.addEventListener("click", () => {
+                document.querySelectorAll(".custom-select")
+                    .forEach(s => s !== select && s.classList.remove("active"));
+                select.classList.toggle("active");
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener("click", () => {
+                    const id = opt.dataset.value;
+                    const nome = opt.textContent;
+
+                    selected.textContent = nome;
+
+                    select.classList.remove("active");
+
+                    setTimeout(() => {
+                        window.location.href = "/FiltrosFavoritos/Aplicar?id=" + id;
+                    }, 150);
+                });
+            });
+        });
+
+
+        function obterFiltrosAtivos() {
+            const filtros = {};
+
+            document.querySelectorAll("#filtrosForm input, #filtrosForm select").forEach(el => {
+                if (!el.name) return;
+
+                const val = el.value?.trim();
+
+                if (
+                    val &&
+                    val !== "Todas" &&
+                    val !== "Todos"
+                ) {
+                    filtros[el.name] = val;
+                }
+            });
+
+            return filtros;
+        }
+
+        function atualizarBotaoGuardarFiltro() {
+            const btn = document.getElementById("guardarFiltroBtn");
+            if (!btn) return;
+
+            const filtros = obterFiltrosAtivos();
+            btn.style.display = Object.keys(filtros).length > 0 ? "inline-flex" : "none";
+        }
+
+        // ao carregar a página
+        atualizarBotaoGuardarFiltro();
+
+        // sempre que algo muda nos filtros
+        document.getElementById("filtrosForm")
+            ?.addEventListener("change", atualizarBotaoGuardarFiltro);
+
     </script>
 }

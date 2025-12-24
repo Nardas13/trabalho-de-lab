@@ -1,0 +1,128 @@
+﻿.estado-texto {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.acoes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 520px;
+}
+
+.acao-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.6);
+    padding: 14px 18px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.acao-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.acao-tipo {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.favoritos-mini {
+    display: flex;
+    gap: 14px;
+}
+
+.fav-mini-card {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    text-decoration: none;
+    color: inherit;
+}
+
+    .fav-mini-card img {
+        width: 48px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+.link-ver-todos {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.fav-see-all {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+    .fav-see-all:hover {
+        color: #0f172a;
+    }
+
+.fav-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    max-width: 260px;
+}
+
+    .fav-card img {
+        width: 48px;
+        height: 36px;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #e5e7eb;
+    }
+
+
+.fav-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.fav-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fav-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.fav-price {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.estado-muted {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 6px;
+}

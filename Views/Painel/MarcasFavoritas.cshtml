@@ -1,0 +1,76 @@
+﻿@model AutoHubProjeto.ViewModels.MarcasFavoritasVM
+
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Marcas Favoritas</h2>
+        <div class="painel-subtitle">
+            Escolhe marcas para receber sugestões e notificações.
+        </div>
+
+        <form method="post" action="/Painel/GuardarMarcas">
+
+            <!-- MARCAS -->
+            <div class="marcas-pills">
+                @foreach (var m in Model.Marcas)
+                {
+                    <label class="marca-pill @(m.Selecionada ? "active" : "")">
+                        <input type="checkbox"
+                               name="marcas"
+                               value="@m.Nome"
+                               @(m.Selecionada ? "checked" : "") />
+
+                        <span>@m.Nome</span>
+                    </label>
+                }
+            </div>
+
+            <div class="modal hidden"></div>
+
+            <!-- NOTIFICAÇÕES -->
+            <div class="section-divider"></div>
+
+            <div class="notif-row">
+                <label class="marca-pill @(Model.NotificacoesAtivas ? "active" : "")">
+                    <input type="checkbox"
+                           name="notificacoes"
+                           @(Model.NotificacoesAtivas ? "checked" : "") />
+
+                    <span>Receber notificações</span>
+                </label>
+
+                <span class="visita-data">
+                    Avisar quando surgirem novos anúncios destas marcas
+                </span>
+            </div>
+
+            <!-- BOTÃO -->
+            <div style="margin-top:32px">
+                <button class="btn">
+                    Guardar Preferências
+                </button>
+            </div>
+
+        </form>
+
+    </section>
+</div>
+
+<!-- scripts -->
+
+@section scripts {
+    <script>
+        document.querySelectorAll(".marca-pill input").forEach(input => {
+            input.addEventListener("change", () => {
+                input.closest(".marca-pill")
+                    .classList.toggle("active", input.checked);
+            });
+        });
+    </script>
+
+}

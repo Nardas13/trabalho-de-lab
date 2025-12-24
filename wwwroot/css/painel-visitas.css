@@ -1,5 +1,15 @@
-﻿.visitas-wrapper {
-    max-height: 220px; 
+﻿/* =========================
+   LISTAS / CARDS
+========================= */
+
+.visitas-wrapper {
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.visitas-wrapper-fav {
+    max-height: 400px;
     overflow-y: auto;
     padding-right: 6px;
 }
@@ -9,7 +19,6 @@
     flex-direction: column;
     gap: 14px;
 }
-
 
 .visita-card {
     background: rgba(255,255,255,0.55);
@@ -28,6 +37,7 @@
     border-radius: 10px;
 }
 
+/* info textos */
 .visita-info h4 {
     margin: 0;
     font-size: 15px;
@@ -53,24 +63,75 @@
         color: #22c55e;
     }
 
+    .visita-status.cancelada {
+        color: #6b7280;
+        text-decoration: line-through;
+    }
+
+/* =========================
+   BOTÃO CANCELAR / REMOVER
+========================= */
+
 .cancel-btn {
     margin-left: auto;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
     background: #fee2e2;
     color: #b91c1c;
-    padding: 6px 14px;
-    border-radius: 10px;
-    border: none;
-    font-size: 13px;
-    cursor: pointer;
+    border: 1px solid #fecaca;
+    transition: all 0.2s ease;
 }
 
     .cancel-btn:hover {
-        background: #ffcaca;
+        background: #fecaca;
     }
 
-/* ============================
+/* =========================
+   BOTÃO CANCELADO
+========================= */
+.btn-cancelado {
+    margin-left: auto;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #e5e7eb;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.9;
+}
+
+/*fav*/
+.fav-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-view {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: white;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+    .btn-view:hover {
+        background: #f1f5f9;
+    }
+
+/* =========================
    MODAL CANCELAMENTO
-============================ */
+========================= */
 
 .modal {
     position: fixed;
@@ -110,12 +171,13 @@
     margin-bottom: 22px;
 }
 
-/* Botões */
 .modal-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
 }
+
+/*botoes modal*/
 
 .btn-outline {
     padding: 8px 20px;
@@ -144,7 +206,6 @@
         filter: brightness(1.15);
     }
 
-/* animação */
 @keyframes fadeUp {
     from {
         opacity: 0;
@@ -157,35 +218,69 @@
     }
 }
 
-.empty {
-    color: #64748b;
-    font-size: 14px;
-}
-
-
-/* =====================================
-   VISITAS CANCELADAS 
-===================================== */
+    /*estados*/
 
 .cancelada-card {
     opacity: .55;
     filter: grayscale(30%);
 }
 
-.visita-status.cancelada {
-    color: #6b7280;
-    text-decoration: line-through;
+.empty {
+    color: #64748b;
+    font-size: 14px;
 }
 
-/* botão "Cancelado" */
-.btn-cancelado {
-    margin-left: auto;
-    background: #e5e7eb;
-    color: #6b7280; 
-    padding: 6px 14px;
-    border-radius: 10px;
-    border: none;
-    font-size: 13px;
-    cursor: default;
-    pointer-events: none;
+/* =========================
+   MARCAS FAVORITAS
+========================= */
+
+.marcas-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 24px 0 32px;
+}
+
+.marca-pill {
+    position: relative;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.75);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    font-weight: 600;
+    font-size: 14px;
+    color: #0f172a;
+    cursor: pointer;
+    transition: all .25s ease;
+    user-select: none;
+}
+
+    /* esconde checkbox real */
+    .marca-pill input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* hover suave */
+    .marca-pill:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+    }
+
+    /* estado ativo */
+    .marca-pill.active {
+        background: rgba(37,99,235,0.08);
+        color: #2563eb;
+    }
+
+/* =========================
+   NOTIFICAÇÕES
+========================= */
+
+.notif-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 28px;
 }

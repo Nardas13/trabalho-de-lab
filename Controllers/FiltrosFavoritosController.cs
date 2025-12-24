@@ -96,7 +96,40 @@ namespace AutoHubProjeto.Controllers
             );
         }
 
+        [HttpPost]
+        public IActionResult Remover([FromBody] JsonElement dados)
+        {
+            if (!User.Identity!.IsAuthenticated)
+                return Unauthorized();
 
+            var prop = dados.GetProperty("idFiltro");
+
+            int idFiltro = prop.ValueKind == JsonValueKind.Number
+                ? prop.GetInt32()
+                : int.Parse(prop.GetString()!);
+
+            var email = User.Identity.Name;
+
+            var comprador = _db.Utilizadors
+                .Include(u => u.Comprador)
+                .FirstOrDefault(u => u.Email == email)
+                ?.Comprador;
+
+            if (comprador == null)
+                return Unauthorized();
+
+            var filtro = _db.FiltroFavoritos
+                .FirstOrDefault(f => f.IdFiltro == idFiltro &&
+                                     f.IdComprador == comprador.IdComprador);
+
+            if (filtro == null)
+                return Json(new { ok = false, msg = "Filtro não encontrado." });
+
+            _db.FiltroFavoritos.Remove(filtro);
+            _db.SaveChanges();
+
+            return Json(new { ok = true, msg = "Filtro removido." });
+        }
 
     }
 }

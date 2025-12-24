@@ -12,6 +12,8 @@
         public int ReservasCount { get; set; }
         public int ComprasCount { get; set; }
         public int AnunciosCount { get; set; }
+        public bool NotificacoesAtivas { get; set; }
+        public List<string> MarcasFavoritas { get; set; } = new();
 
         public List<PainelAtividadeVM> Atividade { get; set; } = new();
 

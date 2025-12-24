@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text.Json;
+using AutoHubProjeto.Helpers;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

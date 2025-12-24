@@ -1,4 +1,6 @@
 ﻿@model AutoHubProjeto.ViewModels.PainelDashboardVM
+@using Microsoft.AspNetCore.Http
+
 <link rel="stylesheet" href="/css/painel.css" />
 
 <div class="painel-wrapper">
@@ -63,7 +65,7 @@
         <!-- ATIVIDADE RECENTE -->
         <h3 class="painel-section-title">Atividade Recente</h3>
 
-        <div class="activity-box">
+        <div class="estado-muted">
 
             @if (Model.Atividade.Count == 0)
             {

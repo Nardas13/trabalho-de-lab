@@ -1,4 +1,77 @@
-﻿@page
-@model AutoHubProjeto.Views.Painel.FavoritosModel
-@{
-}
+﻿@model AutoHubProjeto.ViewModels.FavoritosVM
+
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Favoritos</h2>
+        <div class="painel-subtitle">
+            Os anúncios que guardaste para ver mais tarde.
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="visitas-wrapper-fav">
+            <div class="visitas-list">
+
+                @if (!Model.Lista.Any())
+                {
+                    <p class="empty">Ainda não adicionaste favoritos.</p>
+                }
+                else
+                {
+                    foreach (var f in Model.Lista)
+                    {
+                        <div class="visita-card @(f.Disponivel ? "" : "cancelada-card")">
+
+                            <img src="/@f.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@f.Titulo</h4>
+
+                                @if (f.Disponivel)
+                                {
+                                    <span class="visita-data">
+                                        @f.Preco.ToString("C")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="visita-status cancelada">
+                                        Indisponível
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="fav-actions">
+
+                                @if (f.Disponivel)
+                                {
+                                    <a href="/Veiculos/Detalhes/@f.IdAnuncio"
+                                       class="btn-view">
+                                        Ver
+                                    </a>
+                                }
+
+                                <button class="cancel-btn btn-cancelar-favorito"
+                                        data-id="@f.Id">
+                                    Remover
+                                </button>
+
+                            </div>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<script src="/js/painel-favoritos.js"></script>

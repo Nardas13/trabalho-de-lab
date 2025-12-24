@@ -1,6 +1,106 @@
-﻿@{
-    Layout = "_PainelLayout";
-}
+﻿@model AutoHubProjeto.ViewModels.PainelCompradorVM
 
-<h1>Painel do Comprador</h1>
-<p>Colocar reservas, visitas, etc.</p>
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-comprador.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Painel do Comprador</h2>
+        <p class="painel-subtitle">
+            Resumo da tua atividade recente.
+        </p>
+
+        <!-- ================= ESTADO ATUAL ================= -->
+        <div class="section-divider"></div>
+
+        <h3 class="painel-section-title">Estado atual</h3>
+
+        @if (!Model.TemAtividade)
+        {
+            <p class="estado-muted">
+                Sem atividade registada neste momento.
+            </p>
+        }
+        else
+        {
+            <p class="estado-texto">
+                @if (Model.NumVisitasAtivas > 0)
+                {
+                    <span>📅 @Model.NumVisitasAtivas visita(s) marcada(s)</span>
+                }
+                @if (Model.NumReservasPendentes > 0)
+                {
+                    <span>⏳ @Model.NumReservasPendentes reserva(s) pendente(s)</span>
+                }
+            </p>
+        }
+
+        <!-- ================= PRÓXIMAS AÇÕES ================= -->
+        <div class="section-divider"></div>
+
+        <h3 class="painel-section-title">Próximas ações</h3>
+
+        @if (!Model.Acoes.Any())
+        {
+            <p class="estado-muted">
+                Sem ações pendentes.
+            </p>
+
+        }
+        else
+        {
+            <div class="acoes-list">
+                @foreach (var a in Model.Acoes)
+                {
+                    <div class="acao-card">
+                        <div class="acao-info">
+                            <span class="acao-tipo">@a.Tipo</span>
+                            <strong>@a.Titulo</strong>
+                        </div>
+
+                        <a href="@a.Url" class="btn-outline">
+                            Ver
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- ================= FAVORITOS RECENTES ================= -->
+        <div class="section-divider"></div>
+
+        <h3 class="painel-section-title">Favoritos recentes</h3>
+
+        @if (!Model.Favoritos.Any())
+        {
+            <p class="estado-muted">
+                Ainda não adicionaste veículos aos favoritos.
+            </p>
+        }
+        else
+        {
+            <div class="fav-list">
+                @foreach (var f in Model.Favoritos)
+                {
+                    <div class="fav-card">
+                        <img src="@(string.IsNullOrEmpty(f.Imagem) ? "/imgs/placeholder-car.png" : f.Imagem)" />
+
+                        <div class="fav-info">
+                            <div class="fav-title">@f.Titulo</div>
+                            <div class="fav-price">@f.Preco €</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <a href="/Painel/Favoritos" class="fav-see-all">
+                Ver todos os favoritos
+            </a>
+
+        }
+
+    </section>
+</div>

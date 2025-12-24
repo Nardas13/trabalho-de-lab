@@ -1,0 +1,193 @@
+﻿@model AutoHubProjeto.ViewModels.DefinicoesContaVM
+
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+<link rel="stylesheet" href="/css/conta.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Definições da Conta</h2>
+        <div class="painel-subtitle">
+            Gere os teus dados pessoais e segurança.
+        </div>
+
+        <!-- ================= DADOS DA CONTA ================= -->
+        <h3 class="painel-section-title">Dados da Conta</h3>
+
+        <form method="post" action="/Painel/AtualizarDados" id="formConta">
+
+            <div class="conta-grid">
+                <div class="field">
+                    <label>Nome</label>
+                    <input name="Nome"
+                           value="@Model.Nome"
+                           required />
+                </div>
+
+                <div class="field">
+                    <label>Username</label>
+                    <input name="Username"
+                           value="@Model.Username"
+                           required />
+                </div>
+
+                <div class="field">
+                    <label>Email</label>
+                    <input value="@Model.Email"
+                           disabled />
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <h3 class="painel-section-title">Contacto</h3>
+
+            <div class="conta-grid">
+                <div class="field">
+                    <label>Telefone</label>
+                    <input id="telefone"
+                           name="Telefone"
+                           value="@Model.Telefone"
+                           oninput="restrictPhone(this)" />
+                </div>
+
+                <div class="field">
+                    <label>Morada</label>
+                    <input name="Morada"
+                           value="@Model.Morada" />
+                </div>
+            </div>
+
+            <button class="btn" style="margin-top:20px">
+                Guardar Dados
+            </button>
+        </form>
+
+
+        <div class="section-divider"></div>
+
+        <!-- ================= SEGURANÇA ================= -->
+        <h3 class="painel-section-title">Segurança</h3>
+
+        <div class="security-row">
+            <span class="pwd-dots">● ● ● ● ● ●</span>
+
+            <button type="button"
+                    class="btn-outline mini"
+                    id="openPwdModal">
+                Alterar palavra-passe
+            </button>
+        </div>
+
+
+    </section>
+</div>
+
+<!-- ================= MODAL PASSWORD ================= -->
+<div id="pwdModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+
+        <h2>Alterar Palavra-Passe</h2>
+
+        <form method="post"
+              action="/Painel/AlterarPassword"
+              autocomplete="off">
+
+            <!-- PASSWORD ATUAL -->
+            <div class="pwd-wrapper">
+                <div class="pwd-input">
+                    <input type="password"
+                           id="pwd-atual"
+                           name="PasswordAtual"
+                           placeholder="Password atual"
+                           autocomplete="current-password"
+                           required />
+
+                    <img src="/imgs/eye-off.jpg"
+                         class="eye-icon"
+                         onclick="togglePwd('pwd-atual', this)" />
+                </div>
+
+                @if (TempData["PwdError"] != null)
+                {
+                    <div class="pwd-error">
+                        @TempData["PwdError"]
+                    </div>
+                }
+            </div>
+
+
+            <!-- NOVA PASSWORD -->
+            <div class="pwd-wrapper">
+                <input type="password"
+                       id="pwd-nova"
+                       name="NovaPassword"
+                       placeholder="Nova password"
+                       autocomplete="new-password"
+                       required />
+
+                <img src="/imgs/eye-off.jpg"
+                     class="eye-icon"
+                     onclick="togglePwd('pwd-nova', this)" />
+            </div>
+
+            <!-- CONFIRMAR -->
+            <div class="pwd-wrapper">
+                <input type="password"
+                       id="pwd-confirmar"
+                       name="ConfirmarPassword"
+                       placeholder="Confirmar password"
+                       autocomplete="new-password"
+                       required />
+
+                <img src="/imgs/eye-off.jpg"
+                     class="eye-icon"
+                     onclick="togglePwd('pwd-confirmar', this)" />
+            </div>
+
+            <!-- BOTÕES -->
+            <div class="modal-buttons">
+                <button type="button"
+                        class="btn-outline"
+                        id="closePwdModal">
+                    Cancelar
+                </button>
+
+                <button type="submit"
+                        class="btn"
+                        id="confirmPwdBtn"
+                        disabled>
+                    Confirmar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+@if (TempData["OpenPwdModal"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("pwdModal")?.classList.remove("hidden");
+        });
+    </script>
+}
+
+@if (TempData["Toast"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            showToast("@Html.Raw(TempData["Toast"])");
+        });
+    </script>
+}
+
+@section Scripts {
+    <script src="/js/painel-conta.js"></script>
+}

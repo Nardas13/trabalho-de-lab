@@ -1,40 +1,42 @@
 ﻿using System.Security.Cryptography;
-
-public static class PasswordHelper
+namespace AutoHubProjeto.Helpers
 {
-    private const int SaltSize = 16;   // 128 bits
-    private const int KeySize = 32;   // 256 bits
-    private const int Iterations = 100_000;
-
-    public static byte[] HashPassword(string password)
+    public static class PasswordHelper
     {
-        using var rng = RandomNumberGenerator.Create();
-        var salt = new byte[SaltSize];
-        rng.GetBytes(salt);
+        private const int SaltSize = 16;   // 128 bits
+        private const int KeySize = 32;   // 256 bits
+        private const int Iterations = 100_000;
 
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
-        var key = pbkdf2.GetBytes(KeySize);
+        public static byte[] HashPassword(string password)
+        {
+            using var rng = RandomNumberGenerator.Create();
+            var salt = new byte[SaltSize];
+            rng.GetBytes(salt);
 
-        var result = new byte[SaltSize + KeySize];
-        Buffer.BlockCopy(salt, 0, result, 0, SaltSize);
-        Buffer.BlockCopy(key, 0, result, SaltSize, KeySize);
-        return result;
-    }
+            using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+            var key = pbkdf2.GetBytes(KeySize);
 
-    public static bool VerifyPassword(string password, byte[] stored)
-    {
-        if (stored == null || stored.Length != SaltSize + KeySize)
-            return false;
+            var result = new byte[SaltSize + KeySize];
+            Buffer.BlockCopy(salt, 0, result, 0, SaltSize);
+            Buffer.BlockCopy(key, 0, result, SaltSize, KeySize);
+            return result;
+        }
 
-        var salt = new byte[SaltSize];
-        var key = new byte[KeySize];
+        public static bool VerifyPassword(string password, byte[] stored)
+        {
+            if (stored == null || stored.Length != SaltSize + KeySize)
+                return false;
 
-        Buffer.BlockCopy(stored, 0, salt, 0, SaltSize);
-        Buffer.BlockCopy(stored, SaltSize, key, 0, KeySize);
+            var salt = new byte[SaltSize];
+            var key = new byte[KeySize];
 
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
-        var keyToCheck = pbkdf2.GetBytes(KeySize);
+            Buffer.BlockCopy(stored, 0, salt, 0, SaltSize);
+            Buffer.BlockCopy(stored, SaltSize, key, 0, KeySize);
 
-        return CryptographicOperations.FixedTimeEquals(key, keyToCheck);
+            using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
+            var keyToCheck = pbkdf2.GetBytes(KeySize);
+
+            return CryptographicOperations.FixedTimeEquals(key, keyToCheck);
+        }
     }
 }

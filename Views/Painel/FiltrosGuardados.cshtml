@@ -1,0 +1,56 @@
+﻿@model AutoHubProjeto.ViewModels.FiltrosGuardadosVM
+
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/painel-visitas.css">
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Filtros Guardados</h2>
+        <div class="painel-subtitle">
+            Filtros que guardaste para usar rapidamente.
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Filtros.Any())
+                {
+                    <p class="empty">Ainda não guardaste filtros.</p>
+                }
+                else
+                {
+                    foreach (var f in Model.Filtros)
+                    {
+                        <div class="visita-card">
+
+                            <div class="visita-info">
+                                <h4>@f.Nome</h4>
+                                <span class="visita-data">@f.Descricao</span>
+                            </div>
+                            <div class="fav-actions">
+                            <a href="/FiltrosFavoritos/Aplicar?id=@f.IdFiltro"
+                               class="btn-view">
+                                Aplicar
+                            </a>
+
+                            <button class="btn-remover-filtro cancel-btn"
+                                    data-id="@f.IdFiltro">
+                                Remover
+                            </button>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<script src="/js/painel-filtros.js"></script>

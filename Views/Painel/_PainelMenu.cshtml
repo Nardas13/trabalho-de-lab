@@ -99,6 +99,10 @@
 
         <ul class="submenu">
             <li><a href="/Painel/Conta">Definições da Conta</a></li>
+            @if (Model.IsAdmin)
+            {
+                <li class="admin-entry"><a href="/Admin/EntrarAdmin">AutoHub Admin</a></li>
+            }
             <li><a href="/Auth/Logout" class="logout">Terminar Sessão</a></li>
         </ul>
     </div>

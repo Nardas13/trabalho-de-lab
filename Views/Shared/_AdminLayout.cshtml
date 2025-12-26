@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - AutoHub Admin</title>
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- CSS base do site -->
+    <link rel="stylesheet" href="~/css/variables.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+
+    <!-- CSS admin -->
+    <link rel="stylesheet" href="~/css/admin.css" />
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body class="admin-mode">
+
+    <!-- HEADER -->
+    <header class="nav admin-nav">
+        <div class="nav-inner">
+
+            <!-- LOGO -->
+            <div class="brand">
+                <img src="~/imgs/logotipodourado.jpg" class="logo-dourado" />
+                <span class="brand-name">AUTOHUB</span>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+
+            <!-- MENU ADMIN -->
+            <nav class="menu-center">
+                <a href="/AdmDashboard/Index">Painel</a>
+                <a href="/AdminUtilizadores/Index">Utilizadores</a>
+                <a href="/AdminAnuncios/Index">Anúncios</a>
+            </nav>
+
+            <!-- SAIR -->
+            <div class="menu-right">
+                <a href="/Admin/Admin/Sair" class="admin-exit">
+                    Sair
+                </a>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- CONTEÚDO -->
+    <main class="admin-main">
+        @RenderBody()
+    </main>
+
+</body>
+</html>

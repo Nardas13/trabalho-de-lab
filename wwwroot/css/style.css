@@ -66,23 +66,45 @@ body {
     letter-spacing: 0.13rem;
 }
 
-.menu-center {
+/* SITE NORMAL APENAS */
+body:not(.admin-mode) .menu-center {
     display: flex;
     justify-content: center;
     gap: 40px;
 }
 
-    .menu-center a {
+    body:not(.admin-mode) .menu-center a {
         font-family: 'Inter', sans-serif;
         font-size: 17px;
         font-weight: 700;
         color: #0f1627;
         text-decoration: none;
+        position: relative;
+        padding-bottom: 6px;
     }
 
-        .menu-center a:hover {
-            color: #2a3d56;
+        body:not(.admin-mode) .menu-center a::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient( 90deg, transparent, rgba(200, 180, 110, 0.9), rgba(225, 205, 135, 1), rgba(200, 180, 110, 0.9), transparent );
+            transform: translateX(-50%);
+            transition: width 0.32s ease;
+            border-radius: 2px;
         }
+
+        body:not(.admin-mode) .menu-center a:hover::after {
+            width: 100%;
+        }
+
+        body:not(.admin-mode) .menu-center a:hover,
+        body:not(.admin-mode) .menu-center a.active {
+            color: #0f1627;
+        }
+
 
 .menu-right {
     display: flex;

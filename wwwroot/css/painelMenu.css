@@ -74,7 +74,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Gradiente igual ao .btn */
     background: linear-gradient( 135deg, #2a3d56 0%,
     #152235 40%, 
     #0b1220 100%
@@ -124,7 +123,7 @@
         transform: scaleY(1);
     }
 
-/* Pequena animação no ícone ao passar o rato */
+/* Pequena animação */
 .hover-expand:hover .menu-item-icon {
     filter: brightness(1.10);
     transform: translateY(-1px);
@@ -239,3 +238,4 @@
 .painel-wrapper + footer {
     margin-top: 0 !important;
 }
+

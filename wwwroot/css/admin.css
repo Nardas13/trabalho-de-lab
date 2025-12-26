@@ -1,0 +1,294 @@
+﻿/* ================= ADMIN MODE ================= */
+
+body.admin-mode {
+    background: #0f172a; 
+    color: #e5e7eb;
+}
+    body.admin-mode .menu-center {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+    }
+    body.admin-mode .admin-nav {
+        background: linear-gradient(180deg, #0b1220, #020617);
+    }
+    body.admin-mode .menu-center a {
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+        color: #cbd5f5;
+    }
+        body.admin-mode .menu-center a:hover {
+            color: #ffffff;
+        }
+
+
+/* header admin */
+.admin-nav {
+    background: #ffffff;
+    border-bottom: 1px solid rgba(37,99,235,0.25);
+}
+    .admin-nav .nav-inner {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    .admin-nav .menu-center a {
+        position: relative;
+        transition: color 0.15s ease;
+    }
+
+        .admin-nav .menu-center a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 0;
+            height: 2px;
+            background: #60a5fa;
+            transition: width 0.18s ease;
+        }
+
+        .admin-nav .menu-center a:hover::after {
+            width: 100%;
+        }
+
+/* badge ADMIN */
+.admin-badge {
+    margin-left: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #fff;
+}
+
+/* sair admin */
+.admin-exit {
+    font-weight: 700;
+    color: #2563eb;
+    text-decoration: none;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+    .admin-exit:hover {
+        text-decoration: underline;
+        color: #93c5fd;
+        opacity: 0.9;
+    }
+
+/* conteúdo admin */
+.admin-main {
+    max-width: 1250px;
+    margin: 40px auto;
+    padding: 32px;
+    background: #f8fafc;
+    border-radius: 20px;
+}
+
+
+
+body.admin-mode .admin-nav {
+    background: linear-gradient(135deg, #0b1220, #020617);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+body.admin-mode .brand-name {
+    color: #ffffff;
+}
+
+body.admin-mode .menu-center a {
+    color: #cbd5f5;
+}
+
+    body.admin-mode .menu-center a:hover {
+        color: #ffffff;
+    }
+
+body.admin-mode .menu-right a {
+    color: #60a5fa;
+    font-weight: 700;
+}
+
+/* ================= DASHBOARD ================= */
+
+.stat-card {
+    background: linear-gradient(135deg, #020617, #020617);
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 10px 30px rgba(2,6,23,.45);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 40px rgba(2,6,23,0.55);
+    }
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.stat-value {
+    color: #f8fafc;
+    font-size: 36px;
+    font-weight: 800;
+}
+
+.stats-list li {
+    background: #020617;
+    border-radius: 14px;
+    padding: 14px 18px;
+    box-shadow: 0 6px 20px rgba(2,6,23,.35);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+    .stats-list li:hover {
+        background: rgba(15,23,42,0.85);
+        transform: translateX(4px);
+    }
+
+.stats-list span {
+    color: #e5e7eb;
+}
+
+.stats-list strong {
+    color: #facc15;
+}
+
+/* ===== ADMIN DASHBOARD ===== */
+
+.dashboard-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.dashboard-header p {
+    color: #94a3b8;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* GRID DOS 4 QUADRADOS */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+/* CADA QUADRADO */
+.admin-stat-box {
+    background: linear-gradient(135deg, #020617, #020617);
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-height: 88px;
+    box-shadow: 0 8px 18px rgba(2,6,23,.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+    .admin-stat-box:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 28px rgba(2,6,23,.55);
+    }
+
+.stat-name {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.stat-number {
+    display: block;
+    margin-top: 4px;
+    font-size: 30px;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+
+/* ===== ADMIN LISTAS ===== */
+
+.admin-lists-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.admin-list-card {
+    background: linear-gradient(135deg, #020617, #020617);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 10px 24px rgba(2,6,23,.4);
+}
+
+    .admin-list-card h2 {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+.admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .admin-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+        .admin-list li:last-child {
+            border-bottom: none;
+        }
+
+    .admin-list span {
+        color: #e5e7eb;
+    }
+
+    .admin-list strong {
+        color: #facc15;
+        font-weight: 700;
+    }
+
+.admin-main {
+    padding: 26px;
+}
+
+.section-divider {
+    width: 100%;
+    height: 1px;
+    margin: 28px 0;
+    background: linear-gradient( to right, transparent, rgba(96,165,250,0.35), transparent );
+}
+
+.dashboard-meta {
+    margin: 18px 0 30px;
+    text-align: center;
+    font-size: 12.5px;
+    color: rgba(203, 213, 245, 0.55);
+    letter-spacing: 0.04em;
+}
+
+.stat-value {
+    animation: popIn 0.35s ease-out;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.92);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

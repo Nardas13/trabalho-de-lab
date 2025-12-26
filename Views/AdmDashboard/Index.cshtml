@@ -1,0 +1,79 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Painel Administrativo";
+}
+
+<div class="admin-dashboard">
+
+    <!-- HEADER -->
+    <header class="dashboard-header">
+        <h1>Painel Administrativo</h1>
+        <p>Controlo e estatísticas globais da plataforma.</p>
+    </header>
+
+    <!--  CARDS PRINCIPAIS  -->
+    <section class="admin-stats-grid">
+
+        <div class="admin-stat-box">
+            <span class="stat-name">Compradores</span>
+            <span class="stat-number">@ViewBag.Compradores</span>
+        </div>
+
+        <div class="admin-stat-box">
+            <span class="stat-name">Vendedores</span>
+            <span class="stat-number">@ViewBag.Vendedores</span>
+        </div>
+
+        <div class="admin-stat-box">
+            <span class="stat-name">Anúncios Ativos</span>
+            <span class="stat-number">@ViewBag.Anuncios</span>
+        </div>
+
+        <div class="admin-stat-box">
+            <span class="stat-name">Vendas</span>
+            <span class="stat-number">@ViewBag.Vendas</span>
+        </div>
+
+    </section>
+
+    <div class="section-divider"></div>
+
+    <p class="dashboard-meta">
+        Última atualização: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+    </p>
+
+    <div class="section-divider"></div>
+
+
+    <!--  LISTAS  -->
+    <section class="admin-lists-grid">
+
+        <div class="admin-list-card">
+            <h2>Top Marcas</h2>
+            <ul class="admin-list">
+                @foreach (var m in ViewBag.TopMarcas)
+                {
+                    <li>
+                        <span>@m.Marca</span>
+                        <strong>@m.Total</strong>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="admin-list-card">
+            <h2>Top Modelos</h2>
+            <ul class="admin-list">
+                @foreach (var m in ViewBag.TopModelos)
+                {
+                    <li>
+                        <span>@m.Modelo</span>
+                        <strong>@m.Total</strong>
+                    </li>
+                }
+            </ul>
+        </div>
+
+    </section>
+
+</div>

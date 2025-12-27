@@ -43,18 +43,30 @@
 
                     @if (u.EstadoConta == "Ativo")
                     {
-                        <form method="post" action="/AdminUtilizadores/Bloquear" style="display:inline;">
+                        <form method="post" action="/AdminUtilizadores/Bloquear" class="inline-form">
                             <input type="hidden" name="id" value="@u.Id" />
-                            <button type="submit" class="btn-danger">Bloquear</button>
+
+                            <input type="text"
+                                   name="motivo"
+                                   placeholder="Motivo do bloqueio"
+                                   class="admin-input"
+                                   required />
+
+                            <button type="submit" class="btn-danger">
+                                Bloquear
+                            </button>
                         </form>
                     }
                     else
                     {
-                        <form method="post" action="/AdminUtilizadores/Desbloquear" style="display:inline;">
+                        <form method="post" action="/AdminUtilizadores/Desbloquear" class="inline-form">
                             <input type="hidden" name="id" value="@u.Id" />
-                            <button type="submit" class="btn-success">Ativar</button>
+                            <button type="submit" class="btn-success">
+                                Ativar
+                            </button>
                         </form>
                     }
+
                 </td>
             </tr>
         }

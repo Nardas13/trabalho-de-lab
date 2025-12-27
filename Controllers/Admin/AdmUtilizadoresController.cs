@@ -29,23 +29,25 @@ public class AdmUtilizadoresController : Controller
         if (user == null) return NotFound();
 
         user.EstadoConta = "Bloqueado";
+        user.MotivoBloqueio = motivo?.Trim();
 
-//motivo 
         _context.SaveChanges();
 
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult Desbloquear(int id)
+    public IActionResult Desbloquear(int id, string motivo)
     {
         var user = _context.Utilizadors.Find(id);
         if (user == null) return NotFound();
 
         user.EstadoConta = "Ativo";
-        user.MotivoBloqueio = null; 
+        user.MotivoBloqueio = motivo?.Trim();
+
         _context.SaveChanges();
 
         return RedirectToAction("Index");
     }
+
 }

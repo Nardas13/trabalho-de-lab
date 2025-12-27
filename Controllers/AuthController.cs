@@ -44,7 +44,7 @@ namespace AutoHubProjeto.Controllers
                 return RedirectToAction("Index");
             }
 
-            if (user.EstadoConta.ToLower() == "bloqueado")
+            if (string.Equals(user.EstadoConta, "Bloqueado", StringComparison.OrdinalIgnoreCase))
             {
                 var motivo = string.IsNullOrWhiteSpace(user.MotivoBloqueio)
                     ? "Contacta o suporte para mais informações."

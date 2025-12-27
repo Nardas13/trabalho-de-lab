@@ -42,7 +42,7 @@
     <!-- ========================= -->
     <!--      ÁREA DE VENDAS       -->
     <!-- ========================= -->
-    @if (Model.IsVendedor)
+    @if (Model.IsVendedor && Model.IsVendedorAprovado)
     {
         <div class="menu-group hover-expand">
             <div class="menu-item">
@@ -66,17 +66,29 @@
             </ul>
         </div>
     }
+    else if (Model.IsVendedor && !Model.IsVendedorAprovado)
+    {
+        <div class="seller-pending-side">
+            <span class="pending-dot"></span>
+            <span>Pedido de vendedor pendente</span>
+        </div>
+    }
     else
     {
         <!-- CARD TORNAR VENDEDOR -->
-        <a class="become-seller-card" href="/Vendedor/Tornar">
-            <div class="become-seller-icon">★</div>
-            <div class="become-seller-text">
-                <div class="become-seller-title">Tornar-me Vendedor</div>
-                <div class="become-seller-sub">Começa a publicar veículos na AutoHub</div>
-            </div>
-            <div class="become-seller-arrow">›</div>
-        </a>
+        <form method="post" action="/Painel/Tornar" class="become-seller-card-form">
+            <button type="submit" class="become-seller-card">
+                <div class="become-seller-icon">★</div>
+                <div class="become-seller-text">
+                    <div class="become-seller-title">Tornar-me Vendedor</div>
+                    <div class="become-seller-sub">
+                        Pedido sujeito a aprovação de um administrador
+                    </div>
+                </div>
+                <div class="become-seller-arrow">›</div>
+            </button>
+        </form>
+
     }
 
     <!-- DIVISOR VISUAL -->

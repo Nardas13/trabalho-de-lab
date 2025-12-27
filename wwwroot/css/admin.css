@@ -496,3 +496,57 @@ body.admin-mode .menu-right a {
     font-size: 12px;
     font-weight: 700;
 }
+
+.admin-detail-card {
+    background: rgba(2,6,23,.85);
+    padding: 28px;
+    border-radius: 18px;
+    max-width: 900px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 28px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.detail-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e5e7eb;
+}
+
+.detail-alert {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(220,38,38,.12);
+    color: #fecaca;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.detail-actions {
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

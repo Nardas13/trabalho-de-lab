@@ -57,5 +57,33 @@ public class AdmUtilizadoresController : Controller
         return RedirectToAction("Index");
     }
 
+    public IActionResult Detalhes(int id)
+    {
+        var user = _context.Utilizadors
+            .Include(u => u.Comprador)
+            .Include(u => u.Vendedor)
+            .Include(u => u.Administrador)
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null)
+            return NotFound();
+
+        return View(user);
+    }
+
+    [HttpPost]
+    public IActionResult Atualizar(Utilizador model)
+    {
+        var user = _context.Utilizadors.Find(model.Id);
+        if (user == null) return NotFound();
+
+        user.Nome = model.Nome?.Trim();
+        user.Email = model.Email?.Trim();
+
+        _context.SaveChanges();
+
+        return RedirectToAction("Detalhes", new { id = user.Id });
+    }
+
 }
 

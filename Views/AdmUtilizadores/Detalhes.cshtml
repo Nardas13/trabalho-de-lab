@@ -1,5 +1,83 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model AutoHubProjeto.Models.Utilizador
+
 @{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Detalhes do Utilizador";
 }
+
+<h1>Detalhes do Utilizador</h1>
+
+<div class="admin-detail-card">
+
+    <!-- INFO PRINCIPAL -->
+    <div class="detail-grid">
+
+        <div class="detail-item">
+            <span class="detail-label">Nome</span>
+            <span class="detail-value">@Model.Nome</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Email</span>
+            <span class="detail-value">@Model.Email</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Estado</span>
+            <span class="detail-value">@Model.EstadoConta</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Tipo</span>
+            <span class="detail-value">
+                @(Model.Administrador != null ? "Administrador" :
+                                Model.Vendedor != null ? "Vendedor" : "Comprador")
+            </span>
+        </div>
+
+    </div>
+
+    <!-- MOTIVO BLOQUEIO -->
+    @if (!string.IsNullOrWhiteSpace(Model.MotivoBloqueio))
+    {
+        <div class="detail-alert">
+            <strong>Motivo do bloqueio:</strong>
+            <span>@Model.MotivoBloqueio</span>
+        </div>
+    }
+
+    <!-- ATUALIZAR PERFIL -->
+    <div class="section-divider"></div>
+
+    <h2>Atualizar Perfil</h2>
+
+    <form method="post" action="/AdmUtilizadores/Atualizar">
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="form-grid">
+            <input type="text"
+                   name="Nome"
+                   value="@Model.Nome"
+                   class="admin-input"
+                   placeholder="Nome" />
+
+            <input type="email"
+                   name="Email"
+                   value="@Model.Email"
+                   class="admin-input"
+                   placeholder="Email" />
+        </div>
+
+        <div class="detail-actions">
+            <a href="/AdmUtilizadores/Index" class="btn-outline">
+                Voltar
+            </a>
+
+            <button type="submit" class="btn-success">
+                Guardar Alterações
+            </button>
+        </div>
+    </form>
+
+</div>

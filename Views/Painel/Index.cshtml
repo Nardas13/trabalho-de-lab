@@ -44,12 +44,22 @@
         <!-- VENDEDOR -->
         <h3 class="painel-section-title">Ferramentas do Vendedor</h3>
 
-        @if (Model.IsVendedor)
+        @if (Model.IsVendedor && Model.IsVendedorAprovado)
         {
             <div class="seller-tools">
                 <a href="/Anuncios/Criar" class="btn mini">Criar Anúncio</a>
                 <a href="/Anuncios/Meus" class="btn mini">Os Meus Veículos</a>
                 <a href="/Vendedor/Estatisticas" class="btn mini">Estatísticas</a>
+            </div>
+        }
+        else if (Model.IsVendedor && !Model.IsVendedorAprovado)
+        {
+            <div class="seller-pending">
+                <span class="pending-dot"></span>
+                <p>
+                    O teu pedido para te tornares vendedor está
+                    <strong>em análise</strong>.
+                </p>
             </div>
         }
         else

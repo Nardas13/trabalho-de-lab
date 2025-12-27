@@ -26,10 +26,12 @@ namespace AutoHubProjeto.Controllers
             var user = await _db.Utilizadors
                 .Include(u => u.Comprador)
                 .Include(u => u.Vendedor)
+                .Include(u => u.Administrador)
                 .FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
                 return RedirectToAction("Login", "Auth");
+
 
             int idComprador = user.Comprador?.IdComprador ?? 0;
             int idVendedor = user.Vendedor?.IdVendedor ?? 0;
@@ -39,6 +41,8 @@ namespace AutoHubProjeto.Controllers
                 Nome = email,
                 IsComprador = user.Comprador != null,
                 IsVendedor = user.Vendedor != null,
+                IsVendedorAprovado = user.Vendedor != null && user.Vendedor.Aprovado,
+                IsAdmin = user.Administrador != null,
 
                 FavoritosCount = idComprador == 0 ? 0 :
                     await _db.Favoritos.CountAsync(f => f.IdComprador == idComprador),
@@ -691,7 +695,7 @@ namespace AutoHubProjeto.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AtualizarVendedor(DefinicoesContaVM vm)
+        public async Task<IActionResult> Tornar()
         {
             var email = User.Identity!.Name;
 
@@ -699,23 +703,33 @@ namespace AutoHubProjeto.Controllers
                 .Include(u => u.Vendedor)
                 .FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user?.Vendedor == null)
+            if (user == null)
                 return Unauthorized();
 
-            user.Vendedor.Nif = vm.Nif!;
-            user.Vendedor.Tipo = vm.TipoVendedor!;
-            user.Vendedor.DadosFaturacao = vm.DadosFaturacao;
+            // Já pediu ou já é vendedor
+            if (user.Vendedor != null)
+            {
+                TempData["Toast"] = "Já existe um pedido de vendedor pendente.";
+                return RedirectToAction("Index");
+            }
 
-            // se alterar dados → perde aprovação
-            user.Vendedor.Aprovado = false;
-            user.Vendedor.DataAprovacao = null;
-            user.Vendedor.IdAdminAprovador = null;
+            var vendedor = new Vendedor
+            {
+                IdVendedor = user.Id,
+                Nif = "PENDENTE",
+                Tipo = "particular",
+                Aprovado = false,
+                IdAdminAprovador = null,
+                DataAprovacao = null
+            };
 
+            _db.Vendedors.Add(vendedor);
             await _db.SaveChangesAsync();
 
-            TempData["Toast"] = "Dados de vendedor atualizados. Aguardas nova aprovação.";
-            return RedirectToAction("Conta");
+            TempData["Toast"] = "Pedido enviado. Aguarda aprovação do administrador.";
+            return RedirectToAction("Index");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AlterarPassword(DefinicoesContaVM vm)
@@ -843,10 +857,6 @@ namespace AutoHubProjeto.Controllers
     .FirstOrDefault()
     })
     .ToListAsync();
-
-
-
-
 
             return View(vm);
         }

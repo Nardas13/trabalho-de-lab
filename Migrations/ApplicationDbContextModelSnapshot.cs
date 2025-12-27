@@ -180,6 +180,38 @@ namespace AutoHubProjeto.Migrations
                     b.ToTable("Comprador", (string)null);
                 });
 
+            modelBuilder.Entity("AutoHubProjeto.Models.FiltroFavorito", b =>
+                {
+                    b.Property<int>("IdFiltro")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFiltro"));
+
+                    b.Property<DateTime>("DataCriacao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("FiltrosJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdComprador")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IdFiltro");
+
+                    b.HasIndex("IdComprador");
+
+                    b.ToTable("FiltroFavorito", (string)null);
+                });
+
             modelBuilder.Entity("AutoHubProjeto.Models.LogAdministrativo", b =>
                 {
                     b.Property<long>("IdLog")
@@ -301,6 +333,9 @@ namespace AutoHubProjeto.Migrations
                     b.Property<string>("Morada")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("MotivoBloqueio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -573,6 +608,18 @@ namespace AutoHubProjeto.Migrations
                     b.Navigation("IdCompradorNavigation");
                 });
 
+            modelBuilder.Entity("AutoHubProjeto.Models.FiltroFavorito", b =>
+                {
+                    b.HasOne("AutoHubProjeto.Models.Comprador", "Comprador")
+                        .WithMany("FiltroFavoritos")
+                        .HasForeignKey("IdComprador")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Filtro_Comprador");
+
+                    b.Navigation("Comprador");
+                });
+
             modelBuilder.Entity("AutoHubProjeto.Models.LogAdministrativo", b =>
                 {
                     b.HasOne("AutoHubProjeto.Models.Administrador", "IdAdminNavigation")
@@ -681,6 +728,8 @@ namespace AutoHubProjeto.Migrations
             modelBuilder.Entity("AutoHubProjeto.Models.Comprador", b =>
                 {
                     b.Navigation("Compras");
+
+                    b.Navigation("FiltroFavoritos");
 
                     b.Navigation("Reservas");
 

@@ -44,9 +44,15 @@ namespace AutoHubProjeto.Controllers
                 return RedirectToAction("Index");
             }
 
-            if (user.EstadoConta == "bloqueado")
+            if (user.EstadoConta.ToLower() == "bloqueado")
             {
-                TempData["AuthError"] = "A tua conta encontra-se bloqueada.";
+                var motivo = string.IsNullOrWhiteSpace(user.MotivoBloqueio)
+                    ? "Contacta o suporte para mais informações."
+                    : user.MotivoBloqueio;
+
+                TempData["AuthError"] = $"Conta bloqueada: {motivo}";
+                TempData["AuthErrorSource"] = "login";
+
                 return RedirectToAction("Index");
             }
 

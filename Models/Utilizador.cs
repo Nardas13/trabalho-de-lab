@@ -34,4 +34,7 @@ public partial class Utilizador
     public virtual Comprador? Comprador { get; set; }
 
     public virtual Vendedor? Vendedor { get; set; }
+
+    public string? MotivoBloqueio { get; set; }
+
 }

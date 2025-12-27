@@ -2,7 +2,7 @@
 
 namespace AutoHubProjeto.Controllers.Admin
 {
-    public class AdminController : Controller
+    public class AdmController : Controller
     {
         [HttpGet]
         public IActionResult EntrarAdmin()

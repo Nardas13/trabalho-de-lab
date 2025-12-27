@@ -1,6 +1,6 @@
 ﻿namespace AutoHubProjeto.Controllers.Admin
 {
-    public class AnunciosAdminController
+    public class AdmAnunciosController
     {
     }
 }

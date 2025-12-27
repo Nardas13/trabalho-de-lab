@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHubProjeto.Controllers.Admin
 {
-    public class AdmDashboardController : AdminBaseController
+    public class AdmDashboardController : AdmBaseController
     {
         public AdmDashboardController(ApplicationDbContext db)
             : base(db) { }

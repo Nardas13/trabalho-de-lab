@@ -1,0 +1,62 @@
+﻿@model IEnumerable<AutoHubProjeto.Models.Utilizador>
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Utilizadores";
+}
+
+<h1>Gestão de Utilizadores</h1>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Nome</td>
+                <td>@u.Email</td>
+                <td>
+                    @if (u.Administrador != null)
+                    {
+                        <span class="badge admin">Admin</span>
+                    }
+                    else if (u.Vendedor != null)
+                    {
+                        <span class="badge vendedor">Vendedor</span>
+                    }
+                    else
+                    {
+                        <span class="badge comprador">Comprador</span>
+                    }
+                </td>
+                <td>@u.EstadoConta</td>
+                <td>
+                    <a href="/AdminUtilizadores/Detalhes/@u.Id">Ver</a>
+
+                    @if (u.EstadoConta == "Ativo")
+                    {
+                        <form method="post" action="/AdminUtilizadores/Bloquear" style="display:inline;">
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit" class="btn-danger">Bloquear</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" action="/AdminUtilizadores/Desbloquear" style="display:inline;">
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit" class="btn-success">Ativar</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

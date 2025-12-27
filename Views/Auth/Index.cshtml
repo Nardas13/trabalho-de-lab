@@ -42,6 +42,13 @@
                 <button type="submit" class="auth-btn">Iniciar Sessão</button>
             </form>
 
+            @if (TempData["AuthError"] != null && TempData["AuthErrorSource"]?.ToString() == "login")
+            {
+                <div class="auth-error">
+                    @TempData["AuthError"]
+                </div>
+            }
+
             <div class="auth-divider"><span>ou</span></div>
 
             <button type="button" class="social-btn google-btn">

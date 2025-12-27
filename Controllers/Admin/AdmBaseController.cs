@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHubProjeto.Controllers.Admin
 {
-    public abstract class AdminBaseController : Controller
+    public abstract class AdmBaseController : Controller
     {
         protected readonly ApplicationDbContext _db;
 
-        protected AdminBaseController(ApplicationDbContext db)
+        protected AdmBaseController(ApplicationDbContext db)
         {
             _db = db;
         }

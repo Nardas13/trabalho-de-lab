@@ -85,5 +85,45 @@ public class AdmUtilizadoresController : Controller
         return RedirectToAction("Detalhes", new { id = user.Id });
     }
 
+    [HttpPost]
+    public IActionResult AprovarVendedor(int id)
+    {
+        var user = _context.Utilizadors
+            .Include(u => u.Vendedor)
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null || user.Vendedor == null)
+            return NotFound();
+
+        user.Vendedor.Aprovado = true;
+        user.Vendedor.DataAprovacao = DateTime.Now;
+
+        var adminEmail = User.Identity!.Name;
+        var admin = _context.Utilizadors.FirstOrDefault(u => u.Email == adminEmail);
+
+        if (admin != null)
+            user.Vendedor.IdAdminAprovador = admin.Id;
+
+        _context.SaveChanges();
+
+        return RedirectToAction("Detalhes", new { id });
+    }
+
+    [HttpPost]
+    public IActionResult RejeitarVendedor(int id)
+    {
+        var user = _context.Utilizadors
+            .Include(u => u.Vendedor)
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null || user.Vendedor == null)
+            return NotFound();
+
+        _context.Vendedors.Remove(user.Vendedor);
+        _context.SaveChanges();
+
+        return RedirectToAction("Detalhes", new { id });
+    }
+
 }
 

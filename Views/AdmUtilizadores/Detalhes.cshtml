@@ -30,12 +30,27 @@
         <div class="detail-item">
             <span class="detail-label">Tipo</span>
             <span class="detail-value">
-                @(Model.Administrador != null ? "Administrador" :
-                                Model.Vendedor != null ? "Vendedor" : "Comprador")
+                @if (Model.Administrador != null)
+                {
+                    <text>Administrador</text>
+                }
+                else if (Model.Vendedor != null && Model.Vendedor.Aprovado)
+                {
+                    <text>Vendedor</text>
+                }
+                else if (Model.Vendedor != null && !Model.Vendedor.Aprovado)
+                {
+                    <text>Pedido de Vendedor (pendente)</text>
+                }
+                else
+                {
+                    <text>Comprador</text>
+                }
             </span>
         </div>
 
     </div>
+
 
     <!-- MOTIVO BLOQUEIO -->
     @if (!string.IsNullOrWhiteSpace(Model.MotivoBloqueio))
@@ -49,35 +64,44 @@
     <!-- ATUALIZAR PERFIL -->
     <div class="section-divider"></div>
 
-    <h2>Atualizar Perfil</h2>
+    @if (Model.Vendedor != null && !Model.Vendedor.Aprovado)
+    {
+        <h2>Pedido de Vendedor</h2>
 
-    <form method="post" action="/AdmUtilizadores/Atualizar">
+        <p class="estado-muted" style="margin-top: 6px;">
+            Este utilizador solicitou tornar-se vendedor.
+            Avalia o pedido abaixo.
+        </p>
 
-        <input type="hidden" name="Id" value="@Model.Id" />
+        <div class="detail-actions" style="margin-top: 18px;">
 
-        <div class="form-grid">
-            <input type="text"
-                   name="Nome"
-                   value="@Model.Nome"
-                   class="admin-input"
-                   placeholder="Nome" />
-
-            <input type="email"
-                   name="Email"
-                   value="@Model.Email"
-                   class="admin-input"
-                   placeholder="Email" />
-        </div>
-
-        <div class="detail-actions">
             <a href="/AdmUtilizadores/Index" class="btn-outline">
                 Voltar
             </a>
 
-            <button type="submit" class="btn-success">
-                Guardar Alterações
-            </button>
+            <form method="post" action="/AdmUtilizadores/AprovarVendedor" style="display:inline;">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn-success">
+                    Aprovar Vendedor
+                </button>
+            </form>
+
+            <form method="post" action="/AdmUtilizadores/RejeitarVendedor" style="display:inline;">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn-outline-danger">
+                    Rejeitar Pedido
+                </button>
+            </form>
+
         </div>
-    </form>
+    }
+    else
+    {
+        <div class="detail-actions">
+            <a href="/AdmUtilizadores/Index" class="btn-outline">
+                Voltar
+            </a>
+        </div>
+    }
 
 </div>

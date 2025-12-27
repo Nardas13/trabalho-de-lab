@@ -6,6 +6,7 @@ public class AdmUtilizadoresController : Controller
 {
     private readonly ApplicationDbContext _context;
 
+    private const string ADMIN_SUPREMO_EMAIL = "autohubadm1@gmail.com";
     public AdmUtilizadoresController(ApplicationDbContext context)
     {
         _context = context;
@@ -28,6 +29,11 @@ public class AdmUtilizadoresController : Controller
         var user = _context.Utilizadors.Find(id);
         if (user == null) return NotFound();
 
+        if (user.Email == ADMIN_SUPREMO_EMAIL)
+        {
+            return BadRequest("Não é possível bloquear o administrador supremo.");
+        }
+
         user.EstadoConta = "Bloqueado";
         user.MotivoBloqueio = motivo?.Trim();
 
@@ -35,6 +41,7 @@ public class AdmUtilizadoresController : Controller
 
         return RedirectToAction("Index");
     }
+
 
     [HttpPost]
     public IActionResult Desbloquear(int id, string motivo)
@@ -51,3 +58,4 @@ public class AdmUtilizadoresController : Controller
     }
 
 }
+

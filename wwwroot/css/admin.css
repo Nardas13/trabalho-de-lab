@@ -258,6 +258,32 @@ body.admin-mode .menu-right a {
         font-weight: 700;
     }
 
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 8px 8px; 
+}
+
+    .admin-table td {
+        background: rgba(2,6,23,.85);
+        padding: 16px 18px;
+        border-radius: 14px;
+        vertical-align: middle;
+    }
+        .admin-table td:last-child {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+    .admin-table th {
+        text-align: left;
+        color: #cbd5f5;
+        font-size: 14px;
+        padding-bottom: 10px;
+    }
+
 .admin-main {
     padding: 26px;
 }
@@ -292,12 +318,12 @@ body.admin-mode .menu-right a {
         opacity: 1;
     }
 }
-
 .inline-form {
-    display: flex;
+    display: inline-flex;
     gap: 8px;
     align-items: center;
 }
+
 
 .admin-input {
     background: #020617;
@@ -317,8 +343,8 @@ body.admin-mode .menu-right a {
     background: #dc2626;
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -327,8 +353,146 @@ body.admin-mode .menu-right a {
     background: #16a34a;
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
     font-weight: 600;
     cursor: pointer;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+}
+    .modal.hidden {
+        display: none !important;
+    }
+
+    .modal.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+.modal-content {
+    background: linear-gradient(180deg, #020617, #020617);
+    padding: 26px 28px;
+    border-radius: 18px;
+    width: 420px;
+    max-width: 92vw;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+    animation: modalUp .25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+    .modal-content .admin-input {
+        width: 100%;
+        max-width: 280px;
+        text-align: left; 
+    }
+
+    .modal-content form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    }
+    .modal-content h2 {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 2px;
+        color: #f8fafc;
+    }
+
+    .modal-content p {
+        font-size: 14px;
+        color: #94a3b8;
+        margin-bottom: 4px;
+    }
+
+
+@keyframes modalUp {
+    from {
+        transform: translateY(10px) scale(.96);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 22px;
+}
+
+
+.btn-outline {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: transparent;
+    color: #cbd5f5;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+    .btn-outline:hover {
+        background: rgba(255,255,255,0.08);
+    }
+
+.btn-danger {
+    padding: 8px 20px;
+}
+
+.link-view {
+    color: #60a5fa;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 12px;
+}
+
+    .link-view:hover {
+        text-decoration: underline;
+        color: #93c5fd;
+    }
+
+.btn-outline-danger {
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+    .btn-outline-danger:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+.badge.admin {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
 }

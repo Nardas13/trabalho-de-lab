@@ -39,32 +39,33 @@
                 </td>
                 <td>@u.EstadoConta</td>
                 <td>
-                    <a href="/AdminUtilizadores/Detalhes/@u.Id">Ver</a>
-
-                    @if (u.EstadoConta == "Ativo")
+                    <a href="/AdminUtilizadores/Detalhes/@u.Id" class="link-view">
+                        Ver
+                    </a>
+                    @if (u.Email == "autohubadm1@gmail.com")
                     {
-                        <form method="post" action="/AdminUtilizadores/Bloquear" class="inline-form">
-                            <input type="hidden" name="id" value="@u.Id" />
-
-                            <input type="text"
-                                   name="motivo"
-                                   placeholder="Motivo do bloqueio"
-                                   class="admin-input"
-                                   required />
-
-                            <button type="submit" class="btn-danger">
-                                Bloquear
-                            </button>
-                        </form>
+                        <span class="badge admin">Admin Supremo</span>
                     }
                     else
                     {
-                        <form method="post" action="/AdminUtilizadores/Desbloquear" class="inline-form">
-                            <input type="hidden" name="id" value="@u.Id" />
-                            <button type="submit" class="btn-success">
-                                Ativar
+                        @if (u.EstadoConta == "ativo")
+                        {
+                            <button type="button"
+                                    class="btn-outline-danger"
+                                    onclick="openBlockModal(@u.Id, '@u.Nome')">
+                                Bloquear
                             </button>
-                        </form>
+
+                        }
+                        else
+                        {
+                            <form method="post" action="/AdminUtilizadores/Desbloquear" class="inline-form">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn-success">
+                                    Ativar
+                                </button>
+                            </form>
+                        }
                     }
 
                 </td>
@@ -72,3 +73,39 @@
         }
     </tbody>
 </table>
+
+<!-- MODAL BLOQUEIO UTILIZADOR -->
+<div id="blockModal" class="modal">
+    <div class="modal-content cancel-box">
+
+        <h2>Bloquear Utilizador</h2>
+
+        <p class="cancel-text">
+            Indica o motivo do bloqueio.
+        </p>
+
+        <form method="post" action="/AdmUtilizadores/Bloquear">
+            <input type="hidden" name="id" id="blockUserId" />
+
+            <input type="text"
+                   name="motivo"
+                   class="admin-input"
+                   placeholder="Motivo do bloqueio"
+                   required />
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-outline" onclick="closeBlockModal()">
+                    Cancelar
+               
+                </button>
+
+                <button type="submit" class="btn-danger">
+                    Confirmar
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="/js/admin.js"></script>

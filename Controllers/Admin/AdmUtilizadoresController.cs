@@ -49,8 +49,8 @@ public class AdmUtilizadoresController : Controller
         var user = _context.Utilizadors.Find(id);
         if (user == null) return NotFound();
 
-        user.EstadoConta = "Ativo";
-        user.MotivoBloqueio = motivo?.Trim();
+        user.EstadoConta = "ativo";
+        user.MotivoBloqueio = null; 
 
         _context.SaveChanges();
 

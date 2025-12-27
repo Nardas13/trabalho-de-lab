@@ -39,7 +39,7 @@
                 </td>
                 <td>@u.EstadoConta</td>
                 <td>
-                    <a href="/AdminUtilizadores/Detalhes/@u.Id" class="link-view">
+                    <a href="/AdmUtilizadores/Detalhes/@u.Id" class="link-view">
                         Ver
                     </a>
                     @if (u.Email == "autohubadm1@gmail.com")
@@ -59,7 +59,7 @@
                         }
                         else
                         {
-                            <form method="post" action="/AdminUtilizadores/Desbloquear" class="inline-form">
+                            <form method="post" action="/AdmUtilizadores/Desbloquear" class="inline-form">
                                 <input type="hidden" name="id" value="@u.Id" />
                                 <button type="submit" class="btn-success">
                                     Ativar

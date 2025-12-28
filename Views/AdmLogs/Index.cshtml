@@ -1,0 +1,42 @@
+﻿@model IEnumerable<AutoHubProjeto.Models.LogAdministrativo>
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Histórico Administrativo";
+}
+
+<h1>Histórico de Ações Administrativas</h1>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Administrador</th>
+            <th>Ação</th>
+            <th>Utilizador</th>
+            <th>Detalhes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.DataHora.ToString("dd/MM/yyyy HH:mm")</td>
+
+                <td>
+                    @(log.IdAdminNavigation?.IdAdminNavigation?.Email ?? "-")
+                </td>
+
+                <td>@log.Acao</td>
+
+                <td>@log.Entidade</td>
+
+                <td>
+                    @(string.IsNullOrWhiteSpace(log.Detalhes)
+                                    ? "-"
+                                    : log.Detalhes)
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>

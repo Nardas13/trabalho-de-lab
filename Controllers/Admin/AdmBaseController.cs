@@ -14,6 +14,28 @@ namespace AutoHubProjeto.Controllers.Admin
             _db = db;
         }
 
+        protected void RegistarLog(
+            int idAdmin,
+            string acao,
+            string entidade,
+            string idEntidade,
+            string? detalhes = null
+        )
+        {
+            var log = new LogAdministrativo
+            {
+                IdAdmin = idAdmin,
+                DataHora = DateTime.Now,
+                Acao = acao,
+                Entidade = entidade,
+                IdEntidade = idEntidade,
+                Detalhes = detalhes
+            };
+
+            _db.LogAdministrativos.Add(log);
+            _db.SaveChanges();
+        }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             // Autenticado?

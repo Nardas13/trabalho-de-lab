@@ -1,20 +1,19 @@
-﻿using AutoHubProjeto.Models;
+﻿using AutoHubProjeto.Controllers.Admin;
+using AutoHubProjeto.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-public class AdmUtilizadoresController : Controller
+public class AdmUtilizadoresController : AdmBaseController
 {
-    private readonly ApplicationDbContext _context;
-
     private const string ADMIN_SUPREMO_EMAIL = "autohubadm1@gmail.com";
     public AdmUtilizadoresController(ApplicationDbContext context)
+        : base(context)
     {
-        _context = context;
     }
 
     public IActionResult Index()
     {
-        var utilizadores = _context.Utilizadors
+        var utilizadores = _db.Utilizadors
             .Include(u => u.Comprador)
             .Include(u => u.Vendedor)
             .Include(u => u.Administrador)
@@ -23,10 +22,25 @@ public class AdmUtilizadoresController : Controller
         return View(utilizadores);
     }
 
+    public IActionResult Detalhes(int id)
+    {
+        var user = _db.Utilizadors
+            .Include(u => u.Comprador)
+            .Include(u => u.Vendedor)
+            .Include(u => u.Administrador)
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null)
+            return NotFound();
+
+        return View(user);
+    }
+
+
     [HttpPost]
     public IActionResult Bloquear(int id, string motivo)
     {
-        var user = _context.Utilizadors
+        var user = _db.Utilizadors
             .Include(u => u.Administrador)
             .FirstOrDefault(u => u.Id == id);
 
@@ -42,57 +56,73 @@ public class AdmUtilizadoresController : Controller
         user.EstadoConta = "Bloqueado";
         user.MotivoBloqueio = motivo?.Trim();
 
-        _context.SaveChanges();
+        _db.SaveChanges();
+
+        var adminEmail = User.Identity!.Name;
+        var admin = _db.Utilizadors.FirstOrDefault(u => u.Email == adminEmail);
+
+        if (admin != null)
+        {
+            RegistarLog(
+                admin.Id,
+                "Bloqueou utilizador",
+                user.Email,            
+                user.Id.ToString(),
+                motivo
+            );
+
+        }
 
         return RedirectToAction("Index");
     }
 
+
     [HttpPost]
-    public IActionResult Desbloquear(int id, string motivo)
+    public IActionResult Desbloquear(int id)
     {
-        var user = _context.Utilizadors.Find(id);
+        var user = _db.Utilizadors.Find(id);
         if (user == null) return NotFound();
 
         user.EstadoConta = "ativo";
-        user.MotivoBloqueio = null; 
+        user.MotivoBloqueio = null;
 
-        _context.SaveChanges();
+        _db.SaveChanges();
+
+        var adminEmail = User.Identity!.Name;
+        var admin = _db.Utilizadors.FirstOrDefault(u => u.Email == adminEmail);
+
+        if (admin != null)
+        {
+            RegistarLog(
+                admin.Id,
+                "Desbloqueou utilizador",
+                user.Email,
+                user.Id.ToString()
+            );
+
+        }
 
         return RedirectToAction("Index");
     }
 
-    public IActionResult Detalhes(int id)
-    {
-        var user = _context.Utilizadors
-            .Include(u => u.Comprador)
-            .Include(u => u.Vendedor)
-            .Include(u => u.Administrador)
-            .FirstOrDefault(u => u.Id == id);
+    //[HttpPost]
+    //public IActionResult Atualizar(Utilizador model)
+    //{
+    //    var user = _db.Utilizadors.Find(model.Id);
+    //    if (user == null) return NotFound();
 
-        if (user == null)
-            return NotFound();
+    //    user.Nome = model.Nome?.Trim();
+    //    user.Email = model.Email?.Trim();
 
-        return View(user);
-    }
+    //    _db.SaveChanges();
 
-    [HttpPost]
-    public IActionResult Atualizar(Utilizador model)
-    {
-        var user = _context.Utilizadors.Find(model.Id);
-        if (user == null) return NotFound();
-
-        user.Nome = model.Nome?.Trim();
-        user.Email = model.Email?.Trim();
-
-        _context.SaveChanges();
-
-        return RedirectToAction("Detalhes", new { id = user.Id });
-    }
+    //    return RedirectToAction("Detalhes", new { id = user.Id });
+    //}
 
     [HttpPost]
     public IActionResult AprovarVendedor(int id)
     {
-        var user = _context.Utilizadors
+        var user = _db.Utilizadors
             .Include(u => u.Vendedor)
             .FirstOrDefault(u => u.Id == id);
 
@@ -103,12 +133,22 @@ public class AdmUtilizadoresController : Controller
         user.Vendedor.DataAprovacao = DateTime.Now;
 
         var adminEmail = User.Identity!.Name;
-        var admin = _context.Utilizadors.FirstOrDefault(u => u.Email == adminEmail);
+        var admin = _db.Utilizadors.FirstOrDefault(u => u.Email == adminEmail);
 
         if (admin != null)
+        {
             user.Vendedor.IdAdminAprovador = admin.Id;
 
-        _context.SaveChanges();
+            RegistarLog(
+                admin.Id,
+                "Aprovou vendedor",
+                user.Email,
+                user.Id.ToString()
+            );
+
+        }
+
+        _db.SaveChanges();
 
         return RedirectToAction("Detalhes", new { id });
     }
@@ -116,15 +156,29 @@ public class AdmUtilizadoresController : Controller
     [HttpPost]
     public IActionResult RejeitarVendedor(int id)
     {
-        var user = _context.Utilizadors
+        var user = _db.Utilizadors
             .Include(u => u.Vendedor)
             .FirstOrDefault(u => u.Id == id);
 
         if (user == null || user.Vendedor == null)
             return NotFound();
 
-        _context.Vendedors.Remove(user.Vendedor);
-        _context.SaveChanges();
+        var adminEmail = User.Identity!.Name;
+        var admin = _db.Utilizadors.FirstOrDefault(u => u.Email == adminEmail);
+
+        if (admin != null)
+        {
+            RegistarLog(
+                admin.Id,
+                "Rejeitou vendedor",
+                user.Email,
+                user.Id.ToString()
+            );
+
+        }
+
+        _db.Vendedors.Remove(user.Vendedor);
+        _db.SaveChanges();
 
         return RedirectToAction("Detalhes", new { id });
     }

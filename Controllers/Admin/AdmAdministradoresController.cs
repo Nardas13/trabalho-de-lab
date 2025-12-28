@@ -89,6 +89,20 @@ namespace AutoHubProjeto.Controllers.Admin
                 html
             );
 
+            var adminCriador = _db.Utilizadors
+            .FirstOrDefault(u => u.Email == User.Identity!.Name);
+
+                    if (adminCriador != null)
+                    {
+                        RegistarLog(
+                            adminCriador.Id,
+                            "Criou administrador",
+                            "Administrador",
+                            user.Id.ToString(),
+                            user.Email
+                        );
+                    }
+
             TempData["Sucesso"] = "Administrador criado e email enviado.";
             return RedirectToAction("Index");
         }

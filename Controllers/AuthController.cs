@@ -32,6 +32,12 @@ namespace AutoHubProjeto.Controllers
         // LOGIN
         // ---------------------------------------------------------
 
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View("Index"); 
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(string Email, string Password)
         {

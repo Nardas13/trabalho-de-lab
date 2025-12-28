@@ -1,9 +1,8 @@
 ﻿using AutoHubProjeto.Models;
 using AutoHubProjeto.Services;
+using AutoHubProjeto.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace AutoHubProjeto.Controllers.Admin
 {
@@ -33,7 +32,7 @@ namespace AutoHubProjeto.Controllers.Admin
         }
 
         // ===============================
-        // CRIAR ADMINISTRADOR (POST)
+        // CRIAR ADMINISTRADOR
         // ===============================
         [HttpPost]
         public async Task<IActionResult> Criar(string Nome, string Email)
@@ -53,7 +52,8 @@ namespace AutoHubProjeto.Controllers.Admin
             // gerar credenciais
             string username = "admin_" + Guid.NewGuid().ToString("N")[..8];
             string plainPassword = Guid.NewGuid().ToString("N")[..10];
-            byte[] passwordHash = HashPassword(plainPassword);
+
+            byte[] passwordHash = PasswordHelper.HashPassword(plainPassword);
 
             var user = new Utilizador
             {
@@ -61,50 +61,31 @@ namespace AutoHubProjeto.Controllers.Admin
                 Email = Email.Trim(),
                 Username = username,
                 EstadoConta = "ativo",
+                EmailConfirmado = true,
+                DataCriacao = DateTime.Now,
                 PasswordHash = passwordHash
             };
 
             _db.Utilizadors.Add(user);
             _db.SaveChanges();
 
-            var admin = new Administrador
+            _db.Administradors.Add(new Administrador
             {
                 IdAdmin = user.Id
-            };
+            });
 
-            _db.Administradors.Add(admin);
             _db.SaveChanges();
 
-            // enviar email com credenciais
+            var html = EmailTemplates.AdminAccountCreated(username, plainPassword);
+
             await _emailService.SendEmailAsync(
                 Email,
                 "Conta de Administrador AutoHub",
-                $@"
-                    <h2>Conta de Administrador criada</h2>
-
-                    <p>A tua conta de administrador foi criada com sucesso.</p>
-
-                    <p><strong>Username:</strong> {username}</p>
-                    <p><strong>Password:</strong> {plainPassword}</p>
-
-                    <p>
-                        Por motivos de segurança, recomenda-se a alteração da password
-                        após o primeiro login.
-                    </p>
-                "
+                html
             );
 
             TempData["Sucesso"] = "Administrador criado e email enviado.";
             return RedirectToAction("Index");
-        }
-
-        // ===============================
-        // HASH DE PASSWORD
-        // ===============================
-        private byte[] HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            return sha.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
     }
 }

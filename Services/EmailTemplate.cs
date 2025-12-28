@@ -167,5 +167,54 @@ namespace AutoHubProjeto.Services
 </html>";
         }
 
+        public static string AdminAccountCreated(string username, string password)
+        {
+            return $@"
+<div style='background:#f8fafc; padding:48px 16px;'>
+
+    <div style='
+        background:#ffffff;
+        border-radius:18px;
+        padding:36px;
+        max-width:520px;
+        margin:0 auto;
+        font-family:Inter, Arial, sans-serif;
+        color:#0f172a;
+    '>
+
+        <img src='cid:autohub-logo' style='height:36px; margin-bottom:20px;' />
+
+        <h2 style='margin:0 0 10px 0;'>Conta de Administrador criada</h2>
+
+        <p style='color:#475569; font-size:15px;'>
+            A tua conta de administrador foi criada com sucesso.
+        </p>
+
+        <div style='
+            background:#f1f5f9;
+            border-radius:12px;
+            padding:16px;
+            margin:24px 0;
+            font-size:14px;
+        '>
+            <strong>Username:</strong> {username}<br />
+            <strong>Password:</strong> {password}
+        </div>
+
+        <p style='font-size:13px; color:#64748b;'>
+            Por motivos de segurança, recomenda-se a alteração da password após o primeiro login.
+        </p>
+
+        <hr style='border:none; border-top:1px solid #e5e7eb; margin:28px 0;' />
+
+        <p style='font-size:12px; color:#94a3b8; text-align:center;'>
+            © 2025 AutoHub — Todos os direitos reservados
+        </p>
+
+    </div>
+
+</div>";
     }
+
+}
 }

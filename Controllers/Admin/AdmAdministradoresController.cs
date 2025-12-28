@@ -69,6 +69,11 @@ namespace AutoHubProjeto.Controllers.Admin
             _db.Utilizadors.Add(user);
             _db.SaveChanges();
 
+            _db.Compradors.Add(new Comprador
+            {
+                IdComprador = user.Id,
+            });
+
             _db.Administradors.Add(new Administrador
             {
                 IdAdmin = user.Id

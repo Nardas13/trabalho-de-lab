@@ -42,24 +42,35 @@
                     <a href="/AdmUtilizadores/Detalhes/@u.Id" class="link-view">
                         Ver
                     </a>
-                    @if (u.Email == "autohubadm1@gmail.com")
+
+                    @if (u.Administrador != null)
                     {
-                        <span class="badge admin">Admin Supremo</span>
+                        @* Admin supremo ou normal: sem ações *@
+                        if (u.Email == "autohubadm1@gmail.com")
+                        {
+                            <span class="badge admin">Admin Supremo</span>
+                        }
+                        else
+                        {
+                            <span class="badge admin">Admin</span>
+                        }
                     }
                     else
                     {
-                        @if (u.EstadoConta == "ativo")
+                        @* Só compradores e vendedores podem ser bloqueados *@
+                        if (u.EstadoConta == "ativo")
                         {
                             <button type="button"
                                     class="btn-outline-danger"
                                     onclick="openBlockModal(@u.Id, '@u.Nome')">
                                 Bloquear
                             </button>
-
                         }
                         else
                         {
-                            <form method="post" action="/AdmUtilizadores/Desbloquear" class="inline-form">
+                            <form method="post"
+                                  action="/AdmUtilizadores/Desbloquear"
+                                  class="inline-form">
                                 <input type="hidden" name="id" value="@u.Id" />
                                 <button type="submit" class="btn-success">
                                     Ativar

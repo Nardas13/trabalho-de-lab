@@ -26,12 +26,17 @@ public class AdmUtilizadoresController : Controller
     [HttpPost]
     public IActionResult Bloquear(int id, string motivo)
     {
-        var user = _context.Utilizadors.Find(id);
-        if (user == null) return NotFound();
+        var user = _context.Utilizadors
+            .Include(u => u.Administrador)
+            .FirstOrDefault(u => u.Id == id);
 
-        if (user.Email == ADMIN_SUPREMO_EMAIL)
+        if (user == null)
+            return NotFound();
+
+        if (user.Administrador != null)
         {
-            return BadRequest("Não é possível bloquear o administrador supremo.");
+            TempData["Erro"] = "Não é possível bloquear um administrador.";
+            return RedirectToAction("Index");
         }
 
         user.EstadoConta = "Bloqueado";
@@ -41,7 +46,6 @@ public class AdmUtilizadoresController : Controller
 
         return RedirectToAction("Index");
     }
-
 
     [HttpPost]
     public IActionResult Desbloquear(int id, string motivo)

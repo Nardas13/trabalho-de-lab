@@ -1,0 +1,78 @@
+﻿@model IEnumerable<AutoHubProjeto.Models.Utilizador>
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Administradores";
+}
+
+
+<h1>Administradores</h1>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>@a.Nome</td>
+                <td>@a.Email</td>
+                <td>@a.EstadoConta</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button type="button"
+        class="btn-outline"
+        onclick="openCreateAdminModal()">
+    Criar Novo Administrador
+</button>
+
+<!-- MODAL CRIAR ADMIN -->
+<div id="createAdminModal" class="modal">
+    <div class="modal-content cancel-box">
+
+        <h2>Criar Administrador</h2>
+
+        <p class="cancel-text">
+            Será enviado um email para definição de credenciais no primeiro acesso.
+        </p>
+
+        <form method="post" action="/AdmAdministradores/Criar">
+
+            <input type="text"
+                   name="Nome"
+                   class="admin-input"
+                   placeholder="Nome"
+                   required />
+
+            <input type="email"
+                   name="Email"
+                   class="admin-input"
+                   placeholder="Email"
+                   required />
+
+            <div class="modal-buttons">
+                <button type="button"
+                        class="btn-outline"
+                        onclick="closeCreateAdminModal()">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-success">
+                    Criar Administrador
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="~/js/admin.js"></script>

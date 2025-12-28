@@ -1,0 +1,27 @@
+﻿
+@{
+    Layout = "_AdminLayout";
+}
+
+<form method="post">
+
+    <div class="form-grid">
+        <input type="text"
+               name="nome"
+               class="admin-input"
+               placeholder="Nome"
+               required />
+
+        <input type="email"
+               name="email"
+               class="admin-input"
+               placeholder="Email"
+               required />
+    </div>
+
+    <div class="detail-actions">
+        <a href="/AdmAdministradores/Index" class="btn-outline">Voltar</a>
+        <button type="submit" class="btn-success">Criar Administrador</button>
+    </div>
+
+</form>

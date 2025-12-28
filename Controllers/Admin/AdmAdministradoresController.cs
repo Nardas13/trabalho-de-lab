@@ -94,14 +94,14 @@ namespace AutoHubProjeto.Controllers.Admin
 
                     if (adminCriador != null)
                     {
-                        RegistarLog(
-                            adminCriador.Id,
-                            "Criou administrador",
-                            "Administrador",
-                            user.Id.ToString(),
-                            user.Email
-                        );
-                    }
+                    RegistarLog(
+                        adminCriador.Id,
+                        "Criou administrador",
+                        user.Email,          
+                        user.Id.ToString(),  
+                        null                  
+                    );
+            }
 
             TempData["Sucesso"] = "Administrador criado e email enviado.";
             return RedirectToAction("Index");

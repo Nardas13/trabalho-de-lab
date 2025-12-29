@@ -44,10 +44,12 @@ namespace AutoHubProjeto.ViewComponents
             {
                 IsComprador = user.Comprador != null,
                 IsVendedor = user.Vendedor != null,
+                IsVendedorAprovado = user.Vendedor != null && user.Vendedor.Aprovado,
                 IsAdmin = user.Administrador != null,
 
-                FavoritosCount = favoritos       
+                FavoritosCount = favoritos
             };
+
 
             return View("~/Views/Painel/_PainelMenu.cshtml", vm);
         }

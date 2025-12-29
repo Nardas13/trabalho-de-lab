@@ -14,6 +14,7 @@
         <div class="painel-subtitle">Acompanha o teu progresso no AutoHub.</div>
 
         <!-- CARDS -->
+        <h3 class="painel-section-title">Atividade como Comprador</h3>
         <div class="stats-grid">
 
             <div class="stat-card">
@@ -46,12 +47,29 @@
 
         @if (Model.IsVendedor && Model.IsVendedorAprovado)
         {
-            <div class="seller-tools">
-                <a href="/Anuncios/Criar" class="btn mini">Criar Anúncio</a>
-                <a href="/Anuncios/Meus" class="btn mini">Os Meus Veículos</a>
-                <a href="/Vendedor/Estatisticas" class="btn mini">Estatísticas</a>
+            <div class="stats-grid">
+
+                <!-- ANÚNCIOS ATIVOS -->
+                <a href="/Anuncios/Meus" class="stat-card stat-card-action">
+                    <span class="label">Anúncios Ativos</span>
+                    <span class="value">@Model.AnunciosCount</span>
+                </a>
+
+                <!-- CRIAR ANÚNCIO -->
+                <a href="/Anuncios/Meus" class="stat-card stat-card-action create">
+                    <span class="label">Criar Anúncio</span>
+                    <span class="value">+</span>
+                </a>
+
+                <!-- ESTATÍSTICAS -->
+                <a href="/Vendedor/Estatisticas" class="stat-card stat-card-action">
+                    <span class="label">Estatísticas</span>
+                    <span class="value">Ver</span>
+                </a>
+
             </div>
         }
+
         else if (Model.IsVendedor && !Model.IsVendedorAprovado)
         {
             <div class="seller-pending">

@@ -62,10 +62,17 @@
     backdrop-filter: blur(6px);
     padding: 16px 20px;
     border-radius: 16px;
-    min-width: 140px;
+    width: 140px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     transition: transform .18s ease, box-shadow .18s ease;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
 }
+
+    .stat-card .value {
+        display: block;
+    }
 
     .stat-card:hover {
         transform: translateY(-2px);
@@ -77,6 +84,7 @@
         color: #475569;
         font-weight: 500;
         margin-bottom: 6px;
+        display: block;
     }
 
     .stat-card .value {
@@ -250,3 +258,69 @@
         opacity: 0.7;
         flex-shrink: 0;
     }
+
+
+.btn-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: .18s ease;
+}
+
+    .btn-icon:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+.btn-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    text-decoration: none;
+    align-self: center;
+}
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+
+.stat-card-action {
+    text-decoration: none;
+    color: inherit;
+    min-width: 180px;
+    justify-content: center;
+}
+
+    .stat-card-action .label {
+        text-align: center;
+    }
+
+    .stat-card-action .value {
+        text-align: center;
+    }
+
+    .stat-card-action.create .value {
+        font-size: 26px;
+        font-weight: 600;
+    }
+
+/* neutralizar links dentro de stat-cards */
+.stat-card a,
+.stat-card a:hover,
+.stat-card a:focus,
+.stat-card a:active {
+    text-decoration: none !important;
+    color: inherit !important;
+}

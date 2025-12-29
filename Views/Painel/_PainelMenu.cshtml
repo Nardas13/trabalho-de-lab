@@ -44,6 +44,8 @@
     <!-- ========================= -->
     @if (Model.IsVendedor && Model.IsVendedorAprovado)
     {
+        <div class="menu-divider"></div>
+
         <div class="menu-group hover-expand">
             <div class="menu-item">
                 <span class="menu-item-icon">
@@ -58,16 +60,18 @@
 
             <ul class="submenu">
                 <li><a href="/Vendedor">Painel do Vendedor</a></li>
-                <li><a href="/Anuncios/Criar">Criar Anúncio</a></li>
-                <li><a href="/Anuncios/Meus">Meus Veículos</a></li>
-                <li><a href="/Vendedor/Estatisticas">Estatísticas</a></li>
+                <li><a href="/Anuncios/Meus">Meus Anúncios</a></li>
+                <li><a href="/Anuncios/Reservas">Reservas de Clientes</a></li>
                 <li><a href="/Vendedor/Visitas">Visitas Agendadas</a></li>
-                <li><a href="/Vendedor/Reservas">Reservas</a></li>
+                <li><a href="/Vendedor/Comprass">Compras / Vendas </a></li>
+                <li><a href="/Vendedor/Estatisticas">Estatísticas</a></li>
             </ul>
         </div>
     }
     else if (Model.IsVendedor && !Model.IsVendedorAprovado)
     {
+        <div class="menu-divider"></div>
+
         <div class="seller-pending-side">
             <span class="pending-dot"></span>
             <span>Pedido de vendedor pendente</span>

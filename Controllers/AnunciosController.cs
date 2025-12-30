@@ -43,6 +43,7 @@ namespace AutoHubProjeto.Controllers
             var query = _db.Anuncios
                 .Include(a => a.IdVeiculoNavigation)
                 .Include(a => a.AnuncioImagems)
+                .Where(a => a.Estado != "removido")
                 .AsQueryable();
 
             // -------- FILTROS --------

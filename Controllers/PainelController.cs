@@ -1032,11 +1032,13 @@ namespace AutoHubProjeto.Controllers
             // =========================
             // Guardar exatamente 4 imagens (1.jpg → 4.jpg)
             // =========================
-            int index = 1;
+            var files = Request.Form.Files.ToList();
 
-            foreach (var img in vm.Imagens)
+            int ordem = 1;
+
+            foreach (var img in files)
             {
-                var fileName = $"{index}.jpg";
+                var fileName = $"{ordem}.jpg";
                 var path = Path.Combine(pastaVeiculo, fileName);
 
                 using (var stream = new FileStream(path, FileMode.Create))
@@ -1047,11 +1049,13 @@ namespace AutoHubProjeto.Controllers
                 _db.AnuncioImagems.Add(new AnuncioImagem
                 {
                     IdAnuncio = anuncio.IdAnuncio,
-                    Url = $"imgs/veiculos/{veiculo.IdVeiculo}/{fileName}"
+                    Url = $"imgs/veiculos/{veiculo.IdVeiculo}/{fileName}",
+                    Ordem = ordem
                 });
 
-                index++;
+                ordem++;
             }
+
 
             await _db.SaveChangesAsync();
 

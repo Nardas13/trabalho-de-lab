@@ -219,8 +219,13 @@
 
             <!-- IMAGENS -->
             <div class="form-group">
-                <label>Imagens</label>
-                <input type="file" name="Imagens" accept="image/*" multiple required />
+                <label>Imagens (4 obrigatórias)</label>
+
+                <div id="imageBox" class="image-box">
+                    <!-- imagens + botões + vão ser inseridos por JS -->
+                </div>
+
+                <input type="file" id="imageInput" accept="image/*" hidden />
                 <small>Seleciona exatamente 4 imagens</small>
             </div>
 

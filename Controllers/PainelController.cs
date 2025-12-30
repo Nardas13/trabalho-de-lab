@@ -66,7 +66,9 @@ namespace AutoHubProjeto.Controllers
                         c.EstadoPagamento == "pago"),
 
                 AnunciosCount = idVendedor == 0 ? 0 :
-                    await _db.Anuncios.CountAsync(a => a.IdVendedor == idVendedor)
+                    await _db.Anuncios.CountAsync(a => 
+                    a.IdVendedor == idVendedor && 
+                    a.Estado == "ativo")
             };
 
             var atividade = new List<PainelAtividadeVM>();

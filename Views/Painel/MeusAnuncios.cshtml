@@ -1,5 +1,6 @@
 ﻿@model List<AutoHubProjeto.Models.Anuncio>
 
+
 <link rel="stylesheet" href="/css/painel.css" />
 <link rel="stylesheet" href="/css/painel-visitas.css" />
 
@@ -155,7 +156,29 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Marca</label>
-                    <input type="text" name="Marca" required />
+
+                    <div class="custom-select">
+                        <div class="selected">Selecionar</div>
+                        <span class="arrow">▾</span>
+
+                        <div class="custom-options">
+                            <div data-value="Audi">Audi</div>
+                            <div data-value="Bentley">Bentley</div>
+                            <div data-value="BMW">BMW</div>
+                            <div data-value="Jaguar">Jaguar</div>
+                            <div data-value="Jeep">Jeep</div>
+                            <div data-value="Land Rover">Land Rover</div>
+                            <div data-value="McLaren">McLaren</div>
+                            <div data-value="Mercedes-Benz">Mercedes-Benz</div>
+                            <div data-value="Nissan">Nissan</div>
+                            <div data-value="Porsche">Porsche</div>
+                            <div data-value="Tesla">Tesla</div>
+
+
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="Marca" required />
                 </div>
 
                 <div class="form-group">
@@ -168,7 +191,20 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Categoria</label>
-                    <input type="text" name="Categoria" required />
+
+                    <div class="custom-select">
+                        <div class="selected">Selecionar</div>
+                        <span class="arrow">▾</span>
+
+                        <div class="custom-options">
+                            <div data-value="SUV">SUV</div>
+                            <div data-value="Desportivo">Desportivo</div>
+                            <div data-value="Elétrico">Elétrico</div>
+                            <div data-value="Luxo">Luxo</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="Categoria" required />
                 </div>
 
                 <div class="form-group">
@@ -186,22 +222,36 @@
 
                 <div class="form-group">
                     <label>Combustível</label>
-                    <select name="Combustivel" required>
-                        <option value="">Selecionar</option>
-                        <option>Gasolina</option>
-                        <option>Diesel</option>
-                        <option>Elétrico</option>
-                        <option>Híbrido</option>
-                    </select>
+
+                    <div class="custom-select">
+                        <div class="selected">Selecionar</div>
+                        <span class="arrow">▾</span>
+
+                        <div class="custom-options">
+                            <div data-value="Gasolina">Gasolina</div>
+                            <div data-value="Diesel">Diesel</div>
+                            <div data-value="Elétrico">Elétrico</div>
+                            <div data-value="Híbrido">Híbrido</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="Combustivel" required />
                 </div>
 
                 <div class="form-group">
                     <label>Caixa</label>
-                    <select name="Caixa" required>
-                        <option value="">Selecionar</option>
-                        <option>Manual</option>
-                        <option>Automática</option>
-                    </select>
+
+                    <div class="custom-select">
+                        <div class="selected">Selecionar</div>
+                        <span class="arrow">▾</span>
+
+                        <div class="custom-options">
+                            <div data-value="Manual">Manual</div>
+                            <div data-value="Automática">Automática</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="Caixa" required />
                 </div>
             </div>
 
@@ -221,10 +271,7 @@
             <div class="form-group">
                 <label>Imagens (4 obrigatórias)</label>
 
-                <div id="imageBox" class="image-box">
-                    <!-- imagens + botões + vão ser inseridos por JS -->
-                </div>
-
+                <div id="imageBox" class="image-box"></div>
                 <input type="file" id="imageInput" accept="image/*" hidden />
                 <small>Seleciona exatamente 4 imagens</small>
             </div>

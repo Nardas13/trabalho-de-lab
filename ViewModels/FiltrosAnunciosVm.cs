@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using AutoHubProjeto.Models;
+using System.Collections.Generic;
 
-namespace AutoHubProjeto.Models
+namespace AutoHubProjeto.ViewModels
 {
-    public class FiltroAnunciosViewModel
+    public class FiltroAnunciosVM
     {
         // ----- FILTROS -----
         public string Categoria { get; set; }

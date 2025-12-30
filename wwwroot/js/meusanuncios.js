@@ -110,3 +110,35 @@ function createFileList(file) {
 
 // inicial
 renderImages();
+
+
+
+// DROPDOWNS CUSTOM DO MODAL
+document.querySelectorAll("#criarAnuncioModal .custom-select").forEach(select => {
+    const selected = select.querySelector(".selected");
+    const options = select.querySelectorAll(".custom-options div");
+    const hiddenInput = select.parentElement.querySelector("input[type='hidden']");
+
+    selected.addEventListener("click", e => {
+        e.stopPropagation();
+
+        document.querySelectorAll(".custom-select")
+            .forEach(s => s !== select && s.classList.remove("active"));
+
+        select.classList.toggle("active");
+    });
+
+    options.forEach(opt => {
+        opt.addEventListener("click", () => {
+            selected.textContent = opt.textContent;
+            hiddenInput.value = opt.dataset.value;
+            select.classList.remove("active");
+        });
+    });
+});
+
+// fechar dropdowns ao clicar fora
+window.addEventListener("click", () => {
+    document.querySelectorAll(".custom-select")
+        .forEach(s => s.classList.remove("active"));
+});

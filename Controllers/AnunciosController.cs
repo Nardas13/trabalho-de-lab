@@ -1,4 +1,5 @@
 ﻿using AutoHubProjeto.Models;
+using AutoHubProjeto.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -89,7 +90,7 @@ namespace AutoHubProjeto.Controllers
             };
 
             // -------- VIEWMODEL --------
-            var vm = new FiltroAnunciosViewModel
+            var vm = new FiltroAnunciosVM
             {
                 Resultados = query.ToList(),
 

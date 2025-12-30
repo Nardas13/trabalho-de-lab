@@ -1,47 +1,78 @@
 ﻿const modal = document.getElementById("criarAnuncioModal");
-
-// abrir modal criar anúncio
-document.getElementById("openCriarAnuncio")?.addEventListener("click", () => {
-    document.getElementById("criarAnuncioModal").classList.remove("hidden");
-});
-
-// fechar modal (botão)
-document.getElementById("cancelCriar")?.addEventListener("click", () => {
-    document.getElementById("criarAnuncioModal").classList.add("hidden");
-});
-
-// fechar modal (click fora)
-document.getElementById("criarAnuncioModal")?.addEventListener("click", (e) => {
-    if (e.target.id === "criarAnuncioModal") {
-        document.getElementById("criarAnuncioModal").classList.add("hidden");
-    }
-});
-
-
-// validar imagens
-document.getElementById("criarAnuncioForm")?.addEventListener("submit", e => {
-    const files = document.querySelector('input[name="Imagens"]').files;
-
-    if (files.length !== 4) {
-        e.preventDefault();
-        alert("Tens de selecionar exatamente 4 imagens.");
-    }
-});
-
-
-
-
-
+const form = document.getElementById("criarAnuncioForm");
 const imageBox = document.getElementById("imageBox");
 const imageInput = document.getElementById("imageInput");
-const form = document.getElementById("criarAnuncioForm");
+const submitBtn = document.getElementById("submitAnuncio");
 
-let imagens = []; // mantém a ordem correta
+
+
+function setErro(input, mostrar) {
+    const error = input.parentElement.querySelector(".form-error");
+
+    if (mostrar) {
+        input.classList.add("invalid");
+        if (error) error.classList.add("show");
+    } else {
+        input.classList.remove("invalid");
+        if (error) error.classList.remove("show");
+    }
+}
+
+
+document.getElementById("openCriarAnuncio")?.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+});
+
+document.getElementById("cancelCriar")?.addEventListener("click", () => {
+    modal.classList.add("hidden");
+});
+
+modal?.addEventListener("click", e => {
+    if (e.target === modal) {
+        modal.classList.add("hidden");
+    }
+});
+
+
+
+document.querySelectorAll("#criarAnuncioModal .custom-select").forEach(select => {
+    const selected = select.querySelector(".selected");
+    const options = select.querySelectorAll(".custom-options div");
+    const hiddenInput = select.parentElement.querySelector("input[type='hidden']");
+
+    selected.addEventListener("click", e => {
+        e.stopPropagation();
+
+        document.querySelectorAll("#criarAnuncioModal .custom-select")
+            .forEach(s => s !== select && s.classList.remove("active"));
+
+        select.classList.toggle("active");
+    });
+
+    options.forEach(opt => {
+        opt.addEventListener("click", () => {
+            selected.textContent = opt.textContent;
+            hiddenInput.value = opt.dataset.value;
+            select.classList.remove("active");
+
+            validarFormulario();
+        });
+    });
+});
+
+window.addEventListener("click", () => {
+    document.querySelectorAll("#criarAnuncioModal .custom-select")
+        .forEach(s => s.classList.remove("active"));
+});
+
+
+
+let imagens = [];
 
 function renderImages() {
     imageBox.innerHTML = "";
 
-    imagens.forEach((file, index) => {
+    imagens.forEach(file => {
         const slot = document.createElement("div");
         slot.className = "image-slot";
 
@@ -55,90 +86,133 @@ function renderImages() {
     if (imagens.length < 4) {
         const plus = document.createElement("div");
         plus.className = "image-slot plus";
-        plus.innerText = "+";
-
-        plus.addEventListener("click", () => imageInput.click());
+        plus.textContent = "+";
+        plus.onclick = () => imageInput.click();
         imageBox.appendChild(plus);
     }
+
+    validarFormulario();
 }
 
 imageInput.addEventListener("change", e => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    if (imagens.length >= 4) return;
+    if (!file || imagens.length >= 4) return;
 
     imagens.push(file);
     renderImages();
-
-    imageInput.value = ""; // reset
+    imageInput.value = "";
 });
+function validarPreco() {
+    const input = form.querySelector("input[name='Preco']");
+    const valor = parseFloat(input.value);
+
+    const invalido = isNaN(valor) || valor < 100 || valor > 10000000;
+    setErro(input, invalido);
+
+    return !invalido;
+}
+
+
+function validarFormulario() {
+    let valido = true;
+
+    // Só mostrar erros se tentou submeter
+    if (!tentouSubmeter) return false;
+
+    // inputs required
+    form.querySelectorAll("input[required]").forEach(input => {
+        const invalido = !input.value.trim();
+        setErro(input, invalido);
+        if (invalido) valido = false;
+    });
+
+    // dropdowns (hidden)
+    form.querySelectorAll("input[type='hidden'][required]").forEach(input => {
+        const select = input.parentElement.querySelector(".custom-select");
+        const error = input.parentElement.querySelector(".form-error");
+
+        const invalido = !input.value;
+        select?.classList.toggle("invalid", invalido);
+        error?.classList.toggle("show", invalido);
+
+        if (invalido) valido = false;
+    });
+
+    // Ano
+    if (!validarAno()) valido = false;
+
+    // Preço
+    if (!validarPreco()) valido = false;
+
+    // Imagens
+    const imageError = document.getElementById("imageError");
+    if (imagens.length !== 4) {
+        imageError?.classList.add("show");
+        valido = false;
+    } else {
+        imageError?.classList.remove("show");
+    }
+
+    return valido;
+}
+
+
+let tentouSubmeter = false;
 
 form.addEventListener("submit", e => {
-    if (imagens.length !== 4) {
-        e.preventDefault();
-        alert("Tens de selecionar exatamente 4 imagens.");
+    tentouSubmeter = true;
+
+    const valido = validarFormulario();
+
+    if (!valido) {
+        e.preventDefault(); // bloqueia submit
         return;
     }
 
-    // remover inputs antigos (se houver)
+    // se chegou aqui, está tudo válido -> preparar imagens
     form.querySelectorAll("input[name='Imagens']").forEach(i => i.remove());
-    form.querySelectorAll("input[name='Ordem']").forEach(i => i.remove());
 
-    imagens.forEach((file, index) => {
-        const imgInput = document.createElement("input");
-        imgInput.type = "file";
-        imgInput.name = "Imagens";
-        imgInput.files = createFileList(file);
+    imagens.forEach(file => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.name = "Imagens";
 
-        const ordemInput = document.createElement("input");
-        ordemInput.type = "hidden";
-        ordemInput.name = "Ordem";
-        ordemInput.value = index + 1;
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
 
-        form.appendChild(imgInput);
-        form.appendChild(ordemInput);
+        form.appendChild(input);
     });
 });
 
-// helper para criar FileList
-function createFileList(file) {
-    const dt = new DataTransfer();
-    dt.items.add(file);
-    return dt.files;
+
+function validarAno() {
+    const input = form.querySelector("input[name='Ano']");
+    const ano = parseInt(input.value);
+    const anoAtual = new Date().getFullYear();
+
+    const invalido = !ano || ano < 1900 || ano > anoAtual;
+    setErro(input, invalido);
+
+    return !invalido;
 }
 
-// inicial
+
+// inicializar box das imagens (mostra o +)
 renderImages();
 
+["Ano", "Quilometragem"].forEach(name => {
+    const input = form.querySelector(`input[name='${name}']`);
+    if (!input) return;
 
-
-// DROPDOWNS CUSTOM DO MODAL
-document.querySelectorAll("#criarAnuncioModal .custom-select").forEach(select => {
-    const selected = select.querySelector(".selected");
-    const options = select.querySelectorAll(".custom-options div");
-    const hiddenInput = select.parentElement.querySelector("input[type='hidden']");
-
-    selected.addEventListener("click", e => {
-        e.stopPropagation();
-
-        document.querySelectorAll(".custom-select")
-            .forEach(s => s !== select && s.classList.remove("active"));
-
-        select.classList.toggle("active");
-    });
-
-    options.forEach(opt => {
-        opt.addEventListener("click", () => {
-            selected.textContent = opt.textContent;
-            hiddenInput.value = opt.dataset.value;
-            select.classList.remove("active");
-        });
+    input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "");
     });
 });
 
-// fechar dropdowns ao clicar fora
-window.addEventListener("click", () => {
-    document.querySelectorAll(".custom-select")
-        .forEach(s => s.classList.remove("active"));
+
+form.querySelectorAll("input, textarea").forEach(el => {
+    el.addEventListener("input", () => {
+        if (tentouSubmeter) validarFormulario();
+    });
 });

@@ -416,3 +416,32 @@
 .custom-select.active .custom-options {
     display: block;
 }
+
+
+
+/* Campo inválido */
+input.invalid,
+textarea.invalid,
+.custom-select.invalid .selected {
+    border-color: #ff4d4f;
+    background: #fff5f5;
+}
+
+/* Mensagem de erro */
+.form-error {
+    font-size: 12px;
+    color: #ff4d4f;
+    margin-top: 4px;
+    display: none;
+}
+
+    /* Mostrar erro */
+    .form-error.show {
+        display: block;
+    }
+
+/* Botão desativado */
+button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

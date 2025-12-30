@@ -137,8 +137,9 @@
               method="post"
               asp-action="CriarAnuncio"
               asp-controller="Painel"
-              enctype="multipart/form-data">
-
+              enctype="multipart/form-data"
+              novalidate>
+            
             <!-- TÍTULO / PREÇO -->
             <div class="form-row">
                 <div class="form-group">
@@ -148,7 +149,7 @@
 
                 <div class="form-group">
                     <label>Preço (€)</label>
-                    <input type="number" name="Preco" required min="0" />
+                    <input type="number" name="Preco" required min="100" />
                 </div>
             </div>
 
@@ -205,11 +206,13 @@
                     </div>
 
                     <input type="hidden" name="Categoria" required />
+                    <div class="form-error">Seleciona uma categoria</div>
                 </div>
 
                 <div class="form-group">
                     <label>Ano</label>
-                    <input type="number" name="Ano" required />
+                    <input type="number" name="Ano" required min="1900" max="2025" />
+                    <div class="form-error">Ano inválido (1900–2025)</div>
                 </div>
             </div>
 
@@ -217,7 +220,8 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Quilómetros</label>
-                    <input type="number" name="Quilometragem" required />
+                    <input type="number" name="Quilometragem" required min="0" max="2000000" />
+                    <div class="form-error">Valor inválido</div>
                 </div>
 
                 <div class="form-group">
@@ -258,13 +262,13 @@
             <!-- LOCALIZAÇÃO -->
             <div class="form-group">
                 <label>Localização</label>
-                <input type="text" name="Localizacao" />
+                <input type="text" name="Localizacao" maxlength="100" />
             </div>
 
             <!-- DESCRIÇÃO -->
             <div class="form-group">
                 <label>Descrição</label>
-                <textarea name="Descricao" rows="4"></textarea>
+                <textarea name="Descricao" rows="4" maxlength="2000"></textarea>
             </div>
 
             <!-- IMAGENS -->
@@ -274,6 +278,9 @@
                 <div id="imageBox" class="image-box"></div>
                 <input type="file" id="imageInput" accept="image/*" hidden />
                 <small>Seleciona exatamente 4 imagens</small>
+                <div class="form-error" id="imageError">
+                    Tens de selecionar exatamente 4 imagens
+                </div>
             </div>
 
             <!-- BOTÕES -->
@@ -282,12 +289,13 @@
                     Cancelar
                 </button>
 
-                <button type="submit" class="btn">
+                <button type="submit" id="submitAnuncio" class="btn">
                     Publicar Anúncio
                 </button>
+
             </div>
 
-        </form>
+            </form>
 
     </div>
 </div>

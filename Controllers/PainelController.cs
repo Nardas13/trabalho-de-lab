@@ -1,8 +1,9 @@
-﻿using AutoHubProjeto.Models;
+﻿using AutoHubProjeto.Helpers; 
+using AutoHubProjeto.Models;
 using AutoHubProjeto.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AutoHubProjeto.Helpers; 
 using System.Text.Json;
 
 namespace AutoHubProjeto.Controllers
@@ -403,7 +404,7 @@ namespace AutoHubProjeto.Controllers
 
                 vm.Lista.Add(new FavoritoItemVM
                 {
-                    Id = f.Id, 
+                    Id = f.Id,
                     IdAnuncio = anuncio.IdAnuncio,
                     Titulo = anuncio.Titulo,
                     Preco = anuncio.Preco,
@@ -852,13 +853,208 @@ namespace AutoHubProjeto.Controllers
         Titulo = f.Anuncio.Titulo,
         Preco = f.Anuncio.Preco,
         Imagem = f.Anuncio.AnuncioImagems
-    .OrderBy(i => i.Ordem)
-    .Select(i => "/" + i.Url.TrimStart('/'))
-    .FirstOrDefault()
+            .OrderBy(i => i.Ordem)
+            .Select(i => "/" + i.Url.TrimStart('/'))
+            .FirstOrDefault()
     })
-    .ToListAsync();
+            .ToListAsync();
 
             return View(vm);
+        }
+        public async Task<IActionResult> MeusAnuncios()
+        {
+            var email = User.Identity!.Name;
+
+            var user = await _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user?.Vendedor == null)
+                return Unauthorized();
+
+            var anuncios = await _db.Anuncios
+                .Include(a => a.AnuncioImagems)
+                .Where(a =>
+                    a.IdVendedor == user.Vendedor.IdVendedor &&
+                    a.Estado != "removido")
+                .OrderByDescending(a => a.DataPublicacao)
+                .ToListAsync();
+
+            return View(anuncios);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Pausar(int id)
+        {
+            var email = User.Identity!.Name;
+
+            var anuncio = await _db.Anuncios
+                .Include(a => a.IdVendedorNavigation)
+                .ThenInclude(v => v.IdVendedorNavigation)
+                .FirstOrDefaultAsync(a => a.IdAnuncio == id);
+
+            if (anuncio == null)
+                return NotFound();
+
+            if (anuncio.IdVendedorNavigation.IdVendedorNavigation.Email != email)
+                return Unauthorized();
+
+            if (anuncio.Estado == "ativo")
+            {
+                anuncio.Estado = "pausado";
+                anuncio.DataAtualizacao = DateTime.Now;
+                await _db.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(MeusAnuncios));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Ativar(int id)
+        {
+            var email = User.Identity!.Name;
+
+            var anuncio = await _db.Anuncios
+                .Include(a => a.IdVendedorNavigation)
+                .ThenInclude(v => v.IdVendedorNavigation)
+                .FirstOrDefaultAsync(a => a.IdAnuncio == id);
+
+            if (anuncio == null)
+                return NotFound();
+
+            if (anuncio.IdVendedorNavigation.IdVendedorNavigation.Email != email)
+                return Unauthorized();
+
+            if (anuncio.Estado == "pausado")
+            {
+                anuncio.Estado = "ativo";
+                anuncio.DataAtualizacao = DateTime.Now;
+                await _db.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(MeusAnuncios));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remover(int id)
+        {
+            var email = User.Identity!.Name;
+
+            var anuncio = await _db.Anuncios
+                .Include(a => a.IdVendedorNavigation)
+                .ThenInclude(v => v.IdVendedorNavigation)
+                .FirstOrDefaultAsync(a => a.IdAnuncio == id);
+
+            if (anuncio == null)
+                return NotFound();
+
+            if (anuncio.IdVendedorNavigation.IdVendedorNavigation.Email != email)
+                return Unauthorized();
+
+            anuncio.Estado = "removido";
+            anuncio.DataAtualizacao = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(MeusAnuncios));
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CriarAnuncio(CriarAnuncioVM vm)
+        {
+            if (vm.Imagens == null || vm.Imagens.Count != 4)
+            {
+                return BadRequest("Tens de selecionar exatamente 4 imagens.");
+            }
+
+            var email = User.Identity!.Name;
+
+            var user = await _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user?.Vendedor == null)
+                return Unauthorized();
+
+            // =========================
+            // Criar Veículo
+            // =========================
+            var veiculo = new Veiculo
+            {
+                Marca = vm.Marca,
+                Modelo = vm.Modelo,
+                Categoria = vm.Categoria,
+                Ano = vm.Ano,
+                Quilometragem = vm.Quilometragem,
+                Combustivel = vm.Combustivel,
+                Caixa = vm.Caixa,
+                Localizacao = vm.Localizacao,
+                Descricao = vm.Descricao
+            };
+
+            _db.Veiculos.Add(veiculo);
+            await _db.SaveChangesAsync(); //  preciso do IdVeiculo
+
+            // =========================
+            // Criar Anúncio
+            // =========================
+            var anuncio = new Anuncio
+            {
+                IdVendedor = user.Vendedor.IdVendedor,
+                IdVeiculo = veiculo.IdVeiculo,
+                Titulo = vm.Titulo,
+                Preco = vm.Preco,
+                Estado = "ativo",
+                DataPublicacao = DateTime.Now
+            };
+
+            _db.Anuncios.Add(anuncio);
+            await _db.SaveChangesAsync(); //  preciso do IdAnuncio
+
+            // =========================
+            // Criar pasta do veículo
+            // wwwroot/imgs/veiculos/{IdVeiculo}
+            // =========================
+            var pastaVeiculo = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "imgs",
+                "veiculos",
+                veiculo.IdVeiculo.ToString()
+            );
+
+            if (!Directory.Exists(pastaVeiculo))
+            {
+                Directory.CreateDirectory(pastaVeiculo);
+            }
+
+            // =========================
+            // Guardar exatamente 4 imagens (1.jpg → 4.jpg)
+            // =========================
+            int index = 1;
+
+            foreach (var img in vm.Imagens)
+            {
+                var fileName = $"{index}.jpg";
+                var path = Path.Combine(pastaVeiculo, fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await img.CopyToAsync(stream);
+                }
+
+                _db.AnuncioImagems.Add(new AnuncioImagem
+                {
+                    IdAnuncio = anuncio.IdAnuncio,
+                    Url = $"imgs/veiculos/{veiculo.IdVeiculo}/{fileName}"
+                });
+
+                index++;
+            }
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("MeusAnuncios");
         }
 
     }

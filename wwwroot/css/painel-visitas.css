@@ -284,3 +284,32 @@
     gap: 6px;
     margin-bottom: 28px;
 }
+
+/* ===== AÇÕES NOS MEUS ANÚNCIOS ===== */
+
+.visita-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left:  auto;
+}
+
+    .visita-actions form {
+        margin: 0; 
+    }
+
+
+.criar-anuncio-box {
+    width: 720px;
+    max-width: 95%;
+}
+
+    .criar-anuncio-box h2 {
+        margin-bottom: 16px;
+    }
+
+    .criar-anuncio-box form {
+        max-height: 70vh;
+        overflow-y: auto;
+    }

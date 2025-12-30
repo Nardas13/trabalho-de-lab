@@ -1,0 +1,243 @@
+﻿@model List<AutoHubProjeto.Models.Anuncio>
+
+<link rel="stylesheet" href="/css/painel.css" />
+<link rel="stylesheet" href="/css/painel-visitas.css" />
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <!-- TÍTULO -->
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h2 class="painel-title">Meus Anúncios</h2>
+                <div class="painel-subtitle">
+                    Gere os teus anúncios e o respetivo estado.
+                </div>
+            </div>
+
+            <button id="openCriarAnuncio" class="btn-view">
+                + Criar anúncio
+            </button>
+
+        </div>
+
+        @foreach (var grupo in new[] {
+                ("Anúncios Ativos", "ativo"),
+                ("Anúncios Pausados", "pausado"),
+                ("Anúncios Reservados", "reservado"),
+                ("Anúncios Vendidos", "vendido")
+                })
+        {
+            var lista = Model.Where(a => a.Estado == grupo.Item2).ToList();
+
+            if (!lista.Any())
+                continue;
+
+            <div class="section-divider"></div>
+            <h3 class="painel-section-title">@grupo.Item1</h3>
+
+            <!-- SCROLL -->
+            <div class="visitas-wrapper">
+                <div class="visitas-list">
+
+                    @foreach (var a in lista)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@(string.IsNullOrEmpty(a.AnuncioImagems.FirstOrDefault()?.Url)
+                                     ? "/imgs/placeholder-car.png"
+                                     : "/" + a.AnuncioImagems.First().Url)"
+                         class="visita-img" />
+
+
+                            <div class="visita-info">
+                                <h4>@a.Titulo</h4>
+                                <span class="estado-muted">
+                                    @a.Preco.ToString("C")
+                                </span>
+                            </div>
+
+                            <div class="visita-actions">
+
+                                <a href="/Veiculos/Detalhes/@a.IdAnuncio"
+                                   class="btn-view">
+                                    Ver
+                                </a>
+
+                                @* AÇÕES POR ESTADO *@
+                                @if (a.Estado == "ativo")
+                                {
+                                    <form method="post"
+                                          asp-action="Pausar"
+                                          asp-route-id="@a.IdAnuncio">
+                                        <button type="submit"
+                                                class="btn-outline">
+                                            Pausar
+                                        </button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-action="Remover"
+                                          asp-route-id="@a.IdAnuncio">
+                                        <button type="submit"
+                                                class="cancel-btn">
+                                            Remover
+                                        </button>
+                                    </form>
+                                }
+                                else if (a.Estado == "pausado")
+                                {
+                                    <form method="post"
+                                          asp-action="Ativar"
+                                          asp-route-id="@a.IdAnuncio">
+                                        <button type="submit"
+                                                class="btn-view">
+                                            Ativar
+                                        </button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-action="Remover"
+                                          asp-route-id="@a.IdAnuncio">
+                                        <button type="submit"
+                                                class="cancel-btn">
+                                            Remover
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <button class="btn-cancelado" disabled>
+                                        @a.Estado
+                                    </button>
+                                }
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        }
+
+    </section>
+</div>
+
+
+<!-- MODAL CRIAR ANÚNCIO -->
+<div id="criarAnuncioModal" class="modal hidden">
+    <div class="modal-content cancel-box criar-anuncio-box">
+
+        <h2>Novo Anúncio</h2>
+
+        <form id="criarAnuncioForm"
+              method="post"
+              asp-action="CriarAnuncio"
+              asp-controller="Painel"
+              enctype="multipart/form-data">
+
+            <!-- TÍTULO / PREÇO -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" name="Titulo" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Preço (€)</label>
+                    <input type="number" name="Preco" required min="0" />
+                </div>
+            </div>
+
+            <!-- MARCA / MODELO -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" name="Marca" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" name="Modelo" required />
+                </div>
+            </div>
+
+            <!-- CATEGORIA / ANO -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <input type="text" name="Categoria" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Ano</label>
+                    <input type="number" name="Ano" required />
+                </div>
+            </div>
+
+            <!-- KM / COMBUSTÍVEL / CAIXA -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quilómetros</label>
+                    <input type="number" name="Quilometragem" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Combustível</label>
+                    <select name="Combustivel" required>
+                        <option value="">Selecionar</option>
+                        <option>Gasolina</option>
+                        <option>Diesel</option>
+                        <option>Elétrico</option>
+                        <option>Híbrido</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Caixa</label>
+                    <select name="Caixa" required>
+                        <option value="">Selecionar</option>
+                        <option>Manual</option>
+                        <option>Automática</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- LOCALIZAÇÃO -->
+            <div class="form-group">
+                <label>Localização</label>
+                <input type="text" name="Localizacao" />
+            </div>
+
+            <!-- DESCRIÇÃO -->
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea name="Descricao" rows="4"></textarea>
+            </div>
+
+            <!-- IMAGENS -->
+            <div class="form-group">
+                <label>Imagens</label>
+                <input type="file" name="Imagens" accept="image/*" multiple required />
+                <small>Seleciona exatamente 4 imagens</small>
+            </div>
+
+            <!-- BOTÕES -->
+            <div class="modal-buttons">
+                <button type="button" id="cancelCriar" class="btn-outline">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn">
+                    Publicar Anúncio
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="/js/meusanuncios.js"></script>

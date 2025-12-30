@@ -324,3 +324,37 @@
     text-decoration: none !important;
     color: inherit !important;
 }
+
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.large-modal {
+    max-width: 820px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+}
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }

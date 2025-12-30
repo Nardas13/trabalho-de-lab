@@ -958,6 +958,7 @@ namespace AutoHubProjeto.Controllers
 
             return RedirectToAction(nameof(MeusAnuncios));
         }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CriarAnuncio(CriarAnuncioVM vm)

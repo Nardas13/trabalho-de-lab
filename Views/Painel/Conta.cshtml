@@ -60,25 +60,64 @@
                            value="@Model.Morada" />
                 </div>
             </div>
-
-            <button class="btn" style="margin-top:20px">
-                Guardar Dados
-            </button>
         </form>
 
 
         <div class="section-divider"></div>
 
+
+        <!-- ================= DADOS DO VENDEDOR ================= -->
+        @if (Model.IsVendedor && Model.VendedorAprovado)
+        {
+
+            <h3 class="painel-section-title">Dados de Vendedor</h3>
+
+            <div class="conta-grid">
+
+                <div class="field">
+                    <label>Tipo de Vendedor</label>
+                    <input value="@Model.TipoVendedor"
+                           disabled />
+                </div>
+
+                <div class="field">
+                    <label>NIF</label>
+                    <input name="Nif"
+                           value="@(string.IsNullOrEmpty(Model.Nif) ? "" : Model.Nif)"
+                           placeholder="NIF" />
+
+                </div>
+
+            </div>
+
+            <div class="field full">
+                <label>Dados de Faturação</label>
+                <textarea name="DadosFaturacao"
+                      placeholder="Nome fiscal, morada, etc.">@Model.DadosFaturacao</textarea>
+            </div>
+
+
+            <div class="section-divider"></div>
+
+        }
+
+
         <!-- ================= SEGURANÇA ================= -->
         <h3 class="painel-section-title">Segurança</h3>
 
-        <div class="security-row">
-            <span class="pwd-dots">● ● ● ● ● ●</span>
+        <div class="security-row" style="justify-content: space-between; max-width: 560px;">
+            <div class="password-row">
+                <span class="pwd-dots">● ● ● ● ● ●</span>
 
-            <button type="button"
-                    class="btn-outline mini"
-                    id="openPwdModal">
-                Alterar palavra-passe
+                <button type="button"
+                        class="btn-outline mini"
+                        id="openPwdModal">
+                    Alterar palavra-passe
+                </button>
+            </div>
+
+            <button form="formConta" class="btn">
+                Guardar Dados
             </button>
         </div>
 

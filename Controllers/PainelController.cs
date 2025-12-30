@@ -690,6 +690,20 @@ namespace AutoHubProjeto.Controllers
             user.Telefone = vm.Telefone;
             user.Morada = vm.Morada.Trim();
 
+            // ======================
+            // DADOS DE VENDEDOR
+            // ======================
+
+            if (user.Vendedor != null && user.Vendedor.Aprovado)
+            {
+                // se vier preenchido, guarda
+                if (!string.IsNullOrWhiteSpace(vm.Nif))
+                    user.Vendedor.Nif = vm.Nif.Trim();
+
+                user.Vendedor.DadosFaturacao = vm.DadosFaturacao?.Trim();
+            }
+
+
             await _db.SaveChangesAsync();
 
             TempData["Toast"] = "Dados atualizados com sucesso.";

@@ -7,7 +7,7 @@ public partial class Vendedor
 {
     public int IdVendedor { get; set; }
 
-    public string Nif { get; set; } = null!;
+    public string? Nif { get; set; }
 
     public string Tipo { get; set; } = null!;
 

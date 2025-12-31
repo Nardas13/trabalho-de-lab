@@ -175,7 +175,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Estado)
                 .HasMaxLength(10)
                 .IsUnicode(false)
-                .HasDefaultValue("ativada");
+                .HasDefaultValue("ativa");
             entity.Property(e => e.ExpiraEm).HasPrecision(0);
 
             entity.HasOne(d => d.IdAnuncioNavigation).WithMany(p => p.Reservas)

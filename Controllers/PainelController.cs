@@ -57,7 +57,7 @@ namespace AutoHubProjeto.Controllers
                 ReservasCount = idComprador == 0 ? 0 :
                     await _db.Reservas.CountAsync(r =>
                         r.IdComprador == idComprador &&
-                        (r.Estado == "confirmada" || r.Estado == "ativada") &&
+                        (r.Estado == "confirmada" || r.Estado == "ativa") &&
                         r.ExpiraEm > DateTime.Now),
 
                 ComprasCount = idComprador == 0 ? 0 :
@@ -261,8 +261,10 @@ namespace AutoHubProjeto.Controllers
                     "pendente" => "Pendente",
                     "ativa" => r.ExpiraEm > agora ? "Ativa" : "Expirada",
                     "cancelada" => "Cancelada",
+                    "expirada" => "Expirada",
                     _ => "Indefinido"
                 };
+
 
                 var item = new MinhasReservasItemVM
                 {
@@ -279,6 +281,7 @@ namespace AutoHubProjeto.Controllers
                     vm.AtivasEPendentes.Add(item);
                 else
                     vm.ExpiradasECanceladas.Add(item);
+
             }
 
             return View(vm);
@@ -998,9 +1001,9 @@ namespace AutoHubProjeto.Controllers
             // BLOQUEIOS
             // =========================
 
-            // Reserva ATIVADA e ainda dentro do tempo
+            // Reserva ATIVA e ainda dentro do tempo
             if (anuncio.Reservas.Any(r =>
-                r.Estado == "ativada" &&
+                r.Estado == "ativa" &&
                 r.ExpiraEm > DateTime.Now))
             {
                 TempData["Toast"] =
@@ -1164,5 +1167,100 @@ namespace AutoHubProjeto.Controllers
                 return RedirectToAction("MeusAnuncios");
             }
 
+        public async Task<IActionResult> Reservas()
+        {
+            var email = User.Identity!.Name;
+
+            var user = await _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user?.Vendedor == null)
+                return Unauthorized();
+
+            int idVendedor = user.Vendedor.IdVendedor;
+            var agora = DateTime.Now;
+
+            var reservas = await _db.Reservas
+                .Include(r => r.IdAnuncioNavigation)
+                    .ThenInclude(a => a.AnuncioImagems)
+                .Where(r => r.IdAnuncioNavigation.IdVendedor == idVendedor)
+                .OrderByDescending(r => r.DataReserva)
+                .ToListAsync();
+
+            var vm = new ReservasClientesVM();
+
+            foreach (var r in reservas)
+            {
+                string estadoUI = r.Estado switch
+                {
+                    "pendente" => "Pendente",
+                    "ativa" => r.ExpiraEm > agora ? "Ativa" : "Expirada",
+                    "cancelada" => "Cancelada",
+                    "expirada" => "Expirada",
+                    _ => "Indefinido"
+                };
+
+
+                var item = new ReservasClientesItemVM
+                {
+                    IdReserva = r.IdReserva,
+                    IdAnuncio = r.IdAnuncio,
+                    Titulo = r.IdAnuncioNavigation.Titulo,
+                    Imagem = "/" + (
+                        r.IdAnuncioNavigation.AnuncioImagems.FirstOrDefault()?.Url
+                        ?? "imgs/placeholder-car.png"
+                    ),
+                    Estado = estadoUI,
+                    DataReserva = r.DataReserva,
+                    ExpiraEm = r.ExpiraEm
+                };
+
+                if (estadoUI == "Pendente")
+                    vm.Pendentes.Add(item);
+                else if (estadoUI == "Ativa")
+                    vm.Ativas.Add(item);
+                else
+                    vm.ExpiradasECanceladas.Add(item);
+
+            }
+
+            return View(vm);
         }
+
+        [HttpPost]
+        public IActionResult ConfirmarReserva([FromBody] ReservaAcaoVM vm)
+        {
+            var reserva = _db.Reservas
+                .Include(r => r.IdAnuncioNavigation)
+                .FirstOrDefault(r => r.IdReserva == vm.Id);
+
+            if (reserva == null || reserva.Estado != "pendente")
+                return BadRequest();
+
+            reserva.Estado = "ativa";
+            reserva.IdAnuncioNavigation.Estado = "reservado";
+
+            _db.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult CancelarReservaVendedor([FromBody] ReservaAcaoVM vm)
+        {
+            var reserva = _db.Reservas
+                .Include(r => r.IdAnuncioNavigation)
+                .FirstOrDefault(r => r.IdReserva == vm.Id);
+
+            if (reserva == null)
+                return BadRequest();
+
+            reserva.Estado = "cancelada";
+            reserva.IdAnuncioNavigation.Estado = "ativo";
+
+            _db.SaveChanges();
+            return Ok();
+        }
+
+    }
 } 

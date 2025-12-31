@@ -1,4 +1,160 @@
-﻿@page
-@model AutoHubProjeto.Views.Painel.ReservasModel
-@{
-}
+﻿@model AutoHubProjeto.ViewModels.ReservasClientesVM
+
+<link rel="stylesheet" href="/css/painel.css" />
+<link rel="stylesheet" href="/css/painel-visitas.css" />
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Reservas de Clientes</h2>
+        <div class="painel-subtitle">
+            Gere as reservas feitas nos teus anúncios.
+        </div>
+
+        <!-- PENDENTES -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Reservas Pendentes</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Pendentes.Any())
+                {
+                    <p class="estado-muted">Sem reservas pendentes.</p>
+                }
+                else
+                {
+                    foreach (var r in Model.Pendentes)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@r.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@r.Titulo</h4>
+                                <span class="visita-data">
+                                    Pedido em @r.DataReserva.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                <span class="visita-status pendente">Pendente</span>
+                            </div>
+
+                            <div class="visita-actions">
+                                <button class="btn-view confirmar-reserva"
+                                        data-id="@r.IdReserva">
+                                    Confirmar
+                                </button>
+
+                                <button class="cancelar-reserva cancel-btn"
+                                        data-id="@r.IdReserva">
+                                    Cancelar
+                                </button>
+
+
+                            </div>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- ATIVAS -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Reservas Ativas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Ativas.Any())
+                {
+                    <p class="estado-muted">Sem reservas ativas.</p>
+                }
+                else
+                {
+                    foreach (var r in Model.Ativas)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@r.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@r.Titulo</h4>
+                                <span class="visita-status confirmada">Ativa</span>
+                                <span class="visita-data">
+                                    Expira em @r.ExpiraEm?.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                            </div>
+
+                            <button class="btn-cancelado" disabled>
+                                Ativa
+                            </button>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- EXPIRADAS / CANCELADAS -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Reservas Expiradas / Canceladas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.ExpiradasECanceladas.Any())
+                {
+                    <p class="estado-muted">Nenhum histórico.</p>
+                }
+                else
+                {
+                    foreach (var r in Model.ExpiradasECanceladas)
+                    {
+                        <div class="visita-card cancelada-card">
+
+                            <img src="@r.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@r.Titulo</h4>
+                                <span class="visita-status cancelada">@r.Estado</span>
+                            </div>
+
+                            <button class="btn-cancelado" disabled>
+                                @r.Estado
+                            </button>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<!-- MODAL CONFIRMAR / CANCELAR RESERVA -->
+<div id="reservaModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+
+        <h2 id="modalTitle">Confirmar ação</h2>
+
+        <p class="cancel-text" id="modalText">
+            Tens a certeza que queres realizar esta ação?
+        </p>
+
+        <div class="modal-buttons">
+            <button id="closeModal" class="btn-outline">
+                Fechar
+            </button>
+
+            <button id="confirmAction" class="btn">
+                Confirmar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/painel-reservas-vendedor.js"></script>

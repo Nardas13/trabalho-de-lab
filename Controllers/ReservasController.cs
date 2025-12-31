@@ -69,7 +69,7 @@ namespace AutoHubProjeto.Controllers
             // bloquear se já existir reserva ativa 
             bool existeReservaAtiva = _db.Reservas.Any(r =>
                 r.IdAnuncio == idAnuncio &&
-                (r.Estado == "confirmada" || r.Estado == "ativada") &&
+                (r.Estado == "confirmada" || r.Estado == "ativa") &&
                 r.ExpiraEm > DateTime.Now);
 
             if (existeReservaAtiva)

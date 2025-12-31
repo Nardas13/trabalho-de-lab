@@ -245,7 +245,7 @@ namespace AutoHubProjeto.Migrations
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("varchar(10)")
-                        .HasDefaultValue("ativada");
+                        .HasDefaultValue("ativa");
 
                     b.Property<DateTime>("ExpiraEm")
                         .HasPrecision(0)

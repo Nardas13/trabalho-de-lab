@@ -50,7 +50,7 @@
             <div class="menu-item">
                 <span class="menu-item-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4"
-                         stroke-linecap="round" stroke-linejoin="round">
+                    stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="4 14.5 8 10 12 13 20 6" />
                         <line x1="20" y1="6" x2="20" y2="14.5" />
                     </svg>
@@ -80,21 +80,23 @@
     else
     {
         <!-- CARD TORNAR VENDEDOR -->
-        <form method="post" action="/Painel/Tornar" class="become-seller-card-form">
-            <button type="submit" class="become-seller-card">
+        <form class="become-seller-card-form">
+            <button id="btnTornarVendedor" class="become-seller-card" type="button">
                 <div class="become-seller-icon">★</div>
+
                 <div class="become-seller-text">
                     <div class="become-seller-title">Tornar-me Vendedor</div>
                     <div class="become-seller-sub">
-                        Pedido sujeito a aprovação de um administrador
+                        Pedido sujeito à aprovação de um administrador
                     </div>
                 </div>
+
                 <div class="become-seller-arrow">›</div>
             </button>
+
+
         </form>
-
-    }
-
+}
     <!-- DIVISOR VISUAL -->
     <div class="menu-divider"></div>
 
@@ -124,3 +126,19 @@
     </div>
 
 </aside>
+
+<!-- scripts -->
+
+@section Scripts {
+    <script>
+        document.querySelector(".become-seller-card")?.addEventListener("click", e => {
+        e.preventDefault();
+        document.getElementById("tipoVendedorModal")?.classList.remove("hidden");
+    });
+
+    document.getElementById("cancelTipoVendedor")?.addEventListener("click", () => {
+        document.getElementById("tipoVendedorModal")?.classList.add("hidden");
+    });
+    </script>
+}
+

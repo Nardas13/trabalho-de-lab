@@ -14,92 +14,78 @@
             Gere os teus dados pessoais e segurança.
         </div>
 
-        <!-- ================= DADOS DA CONTA ================= -->
-        <h3 class="painel-section-title">Dados da Conta</h3>
-
         <form method="post" action="/Painel/AtualizarDados" id="formConta">
+
+            <!-- ================= DADOS DA CONTA ================= -->
+            <h3 class="painel-section-title">Dados da Conta</h3>
 
             <div class="conta-grid">
                 <div class="field">
                     <label>Nome</label>
-                    <input name="Nome"
-                           value="@Model.Nome"
-                           required />
+                    <input name="Nome" value="@Model.Nome" required />
                 </div>
 
                 <div class="field">
                     <label>Username</label>
-                    <input name="Username"
-                           value="@Model.Username"
-                           required />
+                    <input name="Username" value="@Model.Username" required />
                 </div>
 
                 <div class="field">
                     <label>Email</label>
-                    <input value="@Model.Email"
-                           disabled />
+                    <input value="@Model.Email" disabled />
                 </div>
             </div>
 
             <div class="section-divider"></div>
 
+            <!-- ================= CONTACTO ================= -->
             <h3 class="painel-section-title">Contacto</h3>
 
             <div class="conta-grid">
                 <div class="field">
                     <label>Telefone</label>
-                    <input id="telefone"
-                           name="Telefone"
+                    <input name="Telefone"
                            value="@Model.Telefone"
                            oninput="restrictPhone(this)" />
                 </div>
 
                 <div class="field">
                     <label>Morada</label>
-                    <input name="Morada"
-                           value="@Model.Morada" />
+                    <input name="Morada" value="@Model.Morada" />
                 </div>
             </div>
-        </form>
-
-
-        <div class="section-divider"></div>
-
-
-        <!-- ================= DADOS DO VENDEDOR ================= -->
-        @if (Model.IsVendedor && Model.VendedorAprovado)
-        {
-
-            <h3 class="painel-section-title">Dados de Vendedor</h3>
-
-            <div class="conta-grid">
-
-                <div class="field">
-                    <label>Tipo de Vendedor</label>
-                    <input value="@Model.TipoVendedor"
-                           disabled />
-                </div>
-
-                <div class="field">
-                    <label>NIF</label>
-                    <input name="Nif"
-                           value="@(string.IsNullOrEmpty(Model.Nif) ? "" : Model.Nif)"
-                           placeholder="NIF" />
-
-                </div>
-
-            </div>
-
-            <div class="field full">
-                <label>Dados de Faturação</label>
-                <textarea name="DadosFaturacao"
-                      placeholder="Nome fiscal, morada, etc.">@Model.DadosFaturacao</textarea>
-            </div>
-
 
             <div class="section-divider"></div>
 
-        }
+            <!-- ================= DADOS DO VENDEDOR ================= -->
+            @if (Model.IsVendedor && Model.VendedorAprovado)
+            {
+                <h3 class="painel-section-title">Dados de Vendedor</h3>
+
+                <div class="conta-grid">
+                    <div class="field">
+                        <label>Tipo de Vendedor</label>
+                        <input value="@Model.TipoVendedor" disabled />
+                    </div>
+
+                    <div class="field">
+                        <label>NIF</label>
+                        <input name="Nif"
+                               value="@Model.Nif"
+                               placeholder="NIF" />
+                    </div>
+                </div>
+
+                <div class="field full">
+                    <label>Dados de Faturação</label>
+                    <textarea name="DadosFaturacao"
+                          placeholder="Nome fiscal, morada, etc.">@Model.DadosFaturacao</textarea>
+                </div>
+
+                <div class="section-divider"></div>
+            }
+
+        </form>
 
 
         <!-- ================= SEGURANÇA ================= -->
@@ -229,3 +215,44 @@
 @section Scripts {
     <script src="/js/painel-conta.js"></script>
 }
+
+
+<!-- ================= MODAL TIPO VENDEDOR ================= -->
+<div id="tipoVendedorModal" class="modal hidden">
+    <div class="cancel-box">
+
+        <h2>Tipo de Vendedor</h2>
+
+        <p class="cancel-text">
+            Seleciona o tipo de vendedor.
+            Esta escolha define os dados obrigatórios.
+        </p>
+
+        <form method="post" action="/Painel/Tornar">
+            <div class="field" style="gap:10px">
+                <label>
+                    <input type="radio" name="Tipo" value="particular" checked />
+                    Particular
+                </label>
+
+                <label>
+                    <input type="radio" name="Tipo" value="empresa" />
+                    Empresa
+                </label>
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-outline" id="cancelTipoVendedor">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn">
+                    Confirmar
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="/js/modals.js"></script>

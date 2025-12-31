@@ -628,7 +628,9 @@ namespace AutoHubProjeto.Controllers
             var email = User.Identity.Name;
 
             var user = await _db.Utilizadors
+                .Include(u => u.Vendedor) 
                 .FirstOrDefaultAsync(u => u.Email == email);
+
 
             if (user == null)
                 return Unauthorized();
@@ -710,9 +712,8 @@ namespace AutoHubProjeto.Controllers
             return RedirectToAction("Conta");
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> Tornar()
+        public async Task<IActionResult> Tornar(string Tipo)
         {
             var email = User.Identity!.Name;
 
@@ -723,21 +724,19 @@ namespace AutoHubProjeto.Controllers
             if (user == null)
                 return Unauthorized();
 
-            // Já pediu ou já é vendedor
             if (user.Vendedor != null)
             {
-                TempData["Toast"] = "Já existe um pedido de vendedor pendente.";
+                TempData["Toast"] = "Já existe um pedido de vendedor.";
                 return RedirectToAction("Index");
             }
 
             var vendedor = new Vendedor
             {
                 IdVendedor = user.Id,
-                Nif = "PENDENTE",
-                Tipo = "particular",
-                Aprovado = false,
-                IdAdminAprovador = null,
-                DataAprovacao = null
+                Tipo = Tipo,
+                Nif = null,                
+                DadosFaturacao = null,
+                Aprovado = false
             };
 
             _db.Vendedors.Add(vendedor);
@@ -746,7 +745,6 @@ namespace AutoHubProjeto.Controllers
             TempData["Toast"] = "Pedido enviado. Aguarda aprovação do administrador.";
             return RedirectToAction("Index");
         }
-
 
         [HttpPost]
         public async Task<IActionResult> AlterarPassword(DefinicoesContaVM vm)
@@ -896,7 +894,15 @@ namespace AutoHubProjeto.Controllers
                 .OrderByDescending(a => a.DataPublicacao)
                 .ToListAsync();
 
-            return View(anuncios);
+            var vm = new MeusAnunciosVM
+            {
+                Anuncios = anuncios,
+                TipoVendedor = user.Vendedor?.Tipo,
+                Nif = user.Vendedor?.Nif,
+                DadosFaturacao = user.Vendedor?.DadosFaturacao
+            };
+
+            return View(vm);
         }
 
         [HttpPost]
@@ -979,22 +985,51 @@ namespace AutoHubProjeto.Controllers
         [Authorize]
         public async Task<IActionResult> CriarAnuncio(CriarAnuncioVM vm)
         {
-            if (vm.Imagens == null || vm.Imagens.Count != 4)
-            {
-                return BadRequest("Tens de selecionar exatamente 4 imagens.");
-            }
-
             var email = User.Identity!.Name;
 
             var user = await _db.Utilizadors
                 .Include(u => u.Vendedor)
                 .FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user?.Vendedor == null)
+            // =========================
+            // AUTORIZAÇÃO
+            // =========================
+            if (user?.Vendedor == null || !user.Vendedor.Aprovado)
                 return Unauthorized();
 
             // =========================
-            // Criar Veículo
+            // REGRA DE NEGÓCIO (EMPRESA)
+            // =========================
+            if (user.Vendedor.Tipo == "empresa")
+            {
+                if (string.IsNullOrWhiteSpace(user.Vendedor.Nif))
+                {
+                    TempData["Toast"] =
+                        "Para criar anúncios como empresa tens de preencher o NIF nas definições da conta.";
+                    return RedirectToAction("Conta");
+                }
+
+                if (string.IsNullOrWhiteSpace(user.Vendedor.DadosFaturacao))
+                {
+                    TempData["Toast"] =
+                        "Para criar anúncios como empresa tens de preencher os dados de faturação.";
+                    return RedirectToAction("Conta");
+                }
+            }
+
+            // =========================
+            // IMAGENS (EXATAMENTE 4)
+            // =========================
+            var files = Request.Form.Files.ToList();
+
+            if (files.Count != 4)
+            {
+                TempData["Toast"] = "Tens de selecionar exatamente 4 imagens.";
+                return RedirectToAction("MeusAnuncios");
+            }
+
+            // =========================
+            // CRIAR VEÍCULO
             // =========================
             var veiculo = new Veiculo
             {
@@ -1010,10 +1045,10 @@ namespace AutoHubProjeto.Controllers
             };
 
             _db.Veiculos.Add(veiculo);
-            await _db.SaveChangesAsync(); //  preciso do IdVeiculo
+            await _db.SaveChangesAsync();
 
             // =========================
-            // Criar Anúncio
+            // CRIAR ANÚNCIO
             // =========================
             var anuncio = new Anuncio
             {
@@ -1026,11 +1061,10 @@ namespace AutoHubProjeto.Controllers
             };
 
             _db.Anuncios.Add(anuncio);
-            await _db.SaveChangesAsync(); //  preciso do IdAnuncio
+            await _db.SaveChangesAsync();
 
             // =========================
-            // Criar pasta do veículo
-            // wwwroot/imgs/veiculos/{IdVeiculo}
+            // PASTA DO VEÍCULO
             // =========================
             var pastaVeiculo = Path.Combine(
                 Directory.GetCurrentDirectory(),
@@ -1040,16 +1074,11 @@ namespace AutoHubProjeto.Controllers
                 veiculo.IdVeiculo.ToString()
             );
 
-            if (!Directory.Exists(pastaVeiculo))
-            {
-                Directory.CreateDirectory(pastaVeiculo);
-            }
+            Directory.CreateDirectory(pastaVeiculo);
 
             // =========================
-            // Guardar exatamente 4 imagens (1.jpg → 4.jpg)
+            // GUARDAR IMAGENS (1.jpg → 4.jpg)
             // =========================
-            var files = Request.Form.Files.ToList();
-
             int ordem = 1;
 
             foreach (var img in files)
@@ -1057,10 +1086,8 @@ namespace AutoHubProjeto.Controllers
                 var fileName = $"{ordem}.jpg";
                 var path = Path.Combine(pastaVeiculo, fileName);
 
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await img.CopyToAsync(stream);
-                }
+                using var stream = new FileStream(path, FileMode.Create);
+                await img.CopyToAsync(stream);
 
                 _db.AnuncioImagems.Add(new AnuncioImagem
                 {
@@ -1072,9 +1099,9 @@ namespace AutoHubProjeto.Controllers
                 ordem++;
             }
 
-
             await _db.SaveChangesAsync();
 
+            TempData["Toast"] = "Anúncio criado com sucesso.";
             return RedirectToAction("MeusAnuncios");
         }
 

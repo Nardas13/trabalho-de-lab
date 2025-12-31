@@ -19,18 +19,44 @@ function setErro(input, mostrar) {
 }
 
 
-document.getElementById("openCriarAnuncio")?.addEventListener("click", () => {
-    modal.classList.remove("hidden");
-});
+document.addEventListener("DOMContentLoaded", () => {
 
-document.getElementById("cancelCriar")?.addEventListener("click", () => {
-    modal.classList.add("hidden");
-});
+    const openBtn = document.getElementById("openCriarAnuncio");
+    const modal = document.getElementById("criarAnuncioModal");
 
-modal?.addEventListener("click", e => {
-    if (e.target === modal) {
+    if (!openBtn || !modal) return;
+
+    openBtn.addEventListener("click", () => {
+
+        const tipo = openBtn.dataset.tipo;          // "empresa" | "particular"
+        const nif = openBtn.dataset.nif;
+        const faturacao = openBtn.dataset.faturacao;
+
+        // regra de negócio 
+        if (tipo === "empresa") {
+
+            if (!nif || nif.trim() === "") {
+                showToast("Para criar anúncios como empresa tens de preencher o NIF nas definições da conta.");
+                return;
+            }
+
+            if (!faturacao || faturacao.trim() === "") {
+                showToast("Para criar anúncios como empresa tens de preencher os dados de faturação.");
+                return;
+            }
+        }
+
+        // tudo OK -> abre modal
+        modal.classList.remove("hidden");
+    });
+
+    document.getElementById("cancelCriar")?.addEventListener("click", () => {
         modal.classList.add("hidden");
-    }
+    });
+
+    modal.addEventListener("click", e => {
+        if (e.target === modal) modal.classList.add("hidden");
+    });
 });
 
 

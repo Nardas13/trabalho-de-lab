@@ -1,5 +1,4 @@
-﻿@model List<AutoHubProjeto.Models.Anuncio>
-
+﻿@model MeusAnunciosVM
 
 <link rel="stylesheet" href="/css/painel.css" />
 <link rel="stylesheet" href="/css/painel-visitas.css" />
@@ -18,9 +17,14 @@
                 </div>
             </div>
 
-            <button id="openCriarAnuncio" class="btn-view">
-                + Criar anúncio
+            <button id="openCriarAnuncio"
+                    class="btn-view"
+                    data-tipo="@Model.TipoVendedor"
+                    data-nif="@Model.Nif"
+                    data-faturacao="@Model.DadosFaturacao">
+                    + Criar anúncio
             </button>
+
 
         </div>
 
@@ -31,7 +35,7 @@
                 ("Anúncios Vendidos", "vendido")
                 })
         {
-            var lista = Model.Where(a => a.Estado == grupo.Item2).ToList();
+            var lista = @Model.Anuncios.Where(a => a.Estado == grupo.Item2).ToList();
 
             if (!lista.Any())
                 continue;

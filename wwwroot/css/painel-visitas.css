@@ -445,3 +445,21 @@ button.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
+
+
+
+
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+    .field label {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 500;
+    }

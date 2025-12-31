@@ -358,3 +358,16 @@
         border-radius: 10px;
         border: 1px solid #e5e7eb;
     }
+
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+    .field label {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 500;
+    }

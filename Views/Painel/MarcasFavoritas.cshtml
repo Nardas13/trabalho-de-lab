@@ -74,3 +74,45 @@
     </script>
 
 }
+
+
+
+<!-- ================= MODAL TIPO VENDEDOR ================= -->
+<div id="tipoVendedorModal" class="modal hidden">
+    <div class="cancel-box">
+
+        <h2>Tipo de Vendedor</h2>
+
+        <p class="cancel-text">
+            Seleciona o tipo de vendedor.
+            Esta escolha define os dados obrigatórios.
+        </p>
+
+        <form method="post" action="/Painel/Tornar">
+            <div class="field" style="gap:10px">
+                <label>
+                    <input type="radio" name="Tipo" value="particular" checked />
+                    Particular
+                </label>
+
+                <label>
+                    <input type="radio" name="Tipo" value="empresa" />
+                    Empresa
+                </label>
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-outline" id="cancelTipoVendedor">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn">
+                    Confirmar
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="/js/modals.js"></script>

@@ -35,7 +35,9 @@
                 ("Anúncios Vendidos", "vendido")
                 })
         {
-            var lista = @Model.Anuncios.Where(a => a.Estado == grupo.Item2).ToList();
+            var lista = Model.Anuncios
+            .Where(a => a.Anuncio.Estado == grupo.Item2)
+            .ToList();
 
             if (!lista.Any())
                 continue;
@@ -51,71 +53,66 @@
                     {
                         <div class="visita-card">
 
-                            <img src="@(string.IsNullOrEmpty(a.AnuncioImagems.FirstOrDefault()?.Url)
+                            <img src="@(string.IsNullOrEmpty(a.Anuncio.AnuncioImagems.FirstOrDefault()?.Url)
                                      ? "/imgs/placeholder-car.png"
-                                     : "/" + a.AnuncioImagems.First().Url)"
+                                     : "/" + a.Anuncio.AnuncioImagems.First().Url)"
                          class="visita-img" />
 
 
                             <div class="visita-info">
-                                <h4>@a.Titulo</h4>
+                                <h4>@a.Anuncio.Titulo</h4>
                                 <span class="estado-muted">
-                                    @a.Preco.ToString("C")
+                                    @a.Anuncio.Preco.ToString("C")
                                 </span>
                             </div>
 
                             <div class="visita-actions">
 
-                                <a href="/Veiculos/Detalhes/@a.IdAnuncio"
+                                <a href="/Veiculos/Detalhes/@a.Anuncio.IdAnuncio"
                                    class="btn-view">
                                     Ver
                                 </a>
 
                                 @* AÇÕES POR ESTADO *@
-                                @if (a.Estado == "ativo")
+                        @if (a.Anuncio.Estado == "ativo" || a.Anuncio.Estado == "pausado")
                                 {
-                                    <form method="post"
-                                          asp-action="Pausar"
-                                          asp-route-id="@a.IdAnuncio">
-                                        <button type="submit"
-                                                class="btn-outline">
-                                            Pausar
-                                        </button>
-                                    </form>
+                                    @* Pausar / Ativar *@
+                                    if (a.Anuncio.Estado == "ativo")
+                                    {
+                                        <form method="post"
+                                              asp-action="Pausar"
+                                              asp-route-id="@a.Anuncio.IdAnuncio">
+                                            <button type="submit" class="btn-outline">
+                                                Pausar
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post"
+                                              asp-action="Ativar"
+                                              asp-route-id="@a.Anuncio.IdAnuncio">
+                                            <button type="submit" class="btn-view">
+                                                Ativar
+                                            </button>
+                                        </form>
+                                    }
 
-                                    <form method="post"
-                                          asp-action="Remover"
-                                          asp-route-id="@a.IdAnuncio">
-                                        <button type="submit"
-                                                class="cancel-btn">
-                                            Remover
-                                        </button>
-                                    </form>
-                                }
-                                else if (a.Estado == "pausado")
-                                {
-                                    <form method="post"
-                                          asp-action="Ativar"
-                                          asp-route-id="@a.IdAnuncio">
-                                        <button type="submit"
-                                                class="btn-view">
-                                            Ativar
-                                        </button>
-                                    </form>
+                                    @* REMOVER (MESMO BOTÃO SEMPRE) *@
+                                    <button class="cancel-btn open-remover-modal"
+                                            data-id="@a.Anuncio.IdAnuncio"
+                                            data-titulo="@a.Anuncio.Titulo"
+                                            data-tem-reserva="@a.TemReserva"
+                                            data-tem-visitas="@a.TemVisitas"
+                                            data-tem-compras="@a.TemCompras">
+                                        Remover
+                                    </button>
 
-                                    <form method="post"
-                                          asp-action="Remover"
-                                          asp-route-id="@a.IdAnuncio">
-                                        <button type="submit"
-                                                class="cancel-btn">
-                                            Remover
-                                        </button>
-                                    </form>
                                 }
                                 else
                                 {
                                     <button class="btn-cancelado" disabled>
-                                        @a.Estado
+                                        @a.Anuncio.Estado
                                     </button>
                                 }
 
@@ -303,5 +300,41 @@
 
     </div>
 </div>
+
+
+
+<!-- MODAL REMOVER ANÚNCIO -->
+<div id="removerModal" class="modal hidden">
+    <div class="cancel-box">
+
+        <h2>Remover Anúncio</h2>
+
+        <p class="cancel-text">
+            Tens a certeza que queres remover o anúncio
+            <strong id="removerTitulo"></strong>?
+            <br />
+            Esta ação não pode ser desfeita.
+        </p>
+
+        <form method="post" asp-action="Remover" id="removerForm">
+            <input type="hidden" name="id" id="removerId" />
+
+            <div class="modal-buttons">
+                <button type="button"
+                        class="btn-outline"
+                        id="cancelRemover">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn">
+                    Confirmar
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
 
 <script src="/js/meusanuncios.js"></script>

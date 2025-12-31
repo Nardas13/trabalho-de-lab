@@ -242,3 +242,47 @@ form.querySelectorAll("input, textarea").forEach(el => {
         if (tentouSubmeter) validarFormulario();
     });
 });
+
+// ============================
+// MODAL REMOVER ANÚNCIO
+// ============================
+
+const removerModal = document.getElementById("removerModal");
+const removerIdInput = document.getElementById("removerId");
+const removerTitulo = document.getElementById("removerTitulo");
+const cancelRemover = document.getElementById("cancelRemover");
+
+document.querySelectorAll(".open-remover-modal").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        if (btn.dataset.temReserva === "true") {
+            showToast("Este anúncio tem uma reserva ativa. Aguarda o fim da reserva.");
+            return;
+        }
+
+        if (btn.dataset.temVisitas === "true") {
+            showToast("Este anúncio tem visitas agendadas. Cancela-as primeiro.");
+            return;
+        }
+
+        if (btn.dataset.temCompras === "true") {
+            showToast("Este anúncio tem compras pendentes associadas.");
+            return;
+        }
+
+        // Pode abrir modal
+        removerIdInput.value = btn.dataset.id;
+        removerTitulo.textContent = btn.dataset.titulo;
+        removerModal.classList.remove("hidden");
+    });
+});
+
+cancelRemover?.addEventListener("click", () => {
+    removerModal.classList.add("hidden");
+});
+
+removerModal?.addEventListener("click", e => {
+    if (e.target === removerModal) {
+        removerModal.classList.add("hidden");
+    }
+});

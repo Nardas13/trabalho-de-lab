@@ -66,8 +66,8 @@ namespace AutoHubProjeto.Controllers
                         c.EstadoPagamento == "pago"),
 
                 AnunciosCount = idVendedor == 0 ? 0 :
-                    await _db.Anuncios.CountAsync(a => 
-                    a.IdVendedor == idVendedor && 
+                    await _db.Anuncios.CountAsync(a =>
+                    a.IdVendedor == idVendedor &&
                     a.Estado == "ativo")
             };
 
@@ -628,7 +628,7 @@ namespace AutoHubProjeto.Controllers
             var email = User.Identity.Name;
 
             var user = await _db.Utilizadors
-                .Include(u => u.Vendedor) 
+                .Include(u => u.Vendedor)
                 .FirstOrDefaultAsync(u => u.Email == email);
 
 
@@ -734,7 +734,7 @@ namespace AutoHubProjeto.Controllers
             {
                 IdVendedor = user.Id,
                 Tipo = Tipo,
-                Nif = null,                
+                Nif = null,
                 DadosFaturacao = null,
                 Aprovado = false
             };
@@ -888,6 +888,9 @@ namespace AutoHubProjeto.Controllers
 
             var anuncios = await _db.Anuncios
                 .Include(a => a.AnuncioImagems)
+                .Include(a => a.Reservas)
+                .Include(a => a.Visita)
+                .Include(a => a.Compras)
                 .Where(a =>
                     a.IdVendedor == user.Vendedor.IdVendedor &&
                     a.Estado != "removido")
@@ -896,10 +899,24 @@ namespace AutoHubProjeto.Controllers
 
             var vm = new MeusAnunciosVM
             {
-                Anuncios = anuncios,
-                TipoVendedor = user.Vendedor?.Tipo,
-                Nif = user.Vendedor?.Nif,
-                DadosFaturacao = user.Vendedor?.DadosFaturacao
+                TipoVendedor = user.Vendedor.Tipo,
+                Nif = user.Vendedor.Nif,
+                DadosFaturacao = user.Vendedor.DadosFaturacao,
+
+                Anuncios = anuncios.Select(a => new AnuncioVM
+                {
+                    Anuncio = a,
+
+                    // regras
+                    TemReserva = a.Reservas.Any(r =>
+                        r.Estado == "ativa" && r.ExpiraEm > DateTime.Now),
+
+                    TemVisitas = a.Visita.Any(v =>
+                        v.Estado == "pendente" || v.Estado == "confirmada"),
+
+                    TemCompras = a.Compras.Any(c =>
+                        c.EstadoPagamento == "pendente")
+                }).ToList()
             };
 
             return View(vm);
@@ -958,13 +975,17 @@ namespace AutoHubProjeto.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Remover(int id)
         {
             var email = User.Identity!.Name;
 
             var anuncio = await _db.Anuncios
                 .Include(a => a.IdVendedorNavigation)
-                .ThenInclude(v => v.IdVendedorNavigation)
+                    .ThenInclude(v => v.IdVendedorNavigation)
+                .Include(a => a.Reservas)
+                .Include(a => a.Visita)
+                .Include(a => a.Compras)
                 .FirstOrDefaultAsync(a => a.IdAnuncio == id);
 
             if (anuncio == null)
@@ -973,137 +994,175 @@ namespace AutoHubProjeto.Controllers
             if (anuncio.IdVendedorNavigation.IdVendedorNavigation.Email != email)
                 return Unauthorized();
 
+            // =========================
+            // BLOQUEIOS
+            // =========================
+
+            // Reserva ATIVADA e ainda dentro do tempo
+            if (anuncio.Reservas.Any(r =>
+                r.Estado == "ativada" &&
+                r.ExpiraEm > DateTime.Now))
+            {
+                TempData["Toast"] =
+                    "Este anúncio tem uma reserva ativa. Tens de aguardar o fim do período de reserva.";
+                return RedirectToAction(nameof(MeusAnuncios));
+            }
+
+            // Visitas pendentes ou confirmadas
+            if (anuncio.Visita.Any(v =>
+                v.Estado == "pendente" || v.Estado == "confirmada"))
+            {
+                TempData["Toast"] =
+                    "Este anúncio tem visitas agendadas. Cancela as visitas antes de remover.";
+                return RedirectToAction(nameof(MeusAnuncios));
+            }
+
+            // Compras pendentes
+            if (anuncio.Compras.Any(c =>
+                c.EstadoPagamento == "pendente"))
+            {
+                TempData["Toast"] =
+                    "Este anúncio tem compras pendentes. Cancela-as antes de remover.";
+                return RedirectToAction(nameof(MeusAnuncios));
+            }
+
+            // =========================
+            // REMOÇÃO 
+            // =========================
+
             anuncio.Estado = "removido";
             anuncio.DataAtualizacao = DateTime.Now;
 
             await _db.SaveChangesAsync();
 
+            TempData["Toast"] = "Anúncio removido com sucesso.";
             return RedirectToAction(nameof(MeusAnuncios));
         }
 
+
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CriarAnuncio(CriarAnuncioVM vm)
-        {
-            var email = User.Identity!.Name;
-
-            var user = await _db.Utilizadors
-                .Include(u => u.Vendedor)
-                .FirstOrDefaultAsync(u => u.Email == email);
-
-            // =========================
-            // AUTORIZAÇÃO
-            // =========================
-            if (user?.Vendedor == null || !user.Vendedor.Aprovado)
-                return Unauthorized();
-
-            // =========================
-            // REGRA DE NEGÓCIO (EMPRESA)
-            // =========================
-            if (user.Vendedor.Tipo == "empresa")
+            [Authorize]
+            public async Task<IActionResult> CriarAnuncio(CriarAnuncioVM vm)
             {
-                if (string.IsNullOrWhiteSpace(user.Vendedor.Nif))
+                var email = User.Identity!.Name;
+
+                var user = await _db.Utilizadors
+                    .Include(u => u.Vendedor)
+                    .FirstOrDefaultAsync(u => u.Email == email);
+
+                // =========================
+                // AUTORIZAÇÃO
+                // =========================
+                if (user?.Vendedor == null || !user.Vendedor.Aprovado)
+                    return Unauthorized();
+
+                // =========================
+                // REGRA DE NEGÓCIO (EMPRESA)
+                // =========================
+                if (user.Vendedor.Tipo == "empresa")
                 {
-                    TempData["Toast"] =
-                        "Para criar anúncios como empresa tens de preencher o NIF nas definições da conta.";
-                    return RedirectToAction("Conta");
+                    if (string.IsNullOrWhiteSpace(user.Vendedor.Nif))
+                    {
+                        TempData["Toast"] =
+                            "Para criar anúncios como empresa tens de preencher o NIF nas definições da conta.";
+                        return RedirectToAction("Conta");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(user.Vendedor.DadosFaturacao))
+                    {
+                        TempData["Toast"] =
+                            "Para criar anúncios como empresa tens de preencher os dados de faturação.";
+                        return RedirectToAction("Conta");
+                    }
                 }
 
-                if (string.IsNullOrWhiteSpace(user.Vendedor.DadosFaturacao))
+                // =========================
+                // IMAGENS (EXATAMENTE 4)
+                // =========================
+                var files = Request.Form.Files.ToList();
+
+                if (files.Count != 4)
                 {
-                    TempData["Toast"] =
-                        "Para criar anúncios como empresa tens de preencher os dados de faturação.";
-                    return RedirectToAction("Conta");
+                    TempData["Toast"] = "Tens de selecionar exatamente 4 imagens.";
+                    return RedirectToAction("MeusAnuncios");
                 }
-            }
 
-            // =========================
-            // IMAGENS (EXATAMENTE 4)
-            // =========================
-            var files = Request.Form.Files.ToList();
+                // =========================
+                // CRIAR VEÍCULO
+                // =========================
+                var veiculo = new Veiculo
+                {
+                    Marca = vm.Marca,
+                    Modelo = vm.Modelo,
+                    Categoria = vm.Categoria,
+                    Ano = vm.Ano,
+                    Quilometragem = vm.Quilometragem,
+                    Combustivel = vm.Combustivel,
+                    Caixa = vm.Caixa,
+                    Localizacao = vm.Localizacao,
+                    Descricao = vm.Descricao
+                };
 
-            if (files.Count != 4)
-            {
-                TempData["Toast"] = "Tens de selecionar exatamente 4 imagens.";
+                _db.Veiculos.Add(veiculo);
+                await _db.SaveChangesAsync();
+
+                // =========================
+                // CRIAR ANÚNCIO
+                // =========================
+                var anuncio = new Anuncio
+                {
+                    IdVendedor = user.Vendedor.IdVendedor,
+                    IdVeiculo = veiculo.IdVeiculo,
+                    Titulo = vm.Titulo,
+                    Preco = vm.Preco,
+                    Estado = "ativo",
+                    DataPublicacao = DateTime.Now
+                };
+
+                _db.Anuncios.Add(anuncio);
+                await _db.SaveChangesAsync();
+
+                // =========================
+                // PASTA DO VEÍCULO
+                // =========================
+                var pastaVeiculo = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "imgs",
+                    "veiculos",
+                    veiculo.IdVeiculo.ToString()
+                );
+
+                Directory.CreateDirectory(pastaVeiculo);
+
+                // =========================
+                // GUARDAR IMAGENS (1.jpg → 4.jpg)
+                // =========================
+                int ordem = 1;
+
+                foreach (var img in files)
+                {
+                    var fileName = $"{ordem}.jpg";
+                    var path = Path.Combine(pastaVeiculo, fileName);
+
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await img.CopyToAsync(stream);
+
+                    _db.AnuncioImagems.Add(new AnuncioImagem
+                    {
+                        IdAnuncio = anuncio.IdAnuncio,
+                        Url = $"imgs/veiculos/{veiculo.IdVeiculo}/{fileName}",
+                        Ordem = ordem
+                    });
+
+                    ordem++;
+                }
+
+                await _db.SaveChangesAsync();
+
+                TempData["Toast"] = "Anúncio criado com sucesso.";
                 return RedirectToAction("MeusAnuncios");
             }
 
-            // =========================
-            // CRIAR VEÍCULO
-            // =========================
-            var veiculo = new Veiculo
-            {
-                Marca = vm.Marca,
-                Modelo = vm.Modelo,
-                Categoria = vm.Categoria,
-                Ano = vm.Ano,
-                Quilometragem = vm.Quilometragem,
-                Combustivel = vm.Combustivel,
-                Caixa = vm.Caixa,
-                Localizacao = vm.Localizacao,
-                Descricao = vm.Descricao
-            };
-
-            _db.Veiculos.Add(veiculo);
-            await _db.SaveChangesAsync();
-
-            // =========================
-            // CRIAR ANÚNCIO
-            // =========================
-            var anuncio = new Anuncio
-            {
-                IdVendedor = user.Vendedor.IdVendedor,
-                IdVeiculo = veiculo.IdVeiculo,
-                Titulo = vm.Titulo,
-                Preco = vm.Preco,
-                Estado = "ativo",
-                DataPublicacao = DateTime.Now
-            };
-
-            _db.Anuncios.Add(anuncio);
-            await _db.SaveChangesAsync();
-
-            // =========================
-            // PASTA DO VEÍCULO
-            // =========================
-            var pastaVeiculo = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                "imgs",
-                "veiculos",
-                veiculo.IdVeiculo.ToString()
-            );
-
-            Directory.CreateDirectory(pastaVeiculo);
-
-            // =========================
-            // GUARDAR IMAGENS (1.jpg → 4.jpg)
-            // =========================
-            int ordem = 1;
-
-            foreach (var img in files)
-            {
-                var fileName = $"{ordem}.jpg";
-                var path = Path.Combine(pastaVeiculo, fileName);
-
-                using var stream = new FileStream(path, FileMode.Create);
-                await img.CopyToAsync(stream);
-
-                _db.AnuncioImagems.Add(new AnuncioImagem
-                {
-                    IdAnuncio = anuncio.IdAnuncio,
-                    Url = $"imgs/veiculos/{veiculo.IdVeiculo}/{fileName}",
-                    Ordem = ordem
-                });
-
-                ordem++;
-            }
-
-            await _db.SaveChangesAsync();
-
-            TempData["Toast"] = "Anúncio criado com sucesso.";
-            return RedirectToAction("MeusAnuncios");
         }
-
-    }
-}
+} 

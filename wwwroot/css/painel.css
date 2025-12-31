@@ -371,3 +371,16 @@
         color: #64748b;
         font-weight: 500;
     }
+
+
+
+/* =========================
+   MODAL CRIAR ANÚNCIO
+========================= */
+
+.modal .criar-anuncio-box {
+    width: 620px;
+    max-width: 92vw;
+    max-height: 90vh;
+    overflow-y: auto;
+}

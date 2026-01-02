@@ -184,12 +184,15 @@ namespace AutoHubProjeto.Controllers
             {
                 string estadoTexto = v.Estado switch
                 {
+                    "pendente" when v.DataHora <= agora => "Cancelada",
+                    "confirmada" when v.DataHora <= agora => "Concluída",
                     "pendente" => "Pendente",
                     "confirmada" => "Confirmada",
                     "cancelada" => "Cancelada",
                     "realizada" => "Concluída",
                     _ => "Indefinido"
                 };
+
 
                 var item = new MinhasVisitasItemVM
                 {
@@ -207,10 +210,11 @@ namespace AutoHubProjeto.Controllers
                 {
                     vm.Futuras.Add(item);
                 }
-                else if (v.Estado == "realizada" || v.Estado == "cancelada")
+                else
                 {
                     vm.Passadas.Add(item);
                 }
+
             }
 
             return View(vm);
@@ -1341,12 +1345,15 @@ namespace AutoHubProjeto.Controllers
             {
                 string estadoUI = v.Estado switch
                 {
+                    "pendente" when v.DataHora <= agora => "Cancelada",
+                    "confirmada" when v.DataHora <= agora => "Realizada",
                     "pendente" => "Pendente",
                     "confirmada" => "Confirmada",
                     "cancelada" => "Cancelada",
-                    "realizada" => "Concluída",
+                    "realizada" => "Realizada",
                     _ => "Indefinido"
                 };
+
 
                 var item = new VisitaAgendadaItemVM
                 {
@@ -1364,9 +1371,64 @@ namespace AutoHubProjeto.Controllers
                     vm.Confirmadas.Add(item);
                 else
                     vm.CanceladasRealizadas.Add(item);
+
             }
 
             return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult ConfirmarVisita([FromBody] ReservaAcaoVM vm)
+        {
+            if (vm == null || vm.Id <= 0)
+                return BadRequest();
+
+            var visita = _db.Visita
+                .Include(v => v.IdAnuncioNavigation)
+                .FirstOrDefault(v => v.IdVisita == vm.Id);
+
+            if (visita == null || visita.Estado != "pendente")
+                return BadRequest();
+
+            // confirmar esta visita
+            visita.Estado = "confirmada";
+
+            // cancelar outras visitas pendentes
+            var visitasConflito = _db.Visita
+                .Where(v =>
+                    v.IdAnuncio == visita.IdAnuncio &&
+                    v.DataHora == visita.DataHora &&
+                    v.Estado == "pendente" &&
+                    v.IdVisita != visita.IdVisita
+                )
+                .ToList();
+
+            foreach (var v in visitasConflito)
+            {
+                v.Estado = "cancelada";
+            }
+
+            _db.SaveChanges();
+            return Ok();
+        }
+
+
+        [HttpPost]
+        public IActionResult CancelarVisitaVendedor([FromBody] ReservaAcaoVM vm)
+        {
+            if (vm == null || vm.Id <= 0)
+                return BadRequest();
+
+            var visita = _db.Visita
+                .FirstOrDefault(v => v.IdVisita == vm.Id);
+
+            if (visita == null)
+                return BadRequest();
+
+            visita.Estado = "cancelada";
+
+            _db.SaveChanges();
+            return Ok();
         }
 
     }

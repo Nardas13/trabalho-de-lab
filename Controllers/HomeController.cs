@@ -1,3 +1,4 @@
+using AutoHubProjeto.Helpers;
 using AutoHubProjeto.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace AutoHubProjeto.Controllers
 
         public IActionResult Index()
         {
+            ReservaHelper.ExpirarReservasAsync(_db).Wait();
+
             var destaques = _db.Anuncios
                 .Include(a => a.IdVeiculoNavigation)
                 .Include(a => a.AnuncioImagems)

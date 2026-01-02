@@ -2,6 +2,7 @@
 using AutoHubProjeto.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AutoHubProjeto.Helpers;
 
 namespace AutoHubProjeto.Controllers
 {
@@ -28,6 +29,9 @@ namespace AutoHubProjeto.Controllers
             int? filtroAtivo
         )
         {
+
+            ReservaHelper.ExpirarReservasAsync(_db).Wait();
+
             // flag para verificar se há filtros aplicados
             bool temFiltros =
             !string.IsNullOrEmpty(Categoria) ||

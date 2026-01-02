@@ -355,23 +355,44 @@
     position: relative;
 }
 
-/* escurecer */
-.card.sold .car-image {
-    filter: brightness(0.4);
+/* =============================
+   ANÚNCIOS — BANNERS DE ESTADO
+============================= */
+
+/* container da imagem */
+.img-wrapper {
+    position: relative;
 }
 
-/* banner VENDIDO */
-.sold-banner {
+/* escurecer */
+.card.sold .car-image {
+    filter: brightness(0.45);
+}
+
+/* base comum */
+.sold-banner,
+.reserved-banner {
     position: absolute;
     top: 12px;
     left: 12px;
-    background: rgba(220, 38, 38, 0.85);
-    color: white;
     padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 800;
-    z-index: 20;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #fff;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+/* Vendido */
+.sold-banner {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+}
+
+/* Reservado */
+.reserved-banner {
+    background: linear-gradient(135deg, #c2410c, #ea580c);
 }
 
 /* Filtros favoritos */

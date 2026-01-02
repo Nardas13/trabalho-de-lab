@@ -243,8 +243,12 @@
                         {
                             <div class="sold-banner">VENDIDO</div>
                         }
-                    </div>
+                        else if (anuncio.Estado == "reservado")
+                        {
+                            <div class="reserved-banner">RESERVADO</div>
+                        }
 
+                    </div>
 
                     <div class="card-body">
                         <h3 class="card-title">@anuncio.Titulo</h3>

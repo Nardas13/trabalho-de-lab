@@ -28,20 +28,26 @@
                 .FirstOrDefault()?.Url ?? "imgs/carros.jpg";
 
                 <article class="home-card">
-                    <img src="~/@img" alt="@anuncio.Titulo">
+                    <div class="img-wrapper">
+                        <img src="~/@img" alt="@anuncio.Titulo">
+
+                        @if (anuncio.Estado == "vendido")
+                        {
+                            <div class="sold-banner">VENDIDO</div>
+                        }
+                        else if (anuncio.Estado == "reservado")
+                        {
+                            <div class="reserved-banner">RESERVADO</div>
+                        }
+                    </div>
+
                     <div class="home-card-body">
-                        <h3 class="home-card-title">
-                            @anuncio.IdVeiculoNavigation.Marca
-                            @anuncio.IdVeiculoNavigation.Modelo
-                        </h3>
-
-                        <p class="home-card-meta">€ @anuncio.Preco.ToString("N0")</p>
-
-                        <div class="actions">
-                            <a href="/Veiculos/Detalhes/@anuncio.IdAnuncio" class="btn">Ver Detalhes</a>
-                        </div>
+                        <h3>@anuncio.IdVeiculoNavigation.Marca @anuncio.IdVeiculoNavigation.Modelo</h3>
+                        <p>€ @anuncio.Preco.ToString("N0")</p>
+                        <a href="/Veiculos/Detalhes/@anuncio.IdAnuncio" class="btn">Ver Detalhes</a>
                     </div>
                 </article>
+
             }
         </div>
     </div>

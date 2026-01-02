@@ -1,6 +1,8 @@
 ﻿using AutoHubProjeto.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AutoHubProjeto.Helpers;
+
 
 namespace AutoHubProjeto.Controllers
 {
@@ -13,8 +15,10 @@ namespace AutoHubProjeto.Controllers
             _db = db;
         }
 
-        public IActionResult Detalhes(int id)
+        public async Task<IActionResult> Detalhes(int id)
         {
+            await ReservaHelper.ExpirarReservasAsync(_db);
+
             // Carregar anúncio + veículo + imagens + vendedor
             var anuncio = _db.Anuncios
                 .Include(a => a.IdVeiculoNavigation)

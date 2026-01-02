@@ -1,0 +1,155 @@
+﻿@model AutoHubProjeto.ViewModels.VisitasAgendadasVM
+
+<link rel="stylesheet" href="/css/painel.css" />
+<link rel="stylesheet" href="/css/painel-visitas.css" />
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Visitas Agendadas</h2>
+        <div class="painel-subtitle">
+            Gere as visitas agendadas aos teus anúncios.
+        </div>
+
+        <!-- ================= PENDENTES ================= -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Visitas Pendentes</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Pendentes.Any())
+                {
+                    <p class="estado-muted">Sem visitas pendentes.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Pendentes)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+                                <span class="visita-data">
+                                    @v.DataHora.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                <span class="visita-status pendente">Pendente</span>
+                            </div>
+
+                            <div class="visita-actions">
+                                <button class="btn-view confirmar-visita"
+                                        data-id="@v.IdVisita">
+                                    Confirmar
+                                </button>
+
+                                <button class="btn-cancel cancelar-visita"
+                                        data-id="@v.IdVisita">
+                                    Cancelar
+                                </button>
+                            </div>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- ================= CONFIRMADAS ================= -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Visitas Confirmadas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Confirmadas.Any())
+                {
+                    <p class="estado-muted">Sem visitas confirmadas.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Confirmadas)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+                                <span class="visita-data">
+                                    @v.DataHora.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                <span class="visita-status confirmada">Confirmada</span>
+                            </div>
+
+                            <button class="btn-cancelado" disabled>
+                                Confirmada
+                            </button>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- ================= CANCELADAS / REALIZADAS ================= -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Visitas Canceladas / Realizadas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.CanceladasRealizadas.Any())
+                {
+                    <p class="estado-muted">Sem histórico.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.CanceladasRealizadas)
+                    {
+                        <div class="visita-card cancelada-card">
+
+                            <img src="@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+                                <span class="visita-status cancelada">
+                                    @v.Estado
+                                </span>
+                            </div>
+
+                            <button class="btn-cancelado" disabled>
+                                @v.Estado
+                            </button>
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<!-- MODAL (IGUAL AO DAS RESERVAS) -->
+<div id="reservaModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+        <h3 id="modalTitle"></h3>
+        <p id="modalText"></p>
+
+        <div class="modal-buttons">
+            <button id="closeModal" class="btn-outline">
+                Fechar
+            </button>
+
+            <button id="confirmAction" class="btn">
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/painel-visitas-vendedor.js"></script>

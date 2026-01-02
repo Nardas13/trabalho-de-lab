@@ -8,30 +8,41 @@
 .acoes-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-width: 520px;
+    gap: 10px;
+    max-width: 460px; 
 }
+
 
 .acao-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255,255,255,0.6);
-    padding: 14px 18px;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.04);
 }
+
+    .acao-card .btn-outline {
+        padding: 6px 14px;
+        font-size: 13px;
+        border-radius: 999px;
+    }
+
 
 .acao-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
+    font-size: 14px;
 }
 
 .acao-tipo {
-    font-size: 12px;
+    font-size: 11px;
     color: #64748b;
+    font-weight: 500;
 }
+
 
 .favoritos-mini {
     display: flex;

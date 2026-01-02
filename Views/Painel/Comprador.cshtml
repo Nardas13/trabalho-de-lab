@@ -31,10 +31,16 @@
                 {
                     <span>📅 @Model.NumVisitasAtivas visita(s) marcada(s)</span>
                 }
-                @if (Model.NumReservasPendentes > 0)
+                @if (Model.NumReservasAtivas > 0)
                 {
-                    <span>⏳ @Model.NumReservasPendentes reserva(s) pendente(s)</span>
+                    <span>🔒 @Model.NumReservasAtivas reserva(s) ativa(s)</span>
                 }
+
+                @if (Model.NumCompras > 0)
+                {
+                    <span>💳 @Model.NumCompras compra(s) efetuada(s)</span>
+                }
+
             </p>
         }
 

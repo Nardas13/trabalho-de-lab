@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
+
 namespace AutoHubProjeto.Controllers
 {
     public class PainelController : Controller
@@ -19,6 +20,8 @@ namespace AutoHubProjeto.Controllers
 
         public async Task<IActionResult> Index()
         {
+            await ReservaHelper.ExpirarReservasAsync(_db);
+
             if (!User.Identity.IsAuthenticated)
                 return RedirectToAction("Login", "Auth");
 
@@ -230,6 +233,8 @@ namespace AutoHubProjeto.Controllers
         }
         public async Task<IActionResult> MinhasReservas()
         {
+            await ReservaHelper.ExpirarReservasAsync(_db);
+
             if (!User.Identity.IsAuthenticated)
                 return RedirectToAction("Login", "Auth");
 
@@ -790,6 +795,8 @@ namespace AutoHubProjeto.Controllers
         [HttpGet]
         public async Task<IActionResult> Comprador()
         {
+            await ReservaHelper.ExpirarReservasAsync(_db);
+
             if (!User.Identity!.IsAuthenticated)
                 return Unauthorized();
 
@@ -808,6 +815,7 @@ namespace AutoHubProjeto.Controllers
             if (user?.Comprador == null)
                 return Unauthorized();
 
+            var agora = DateTime.Now;
             var vm = new PainelCompradorVM();
 
             /* ======================
@@ -815,7 +823,9 @@ namespace AutoHubProjeto.Controllers
             ======================= */
 
             var visitasAtivas = user.Comprador.Visita
-                .Where(v => v.Estado == "Pendente" || v.Estado == "Confirmada")
+                .Where(v =>
+                    (v.Estado == "pendente" || v.Estado == "confirmada") &&
+                    v.DataHora > agora)
                 .ToList();
 
             vm.NumVisitasAtivas = visitasAtivas.Count;
@@ -826,7 +836,7 @@ namespace AutoHubProjeto.Controllers
                 {
                     Tipo = "Visita",
                     Titulo = v.IdAnuncioNavigation.Titulo,
-                    Url = $"/Painel/MinhasVisitas"
+                    Url = "/Painel/MinhasVisitas"
                 });
             }
 
@@ -835,7 +845,7 @@ namespace AutoHubProjeto.Controllers
             ======================= */
 
             var reservasPendentes = user.Comprador.Reservas
-                .Where(r => r.Estado == "Pendente")
+                .Where(r => r.Estado == "pendente")
                 .ToList();
 
             vm.NumReservasPendentes = reservasPendentes.Count;
@@ -850,36 +860,76 @@ namespace AutoHubProjeto.Controllers
                 });
             }
 
+            /* ======================
+               RESERVAS ATIVAS
+            ======================= */
+
+            var reservasAtivas = user.Comprador.Reservas
+                .Where(r =>
+                    r.Estado == "ativa" &&
+                    r.ExpiraEm > agora)
+                .ToList();
+
+            vm.NumReservasAtivas = reservasAtivas.Count;
+
+            foreach (var r in reservasAtivas)
+            {
+                vm.Acoes.Add(new AcaoCompradorVM
+                {
+                    Tipo = "Reserva Ativa",
+                    Titulo = r.IdAnuncioNavigation.Titulo,
+                    Url = "/Painel/MinhasReservas"
+                });
+            }
+
+            /* ======================
+               COMPRAS
+            ======================= */
+
+            vm.NumCompras = await _db.Compras.CountAsync(c =>
+                c.IdComprador == user.Comprador.IdComprador &&
+                c.EstadoPagamento == "pago"
+            );
+
+            /* ======================
+               ESTADO GERAL
+            ======================= */
+
             vm.TemAtividade =
                 vm.NumVisitasAtivas > 0 ||
-                vm.NumReservasPendentes > 0;
+                vm.NumReservasPendentes > 0 ||
+                vm.NumReservasAtivas > 0 ||
+                vm.NumCompras > 0;
 
             /* ======================
                FAVORITOS (máx 3)
             ======================= */
 
             vm.Favoritos = await _db.Favoritos
-    .Where(f => f.IdComprador == user.Comprador.IdComprador)
-    .Include(f => f.Anuncio)
-        .ThenInclude(a => a.AnuncioImagems)
-    .OrderByDescending(f => f.DataFavorito)
-    .Take(3)
-    .Select(f => new FavoritoMiniVM
-    {
-        IdAnuncio = f.IdAnuncio,
-        Titulo = f.Anuncio.Titulo,
-        Preco = f.Anuncio.Preco,
-        Imagem = f.Anuncio.AnuncioImagems
-            .OrderBy(i => i.Ordem)
-            .Select(i => "/" + i.Url.TrimStart('/'))
-            .FirstOrDefault()
-    })
-            .ToListAsync();
+                .Where(f => f.IdComprador == user.Comprador.IdComprador)
+                .Include(f => f.Anuncio)
+                    .ThenInclude(a => a.AnuncioImagems)
+                .OrderByDescending(f => f.DataFavorito)
+                .Take(3)
+                .Select(f => new FavoritoMiniVM
+                {
+                    IdAnuncio = f.IdAnuncio,
+                    Titulo = f.Anuncio.Titulo,
+                    Preco = f.Anuncio.Preco,
+                    Imagem = f.Anuncio.AnuncioImagems
+                        .OrderBy(i => i.Ordem)
+                        .Select(i => "/" + i.Url.TrimStart('/'))
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
 
             return View(vm);
         }
+
         public async Task<IActionResult> MeusAnuncios()
         {
+            await ReservaHelper.ExpirarReservasAsync(_db);
+
             var email = User.Identity!.Name;
 
             var user = await _db.Utilizadors
@@ -1169,6 +1219,8 @@ namespace AutoHubProjeto.Controllers
 
         public async Task<IActionResult> Reservas()
         {
+            await ReservaHelper.ExpirarReservasAsync(_db);
+
             var email = User.Identity!.Name;
 
             var user = await _db.Utilizadors
@@ -1260,6 +1312,61 @@ namespace AutoHubProjeto.Controllers
 
             _db.SaveChanges();
             return Ok();
+        }
+
+        public async Task<IActionResult> Visitas()
+        {
+            var email = User.Identity!.Name;
+
+            var user = await _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user?.Vendedor == null)
+                return Unauthorized();
+
+            int idVendedor = user.Vendedor.IdVendedor;
+            var agora = DateTime.Now;
+
+            var visitas = await _db.Visita
+                .Include(v => v.IdAnuncioNavigation)
+                    .ThenInclude(a => a.AnuncioImagems)
+                .Where(v => v.IdAnuncioNavigation.IdVendedor == idVendedor)
+                .OrderBy(v => v.DataHora)
+                .ToListAsync();
+
+            var vm = new VisitasAgendadasVM();
+
+            foreach (var v in visitas)
+            {
+                string estadoUI = v.Estado switch
+                {
+                    "pendente" => "Pendente",
+                    "confirmada" => "Confirmada",
+                    "cancelada" => "Cancelada",
+                    "realizada" => "Concluída",
+                    _ => "Indefinido"
+                };
+
+                var item = new VisitaAgendadaItemVM
+                {
+                    IdVisita = v.IdVisita,
+                    Titulo = v.IdAnuncioNavigation.Titulo,
+                    Imagem = "/" + (v.IdAnuncioNavigation.AnuncioImagems.FirstOrDefault()?.Url
+                                    ?? "imgs/placeholder-car.png"),
+                    DataHora = v.DataHora,
+                    Estado = estadoUI
+                };
+
+                if (v.Estado == "pendente")
+                    vm.Pendentes.Add(item);
+                else if (v.Estado == "confirmada" && v.DataHora > agora)
+                    vm.Confirmadas.Add(item);
+                else
+                    vm.CanceladasRealizadas.Add(item);
+            }
+
+            return View(vm);
         }
 
     }

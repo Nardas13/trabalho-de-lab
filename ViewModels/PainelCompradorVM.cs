@@ -9,6 +9,8 @@
         public bool TemAtividade { get; set; }
         public int NumVisitasAtivas { get; set; }
         public int NumReservasPendentes { get; set; }
+        public int NumReservasAtivas { get; set; }
+        public int NumCompras { get; set; }
 
         /* ======================
            AÇÕES

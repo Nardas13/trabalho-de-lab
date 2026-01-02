@@ -44,10 +44,11 @@
 
             <div class="auth-divider"><span>ou</span></div>
 
-            <button type="button" class="social-btn google-btn">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+            <button type="button" class="social-btn google-btn" onclick="googleEmDesenvolvimento()">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" />
                 Continuar com Google
             </button>
+
 
             <p class="auth-switch">
                 Não tens conta?
@@ -244,4 +245,16 @@
     // monitorizar em tempo real
     document.addEventListener("input", updateRegisterButton);
 
+    function googleEmDesenvolvimento() {
+        const msg = document.createElement("div");
+        msg.className = "toast";
+        msg.innerText = "Funcionalidade em desenvolvimento.";
+        document.body.appendChild(msg);
+
+        setTimeout(() => msg.classList.add("show"), 10);
+        setTimeout(() => msg.classList.remove("show"), 2000);
+        setTimeout(() => msg.remove(), 2600);
+    }
+
 </script>
+

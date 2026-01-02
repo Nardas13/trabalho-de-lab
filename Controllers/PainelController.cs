@@ -354,19 +354,31 @@ namespace AutoHubProjeto.Controllers
                     Estado = c.EstadoPagamento switch
                     {
                         "pendente" => "Pendente",
-                        "pago" => "Confirmada",
-                        _ => "Cancelada"
+                        "pago" => "Paga",
+                        "cancelado" => "Cancelada",
+                        _ => "Indefinido"
                     }
                 };
 
-                if (c.EstadoPagamento == "pendente")
-                    vm.Pendentes.Add(item);
-                else
-                    vm.Historico.Add(item);
+                switch (c.EstadoPagamento)
+                {
+                    case "pendente":
+                        vm.Pendentes.Add(item);
+                        break;
+
+                    case "pago":
+                        vm.Pagas.Add(item);
+                        break;
+
+                    case "cancelado":
+                        vm.Canceladas.Add(item);
+                        break;
+                }
             }
 
             return View(vm);
         }
+
 
         [HttpPost]
         public IActionResult CancelarCompra([FromBody] JsonElement dados)

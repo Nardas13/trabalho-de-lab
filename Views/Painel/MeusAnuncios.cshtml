@@ -74,7 +74,9 @@
                                 </a>
 
                                 @* AÇÕES POR ESTADO *@
-                        @if (a.Anuncio.Estado == "ativo" || a.Anuncio.Estado == "pausado")
+                        @if (a.Anuncio.Estado == "ativo"
+                                                || a.Anuncio.Estado == "pausado"
+                                                || a.Anuncio.Estado == "vendido")
                                 {
                                     @* Pausar / Ativar *@
                                     if (a.Anuncio.Estado == "ativo")

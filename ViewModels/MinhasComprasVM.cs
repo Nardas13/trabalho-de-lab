@@ -17,6 +17,8 @@
     public class MinhasComprasVM
     {
         public List<MinhasComprasItemVM> Pendentes { get; set; } = new();
-        public List<MinhasComprasItemVM> Historico { get; set; } = new();
+        public List<MinhasComprasItemVM> Pagas { get; set; } = new();
+        public List<MinhasComprasItemVM> Canceladas { get; set; } = new();
     }
+
 }

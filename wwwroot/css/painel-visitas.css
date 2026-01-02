@@ -465,3 +465,48 @@ button.disabled {
         color: #64748b;
         font-weight: 500;
     }
+
+/* ===============================
+   VENDAS – PREÇO 
+=============================== */
+
+.venda-meta {
+    margin-bottom: 6px;
+    text-align: right;
+    width: 100%;
+}
+
+.venda-preco {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+    opacity: 0.85;
+}
+
+/* ===============================
+   COMPRAS / VENDAS 
+=============================== */
+
+.acoes-inline {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* ===============================
+   HISTÓRICO – PREÇO
+=============================== */
+
+.historico-meta {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.historico-preco {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #9aa0a6; 
+}

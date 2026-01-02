@@ -1,0 +1,197 @@
+﻿@model AutoHubProjeto.ViewModels.VendasVM
+
+<link rel="stylesheet" href="/css/painel.css" />
+<link rel="stylesheet" href="/css/painel-visitas.css" />
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Compras / Vendas</h2>
+        <div class="painel-subtitle">
+            Histórico das vendas realizadas nos teus anúncios.
+        </div>
+
+        <!-- ================= VENDAS PENDENTES ================= -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Vendas Pendentes</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Pendentes.Any())
+                {
+                    <p class="estado-muted">Sem vendas pendentes.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Pendentes)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+
+                                <span class="visita-data">
+                                    Comprador: @v.CompradorEmail
+                                </span>
+
+                                <span class="visita-data">
+                                    @v.DataCompra.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+
+                                <span class="visita-status pendente">
+                                    Pendente
+                                </span>
+                            </div>
+
+                            <div class="visita-actions">
+
+                                <div class="venda-meta">
+                                    <span class="venda-preco">
+                                        @v.Valor.ToString("N2") €
+                                    </span>
+                                </div>
+
+                                <div class="acoes-inline">
+                                    <button class="btn-view confirmar-compra"
+                                            data-id="@v.IdCompra">
+                                        Confirmar
+                                    </button>
+
+                                    <button class="cancel-btn cancelar-compra"
+                                            data-id="@v.IdCompra">
+                                        Cancelar
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <!-- ================= Concluídos ================= -->
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Vendas Concluídas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Concluidas.Any())
+                {
+                    <p class="estado-muted">Sem vendas concluídas.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Concluidas)
+                    {
+                        <div class="visita-card">
+
+                            <img src="@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+
+                                <span class="visita-data">
+                                    Comprador: @v.CompradorEmail
+                                </span>
+
+                                <span class="visita-status confirmada">
+                                    Concluída
+                                </span>
+                            </div>
+
+                            <div class="historico-meta">
+                                <span class="historico-preco">
+                                    @v.Valor.ToString("N2") €
+                                </span>
+                            </div>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <!-- ================= Canceladas ================= -->
+
+        <div class="section-divider"></div>
+        <h3 class="painel-section-title">Vendas Canceladas</h3>
+
+        <div class="visitas-wrapper">
+            <div class="visitas-list">
+
+                @if (!Model.Canceladas.Any())
+                {
+                    <p class="estado-muted">Sem vendas canceladas.</p>
+                }
+                else
+                {
+                    foreach (var v in Model.Canceladas)
+                    {
+                        <div class="visita-card cancelada-card">
+
+                            <img src="@v.Imagem" class="visita-img" />
+
+                            <div class="visita-info">
+                                <h4>@v.Titulo</h4>
+
+                                <span class="visita-data">
+                                    Comprador: @v.CompradorEmail
+                                </span>
+
+                                <span class="visita-status cancelada">
+                                    Cancelada
+                                </span>
+                            </div>
+
+                            <div class="historico-meta">
+                                <span class="historico-preco">
+                                    @v.Valor.ToString("N2") €
+                                </span>
+                            </div>
+
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+
+    </section>
+</div>
+
+<!-- ================= MODAL CONFIRMAÇÃO ================= -->
+<div id="reservaModal" class="modal hidden">
+    <div class="modal-content cancel-box">
+
+        <h2 id="modalTitle"></h2>
+        <p id="modalText" class="cancel-text"></p>
+
+        <div class="modal-buttons">
+            <button type="button"
+                    class="btn-outline"
+                    id="closeModal">
+                Fechar
+            </button>
+
+            <button type="button"
+                    class="btn"
+                    id="confirmAction">
+                Confirmar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/painel-compras-vendedor.js"></script>

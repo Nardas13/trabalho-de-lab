@@ -1431,5 +1431,113 @@ namespace AutoHubProjeto.Controllers
             return Ok();
         }
 
+        public async Task<IActionResult> Compras()
+        {
+            var email = User.Identity!.Name;
+
+            var vendedor = await _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (vendedor?.Vendedor == null)
+                return Unauthorized();
+
+            int idVendedor = vendedor.Vendedor.IdVendedor;
+
+            var compras = await _db.Compras
+                .Include(c => c.IdAnuncioNavigation)
+                    .ThenInclude(a => a.AnuncioImagems)
+                .Include(c => c.IdCompradorNavigation)
+                    .ThenInclude(cmp => cmp.IdCompradorNavigation)
+                .Where(c => c.IdAnuncioNavigation.IdVendedor == idVendedor)
+                .OrderByDescending(c => c.DataCompra)
+                .ToListAsync();
+
+            var vm = new VendasVM();
+
+            foreach (var c in compras)
+            {
+                var item = new VendasItemVM
+                {
+                    IdCompra = c.IdCompra,
+                    Titulo = c.IdAnuncioNavigation.Titulo,
+                    Imagem = "/" + (c.IdAnuncioNavigation.AnuncioImagems.FirstOrDefault()?.Url
+                             ?? "imgs/placeholder-car.png"),
+                    Valor = c.Valor,
+                    DataCompra = c.DataCompra,
+                    CompradorEmail = c.IdCompradorNavigation.IdCompradorNavigation.Email,
+                    Estado = c.EstadoPagamento
+                };
+
+                if (c.EstadoPagamento == "pendente")
+                {
+                    vm.Pendentes.Add(item);
+                }
+                else if (c.EstadoPagamento == "pago")
+                {
+                    vm.Concluidas.Add(item);
+                }
+                else if (c.EstadoPagamento == "cancelado")
+                {
+                    vm.Canceladas.Add(item);
+                }
+
+            }
+
+            return View(vm);
+        }
+
+        // =========================
+        // CONFIRMAR VENDA
+        // =========================
+        [HttpPost]
+        public IActionResult ConfirmarVenda([FromBody] ReservaAcaoVM vm)
+        {
+            if (vm == null || vm.Id <= 0)
+                return BadRequest();
+
+            var compra = _db.Compras
+                .Include(c => c.IdAnuncioNavigation)
+                .FirstOrDefault(c => c.IdCompra == vm.Id);
+
+            if (compra == null || compra.EstadoPagamento != "pendente")
+                return BadRequest();
+
+            // marcar compra como paga
+            compra.EstadoPagamento = "pago";
+
+            // anúncio passa a vendido
+            compra.IdAnuncioNavigation.Estado = "vendido";
+
+            _db.SaveChanges();
+            return Ok();
+        }
+
+        // =========================
+        // CANCELAR VENDA
+        // =========================
+        [HttpPost]
+        public IActionResult CancelarVenda([FromBody] ReservaAcaoVM vm)
+        {
+            if (vm == null || vm.Id <= 0)
+                return BadRequest();
+
+            var compra = _db.Compras
+                .Include(c => c.IdAnuncioNavigation)
+                .FirstOrDefault(c => c.IdCompra == vm.Id);
+
+            if (compra == null || compra.EstadoPagamento != "pendente")
+                return BadRequest();
+
+            // cancelar compra
+            compra.EstadoPagamento = "cancelado";
+
+            // anúncio volta a ativo
+            compra.IdAnuncioNavigation.Estado = "ativo";
+
+            _db.SaveChanges();
+            return Ok();
+        }
+
     }
 } 

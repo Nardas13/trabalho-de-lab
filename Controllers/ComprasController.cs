@@ -52,7 +52,7 @@ namespace AutoHubProjeto.Controllers
             if (compraPendente)
                 return Json(new { ok = false, msg = "Já tens um pedido de compra pendente para este veículo." });
 
-            // bloquear se já foi vendido (comentado a pedido)
+            // bloquear se já foi vendido
             //bool vendido = _db.Compras.Any(c =>
             //    c.IdAnuncio == idAnuncio &&
             //    c.EstadoPagamento == "pago");

@@ -19,16 +19,23 @@ namespace AutoHubProjeto.Controllers
 
         public IActionResult Index()
         {
+            // garante que reservas expiradas libertam anúncios
             ReservaHelper.ExpirarReservasAsync(_db).Wait();
 
             var destaques = _db.Anuncios
-                .Include(a => a.IdVeiculoNavigation)
-                .Include(a => a.AnuncioImagems)
-                .Take(3)
-                .ToList();
+            .Include(a => a.IdVeiculoNavigation)
+            .Include(a => a.AnuncioImagems)
+            .Where(a =>
+                a.Estado == "ativo" ||
+                a.Estado == "reservado"
+            )
+            .OrderByDescending(a => a.DataPublicacao)
+            .Take(3)
+            .ToList();
 
             return View(destaques);
         }
+
 
         public IActionResult Privacy()
         {

@@ -1365,12 +1365,20 @@ namespace AutoHubProjeto.Controllers
                     Estado = estadoUI
                 };
 
-                if (v.Estado == "pendente")
+                if (estadoUI == "Pendente")
+                {
                     vm.Pendentes.Add(item);
-                else if (v.Estado == "confirmada" && v.DataHora > agora)
+                }
+                else if (estadoUI == "Confirmada")
+                {
                     vm.Confirmadas.Add(item);
+                }
                 else
+                {
+                    // Cancelada ou Realizada
                     vm.CanceladasRealizadas.Add(item);
+                }
+
 
             }
 

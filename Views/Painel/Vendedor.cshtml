@@ -1,4 +1,89 @@
-﻿@page
-@model AutoHubProjeto.Views.Painel.VendedorModel
-@{
-}
+﻿@model AutoHubProjeto.ViewModels.PainelVendedorVM
+
+<link rel="stylesheet" href="/css/painel.css" />
+<link rel="stylesheet" href="/css/painel-comprador.css" />
+
+<div class="painel-wrapper">
+    @await Component.InvokeAsync("MenuPainel")
+
+    <section class="painel-content">
+
+        <h2 class="painel-title">Painel do Vendedor</h2>
+        <p class="painel-subtitle">
+            Resumo da tua atividade como vendedor.
+        </p>
+
+        <div class="section-divider"></div>
+
+        <h3 class="painel-section-title">Estado atual</h3>
+
+        <div class="estado-texto">
+            <span>📢 @Model.AnunciosAtivos anúncio(s) ativo(s)</span>
+            <span>🔒 @Model.AnunciosReservados anúncio(s) reservado(s)</span>
+            <span>📅 @Model.VisitasAgendadas visita(s) agendada(s)</span>
+        </div>
+
+
+        <div class="section-divider"></div>
+
+        <h3 class="painel-section-title">Ações pendentes</h3>
+
+        <div class="acoes-list">
+
+            @if (Model.ReservasPendentes > 0)
+            {
+                <div class="acao-card">
+                    <div class="acao-info">
+                        <span class="acao-tipo">Reservas</span>
+                        <strong>@Model.ReservasPendentes pendente(s)</strong>
+                    </div>
+
+                    <a href="/Painel/Reservas" class="btn-outline">
+                        Ver
+                    </a>
+                </div>
+            }
+
+            @if (Model.VisitasPendentes > 0)
+            {
+                <div class="acao-card">
+                    <div class="acao-info">
+                        <span class="acao-tipo">Visitas</span>
+                        <strong>@Model.VisitasPendentes pendente(s)</strong>
+                    </div>
+
+                    <a href="/Painel/Visitas" class="btn-outline">
+                        Ver
+                    </a>
+                </div>
+            }
+
+            @if (Model.VendasPendentes > 0)
+            {
+                <div class="acao-card">
+                    <div class="acao-info">
+                        <span class="acao-tipo">Vendas</span>
+                        <strong>@Model.VendasPendentes pendente(s)</strong>
+                    </div>
+
+                    <a href="/Painel/Compras" class="btn-outline">
+                        Ver
+                    </a>
+                </div>
+            }
+
+            @if (
+                        Model.ReservasPendentes == 0 &&
+                        Model.VisitasPendentes == 0 &&
+                        Model.VendasPendentes == 0
+                        )
+            {
+                <p class="estado-muted">
+                    Sem ações pendentes neste momento.
+                </p>
+            }
+
+        </div>
+
+    </section>
+</div>

@@ -1546,6 +1546,51 @@ namespace AutoHubProjeto.Controllers
             _db.SaveChanges();
             return Ok();
         }
+        public async Task<IActionResult> Vendedor()
+        {
+            var email = User.Identity!.Name;
+
+            var user = await _db.Utilizadors
+                .Include(u => u.Vendedor)
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user?.Vendedor == null)
+                return Unauthorized();
+
+            int idVendedor = user.Vendedor.IdVendedor;
+            var agora = DateTime.Now;
+
+            var vm = new PainelVendedorVM
+            {
+                AnunciosAtivos = await _db.Anuncios.CountAsync(a =>
+                    a.IdVendedor == idVendedor &&
+                    a.Estado == "ativo"),
+
+                AnunciosReservados = await _db.Anuncios.CountAsync(a =>
+                    a.IdVendedor == idVendedor &&
+                    a.Estado == "reservado"),
+
+                VisitasAgendadas = await _db.Visita.CountAsync(v =>
+                    v.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                    (v.Estado == "pendente" || v.Estado == "confirmada") &&
+                    v.DataHora > agora),
+
+                ReservasPendentes = await _db.Reservas.CountAsync(r =>
+                    r.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                    r.Estado == "pendente"),
+
+                VisitasPendentes = await _db.Visita.CountAsync(v =>
+                    v.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                    v.Estado == "pendente" &&
+                    v.DataHora > agora),
+
+                VendasPendentes = await _db.Compras.CountAsync(c =>
+                    c.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                    c.EstadoPagamento == "pendente")
+            };
+
+            return View(vm);
+        }
 
     }
 } 

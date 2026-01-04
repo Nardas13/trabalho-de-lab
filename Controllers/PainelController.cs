@@ -29,9 +29,15 @@ namespace AutoHubProjeto.Controllers
 
             var user = await _db.Utilizadors
                 .Include(u => u.Comprador)
+                    .ThenInclude(c => c.Visita)
+                        .ThenInclude(v => v.IdAnuncioNavigation)
+                .Include(u => u.Comprador)
+                    .ThenInclude(c => c.Reservas)
+                        .ThenInclude(r => r.IdAnuncioNavigation)
                 .Include(u => u.Vendedor)
                 .Include(u => u.Administrador)
                 .FirstOrDefaultAsync(u => u.Email == email);
+
 
             if (user == null)
                 return RedirectToAction("Login", "Auth");
@@ -76,6 +82,8 @@ namespace AutoHubProjeto.Controllers
 
             var atividade = new List<PainelAtividadeVM>();
             var limite = DateTime.Now.AddDays(-30);
+            var agora = DateTime.Now;
+
 
             // FAVORITOS
             atividade.AddRange(
@@ -94,47 +102,54 @@ namespace AutoHubProjeto.Controllers
 
             // RESERVAS
             atividade.AddRange(
-                await _db.Reservas
+                user.Comprador.Reservas
                     .Where(r =>
-                        r.IdComprador == idComprador &&
-                        (r.Estado == "ativa" || r.Estado == "expirada") &&
-                        r.DataReserva >= limite
-                    )
-                    .Include(r => r.IdAnuncioNavigation)
+                        r.Estado == "ativa" &&
+                        r.ExpiraEm > agora)
                     .Select(r => new PainelAtividadeVM
                     {
-                        Tipo = "Reserva",
+                        Tipo = "Reserva (expira)",
                         Titulo = r.IdAnuncioNavigation.Titulo,
-                        Data = r.DataReserva
+                        Data = r.ExpiraEm   
                     })
-                    .ToListAsync()
             );
 
+            atividade.AddRange(
+                user.Comprador.Reservas
+                    .Where(r =>
+                        r.Estado == "expirada" &&
+                        r.ExpiraEm <= agora &&
+                        r.ExpiraEm >= limite)
+                    .Select(r => new PainelAtividadeVM
+                    {
+                        Tipo = "Reserva Expirada",
+                        Titulo = r.IdAnuncioNavigation.Titulo,
+                        Data = r.ExpiraEm   
+                    })
+            );
 
             // VISITAS
             atividade.AddRange(
-                await _db.Visita
+                user.Comprador.Visita
                     .Where(v =>
-                        v.IdComprador == idComprador &&
-                        (v.Estado == "confirmada" || v.Estado == "realizada") &&
+                        v.Estado == "confirmada" &&
                         v.DataHora >= limite
                     )
-                    .Include(v => v.IdAnuncioNavigation)
                     .Select(v => new PainelAtividadeVM
                     {
                         Tipo = "Visita",
                         Titulo = v.IdAnuncioNavigation.Titulo,
                         Data = v.DataHora
                     })
-                    .ToListAsync()
             );
 
             // COMPRAS
             atividade.AddRange(
                 await _db.Compras
                     .Where(c =>
-                        c.IdComprador == idComprador &&
-                        c.EstadoPagamento == "pago")
+                        c.IdComprador == user.Comprador.IdComprador &&
+                        c.EstadoPagamento == "pago" &&
+                        c.DataCompra >= limite)
                     .Include(c => c.IdAnuncioNavigation)
                     .Select(c => new PainelAtividadeVM
                     {
@@ -147,7 +162,7 @@ namespace AutoHubProjeto.Controllers
 
             if (idVendedor != 0)
             {
-                // VISITAS MARCADAS NOS SEUS ANÚNCIOS
+                // VISITAS MARCADAS 
                 atividade.AddRange(
                     await _db.Visita
                         .Where(v =>
@@ -164,7 +179,7 @@ namespace AutoHubProjeto.Controllers
                         .ToListAsync()
                 );
 
-                // VEÍCULOS RESERVADOS NOS SEUS ANÚNCIOS
+                // VEÍCULOS RESERVADOS 
                 atividade.AddRange(
                     await _db.Reservas
                         .Where(r =>
@@ -215,12 +230,40 @@ namespace AutoHubProjeto.Controllers
                         .ToListAsync()
                 );
             }
-
-
-            vm.Atividade = atividade
-                .OrderByDescending(a => a.Data)
-                .Take(6)
+            var atividadeComprador = atividade
+                .Where(a =>
+                    a.Tipo == "Favorito" ||
+                    a.Tipo == "Reserva (expira)" ||
+                    a.Tipo == "Reserva Expirada" ||
+                    a.Tipo == "Visita" ||
+                    a.Tipo == "Compra")
                 .ToList();
+
+            var atividadeVendedor = atividade
+                .Where(a =>
+                    a.Tipo.Contains("Vendedor") ||
+                    a.Tipo == "Reserva Ativa" ||
+                    a.Tipo == "Venda" ||
+                    a.Tipo == "Anúncio Criado")
+                .ToList();
+
+            if (idVendedor == 0)
+            {
+               
+                vm.Atividade = atividadeComprador
+                    .OrderByDescending(a => a.Data)
+                    .Take(6)
+                    .ToList();
+            }
+            else
+            {
+               
+                vm.Atividade = atividadeComprador
+                    .Concat(atividadeVendedor)
+                    .OrderByDescending(a => a.Data)
+                    .Take(6)
+                    .ToList();
+            }
 
             return View(vm);
         }
@@ -912,7 +955,7 @@ namespace AutoHubProjeto.Controllers
 
             var visitasAtivas = user.Comprador.Visita
                 .Where(v =>
-                    (v.Estado == "confirmada") &&
+                    v.Estado == "confirmada" &&
                     v.DataHora > agora)
                 .ToList();
 
@@ -922,29 +965,9 @@ namespace AutoHubProjeto.Controllers
             {
                 vm.Acoes.Add(new AcaoCompradorVM
                 {
-                    Tipo = "Visita",
+                    Tipo = "Visita Confirmada",
                     Titulo = v.IdAnuncioNavigation.Titulo,
                     Url = "/Painel/MinhasVisitas"
-                });
-            }
-
-            /* ======================
-               RESERVAS PENDENTES
-            ======================= */
-
-            var reservasPendentes = user.Comprador.Reservas
-                .Where(r => r.Estado == "pendente")
-                .ToList();
-
-            vm.NumReservasPendentes = reservasPendentes.Count;
-
-            foreach (var r in reservasPendentes)
-            {
-                vm.Acoes.Add(new AcaoCompradorVM
-                {
-                    Tipo = "Reserva",
-                    Titulo = r.IdAnuncioNavigation.Titulo,
-                    Url = "/Painel/MinhasReservas"
                 });
             }
 
@@ -973,6 +996,22 @@ namespace AutoHubProjeto.Controllers
             /* ======================
                COMPRAS
             ======================= */
+            var pagamentosPendentes = await _db.Compras
+                .Where(c =>
+                    c.IdComprador == user.Comprador.IdComprador &&
+                    c.EstadoPagamento == "pendente")
+                .Include(c => c.IdAnuncioNavigation)
+                .ToListAsync();
+
+            foreach (var c in pagamentosPendentes)
+            {
+                vm.Acoes.Add(new AcaoCompradorVM
+                {
+                    Tipo = "Pagamento Pendente",
+                    Titulo = c.IdAnuncioNavigation.Titulo,
+                    Url = "/Pagamentos/Detalhes/" + c.IdCompra
+                });
+            }
 
             vm.NumCompras = await _db.Compras.CountAsync(c =>
                 c.IdComprador == user.Comprador.IdComprador &&
@@ -985,7 +1024,6 @@ namespace AutoHubProjeto.Controllers
 
             vm.TemAtividade =
                 vm.NumVisitasAtivas > 0 ||
-                vm.NumReservasPendentes > 0 ||
                 vm.NumReservasAtivas > 0 ||
                 vm.NumCompras > 0;
 

@@ -102,7 +102,24 @@
                             <span class="act-dot"></span>
                             <strong>@item.Tipo:</strong>
                             <span class="activity-title">@item.Titulo</span>
-                            <span class="act-time">@item.TempoDecorrido</span>
+                            <span class="act-time">
+                                @if (
+                                                        (item.Tipo == "Reserva (expira)" || item.Tipo == "Reserva Ativa")
+                                                        && item.Data > DateTime.Now
+                                                        )
+                                {
+                                    <text>Expira @item.TempoDecorrido</text>
+                                }
+                                else if (item.Tipo == "Reserva Expirada")
+                                {
+                                    <text>Expirou @item.TempoDecorrido</text>
+                                }
+                                else
+                                {
+                                    @item.TempoDecorrido
+                                }
+                            </span>
+
 
                         </li>
                     }

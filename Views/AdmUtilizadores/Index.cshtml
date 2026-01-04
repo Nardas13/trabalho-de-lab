@@ -28,15 +28,20 @@
                     {
                         <span class="badge admin">Admin</span>
                     }
-                    else if (u.Vendedor != null)
+                    else if (u.Vendedor != null && u.Vendedor.Aprovado)
                     {
                         <span class="badge vendedor">Vendedor</span>
+                    }
+                    else if (u.Vendedor != null && !u.Vendedor.Aprovado)
+                    {
+                        <span class="badge pending">Pedido de Vendedor</span>
                     }
                     else
                     {
                         <span class="badge comprador">Comprador</span>
                     }
                 </td>
+
                 <td>@u.EstadoConta</td>
                 <td>
                     <a href="/AdmUtilizadores/Detalhes/@u.Id" class="link-view">

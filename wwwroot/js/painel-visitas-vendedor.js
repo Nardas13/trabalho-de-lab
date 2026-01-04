@@ -1,6 +1,12 @@
 ﻿let visitaSelecionada = null;
 let acaoSelecionada = null;
 
+function fecharModal() {
+    document.getElementById("reservaModal").classList.add("hidden");
+    visitaSelecionada = null;
+    acaoSelecionada = null;
+}
+
 document.querySelectorAll(".confirmar-visita").forEach(btn => {
     btn.addEventListener("click", () => {
         visitaSelecionada = btn.dataset.id;
@@ -34,4 +40,20 @@ document.getElementById("confirmAction").addEventListener("click", () => {
         body: JSON.stringify({ id: visitaSelecionada })
     })
         .then(() => location.reload());
+});
+
+document.getElementById("closeModal")
+    .addEventListener("click", fecharModal);
+
+document.getElementById("reservaModal")
+    .addEventListener("click", (e) => {
+        if (e.target.id === "reservaModal") {
+            fecharModal();
+        }
+    });
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        fecharModal();
+    }
 });

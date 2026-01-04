@@ -134,9 +134,7 @@ namespace AutoHubProjeto.Controllers
                 await _db.Compras
                     .Where(c =>
                         c.IdComprador == idComprador &&
-                        c.EstadoPagamento == "pago" &&
-                        c.DataCompra >= limite
-                    )
+                        c.EstadoPagamento == "pago")
                     .Include(c => c.IdAnuncioNavigation)
                     .Select(c => new PainelAtividadeVM
                     {
@@ -146,6 +144,78 @@ namespace AutoHubProjeto.Controllers
                     })
                     .ToListAsync()
             );
+
+            if (idVendedor != 0)
+            {
+                // VISITAS MARCADAS NOS SEUS ANÚNCIOS
+                atividade.AddRange(
+                    await _db.Visita
+                        .Where(v =>
+                            v.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                            v.Estado == "confirmada" &&
+                            v.DataHora > DateTime.Now)
+                        .Include(v => v.IdAnuncioNavigation)
+                        .Select(v => new PainelAtividadeVM
+                        {
+                            Tipo = "Visita Agendada (Vendedor)",
+                            Titulo = v.IdAnuncioNavigation.Titulo,
+                            Data = v.DataHora
+                        })
+                        .ToListAsync()
+                );
+
+                // VEÍCULOS RESERVADOS NOS SEUS ANÚNCIOS
+                atividade.AddRange(
+                    await _db.Reservas
+                        .Where(r =>
+                            r.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                            r.Estado == "ativa" &&
+                            r.ExpiraEm > DateTime.Now)
+                        .Include(r => r.IdAnuncioNavigation)
+                        .Select(r => new PainelAtividadeVM
+                        {
+                            Tipo = "Reserva Ativa",
+                            Titulo = r.IdAnuncioNavigation.Titulo,
+                            Data = r.ExpiraEm   
+                        })
+                        .ToListAsync()
+                );
+
+                // VENDAS FEITAS
+                atividade.AddRange(
+                    await _db.Compras
+                        .Where(c =>
+                            c.IdAnuncioNavigation.IdVendedor == idVendedor &&
+                            c.EstadoPagamento == "pago")
+                        .Include(c => c.IdAnuncioNavigation)
+                        .Select(c => new PainelAtividadeVM
+                        {
+                            Tipo = "Venda",
+                            Titulo = c.IdAnuncioNavigation.Titulo,
+                            Data = c.DataCompra
+                        })
+                        .ToListAsync()
+                );
+            }
+
+            // ANÚNCIOS CRIADOS 
+            if (idVendedor != 0)
+            {
+                atividade.AddRange(
+                    await _db.Anuncios
+                        .Where(a =>
+                            a.IdVendedor == idVendedor &&
+                            a.DataPublicacao >= limite)
+                        .Select(a => new PainelAtividadeVM
+                        {
+                            Tipo = "Anúncio Criado",
+                            Titulo = a.Titulo,
+                            Data = a.DataPublicacao
+                        })
+                        .ToListAsync()
+                );
+            }
+
 
             vm.Atividade = atividade
                 .OrderByDescending(a => a.Data)
@@ -819,14 +889,16 @@ namespace AutoHubProjeto.Controllers
             var email = User.Identity.Name;
 
             var user = await _db.Utilizadors
-                .Include(u => u.Comprador)
-                    .ThenInclude(c => c.Visita)
-                .Include(u => u.Comprador)
-                    .ThenInclude(c => c.Reservas)
-                        .ThenInclude(r => r.IdAnuncioNavigation)
-                .Include(u => u.Comprador)
-                    .ThenInclude(c => c.FiltroFavoritos)
-                .FirstOrDefaultAsync(u => u.Email == email);
+    .Include(u => u.Comprador)
+        .ThenInclude(c => c.Visita)
+            .ThenInclude(v => v.IdAnuncioNavigation)
+    .Include(u => u.Comprador)
+        .ThenInclude(c => c.Reservas)
+            .ThenInclude(r => r.IdAnuncioNavigation)
+    .Include(u => u.Comprador)
+        .ThenInclude(c => c.FiltroFavoritos)
+    .FirstOrDefaultAsync(u => u.Email == email);
+
 
             if (user?.Comprador == null)
                 return Unauthorized();
@@ -840,7 +912,7 @@ namespace AutoHubProjeto.Controllers
 
             var visitasAtivas = user.Comprador.Visita
                 .Where(v =>
-                    (v.Estado == "pendente" || v.Estado == "confirmada") &&
+                    (v.Estado == "confirmada") &&
                     v.DataHora > agora)
                 .ToList();
 
@@ -1584,7 +1656,7 @@ namespace AutoHubProjeto.Controllers
 
                 VisitasAgendadas = await _db.Visita.CountAsync(v =>
                     v.IdAnuncioNavigation.IdVendedor == idVendedor &&
-                    (v.Estado == "pendente" || v.Estado == "confirmada") &&
+                    (v.Estado == "confirmada") &&
                     v.DataHora > agora),
 
                 ReservasPendentes = await _db.Reservas.CountAsync(r =>

@@ -224,11 +224,10 @@ namespace AutoHubProjeto.Controllers
             // Criar comprador associado automaticamente
             var comprador = new Comprador
             {
-                IdComprador = user.Id,   
-                NotificacoesAtivas = true,
-                MarcaFavorita = null,
+                IdComprador = user.Id,
                 FiltroFavorito = null
             };
+
 
             _db.Compradors.Add(comprador);
             await _db.SaveChangesAsync();

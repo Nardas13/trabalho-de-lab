@@ -81,55 +81,64 @@
             </div>
         }
 
-        <!-- DIVISOR -->
         <div class="section-divider"></div>
 
-        <!-- ATIVIDADE RECENTE -->
-        <h3 class="painel-section-title">Atividade Recente</h3>
+        <div class="dashboard-grid">
 
-        <div class="estado-muted">
+            <!-- COLUNA ESQUERDA -->
+            <div>
+                <h3 class="painel-section-title">Atividade Recente</h3>
 
-            @if (Model.Atividade.Count == 0)
-            {
-                <p>Nada para mostrar por agora.</p>
-            }
-            else
-            {
-                <ul class="activity-list">
-                    @foreach (var item in Model.Atividade)
+                <div class="estado-muted">
+                    @if (Model.Atividade.Count == 0)
                     {
-                        <li>
-                            <span class="act-dot"></span>
-                            <strong>@item.Tipo:</strong>
-                            <span class="activity-title">@item.Titulo</span>
-                            <span class="act-time">
-                                @if (
-                                                        (item.Tipo == "Reserva (expira)" || item.Tipo == "Reserva Ativa")
-                                                        && item.Data > DateTime.Now
-                                                        )
-                                {
-                                    <text>Expira @item.TempoDecorrido</text>
-                                }
-                                else if (item.Tipo == "Reserva Expirada")
-                                {
-                                    <text>Expirou @item.TempoDecorrido</text>
-                                }
-                                else
-                                {
-                                    @item.TempoDecorrido
-                                }
-                            </span>
-
-
-                        </li>
+                        <p>Nada para mostrar por agora.</p>
                     }
-                </ul>
-            }
+                    else
+                    {
+                        <ul class="activity-list">
+                            @foreach (var item in Model.Atividade)
+                            {
+                                <li>
+                                    <span class="act-dot"></span>
+                                    <strong>@item.Tipo:</strong>
+                                    <span class="activity-title">@item.Titulo</span>
+                                    <span class="act-time">@item.TempoDecorrido</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA -->
+            <div>
+                <h3 class="painel-section-title">Notificações</h3>
+
+                <div class="estado-muted">
+                    @if (!Model.Notificacoes.Any())
+                    {
+                        <p>Nenhuma novidade das tuas marcas por agora.</p>
+                    }
+                    else
+                    {
+                        <ul class="activity-list">
+                            @foreach (var n in Model.Notificacoes)
+                            {
+                                <li>
+                                    <span class="act-dot"></span>
+                                    <strong>Novo anúncio:</strong>
+                                    <span class="activity-title">@n.Titulo</span>
+                                    <span class="act-time">@n.TempoDecorrido</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
 
         </div>
 
-    </section>
-</div>
 
 
 <!-- ================= MODAL TIPO VENDEDOR ================= -->

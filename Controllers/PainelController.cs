@@ -265,6 +265,39 @@ namespace AutoHubProjeto.Controllers
                     .ToList();
             }
 
+            // ================= NOTIFICAÇÕES (MARCAS FAVORITAS) =================
+            if (idComprador != 0)
+            {
+                // marcas favoritas em memória
+                var marcas = await _db.MarcasFavoritas
+                    .Where(m => m.IdComprador == idComprador)
+                    .ToListAsync();
+
+                if (marcas.Any())
+                {
+                    // anúncios da BD
+                    var anuncios = await _db.Anuncios
+                        .Include(a => a.IdVeiculoNavigation)
+                        .OrderByDescending(a => a.DataPublicacao)
+                        .Take(20) // limite de segurança
+                        .ToListAsync();
+
+                    // 
+                    vm.Notificacoes = anuncios
+                        .Where(a => marcas.Any(m =>
+                            m.Marca == a.IdVeiculoNavigation.Marca &&
+                            a.DataPublicacao > m.DataCriacao))
+                        .Take(5)
+                        .Select(a => new PainelNotificacaoVM
+                        {
+                            Titulo = a.Titulo,
+                            Marca = a.IdVeiculoNavigation.Marca,
+                            TempoDecorrido = a.DataPublicacao.ToString("dd/MM/yyyy")
+                        })
+                        .ToList();
+                }
+            }
+
             return View(vm);
         }
         public async Task<IActionResult> MinhasVisitas()
@@ -614,6 +647,7 @@ namespace AutoHubProjeto.Controllers
             return View(vm);
         }
 
+        [HttpGet]
         public async Task<IActionResult> MarcasFavoritas()
         {
             if (!User.Identity.IsAuthenticated)
@@ -622,38 +656,36 @@ namespace AutoHubProjeto.Controllers
             var email = User.Identity.Name;
 
             var utilizador = await _db.Utilizadors
-            .Include(u => u.Comprador)
-            .FirstOrDefaultAsync(u => u.Email == email);
+                .Include(u => u.Comprador)
+                    .ThenInclude(c => c.MarcasFavoritas)
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             var comprador = utilizador?.Comprador;
-
 
             if (comprador == null)
                 return RedirectToAction("Index");
 
+            // marcas disponíveis
             var marcasDisponiveis = await _db.Veiculos
+                .Where(v => !string.IsNullOrEmpty(v.Marca))
                 .Select(v => v.Marca)
-                .Where(m => m != null && m != "")
                 .Distinct()
                 .OrderBy(m => m)
                 .ToListAsync();
 
-            var marcasSelecionadas = (comprador.MarcaFavorita ?? "")
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(m => m.Trim())
+            // marcas já guardadas na BD
+            var marcasSelecionadas = comprador.MarcasFavoritas
+                .Select(m => m.Marca)
                 .ToList();
 
-            var vm = new MarcasFavoritasVM
-            {
-                NotificacoesAtivas = comprador.NotificacoesAtivas
-            };
+            var vm = new MarcasFavoritasVM();
 
-            foreach (var m in marcasDisponiveis)
+            foreach (var marca in marcasDisponiveis)
             {
                 vm.Marcas.Add(new MarcaItemVM
                 {
-                    Nome = m,
-                    Selecionada = marcasSelecionadas.Contains(m)
+                    Nome = marca,
+                    Selecionada = marcasSelecionadas.Contains(marca)
                 });
             }
 
@@ -661,9 +693,7 @@ namespace AutoHubProjeto.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GuardarMarcas(
-            List<string> marcas,
-            bool notificacoes)
+        public async Task<IActionResult> GuardarMarcas(List<string> marcas)
         {
             if (!User.Identity.IsAuthenticated)
                 return RedirectToAction("Login", "Auth");
@@ -671,20 +701,32 @@ namespace AutoHubProjeto.Controllers
             var email = User.Identity.Name;
 
             var utilizador = await _db.Utilizadors
-            .Include(u => u.Comprador)
-            .FirstOrDefaultAsync(u => u.Email == email);
+                .Include(u => u.Comprador)
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             var comprador = utilizador?.Comprador;
-
 
             if (comprador == null)
                 return RedirectToAction("Index");
 
-            comprador.MarcaFavorita = marcas != null && marcas.Any()
-                ? string.Join(",", marcas)
-                : null;
+            // remover marcas antigas
+            var antigas = _db.MarcasFavoritas
+                .Where(m => m.IdComprador == comprador.IdComprador);
 
-            comprador.NotificacoesAtivas = notificacoes;
+            _db.MarcasFavoritas.RemoveRange(antigas);
+
+            // adicionar novas (se existirem)
+            if (marcas != null && marcas.Any())
+            {
+                foreach (var marca in marcas)
+                {
+                    _db.MarcasFavoritas.Add(new MarcaFavorita
+                    {
+                        IdComprador = comprador.IdComprador,
+                        Marca = marca
+                    });
+                }
+            }
 
             await _db.SaveChangesAsync();
 
@@ -750,7 +792,6 @@ namespace AutoHubProjeto.Controllers
             if (comprador == null)
                 return Unauthorized();
 
-            comprador.NotificacoesAtivas = notificacoes;
             await _db.SaveChangesAsync();
 
             return RedirectToAction("Conta");

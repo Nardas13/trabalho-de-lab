@@ -20,6 +20,8 @@
         public List<string> MarcasFavoritas { get; set; } = new();
 
         public List<PainelAtividadeVM> Atividade { get; set; } = new();
+        public List<PainelNotificacaoVM> Notificacoes { get; set; } = new();
+
 
     }
 }

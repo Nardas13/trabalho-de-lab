@@ -15,7 +15,6 @@
 
         <form method="post" action="/Painel/GuardarMarcas">
 
-            <!-- MARCAS -->
             <div class="marcas-pills">
                 @foreach (var m in Model.Marcas)
                 {
@@ -24,39 +23,17 @@
                                name="marcas"
                                value="@m.Nome"
                                @(m.Selecionada ? "checked" : "") />
-
                         <span>@m.Nome</span>
                     </label>
                 }
             </div>
 
-            <div class="modal hidden"></div>
-
-            <!-- NOTIFICAÇÕES -->
-            <div class="section-divider"></div>
-
-            <div class="notif-row">
-                <label class="marca-pill @(Model.NotificacoesAtivas ? "active" : "")">
-                    <input type="checkbox"
-                           name="notificacoes"
-                           @(Model.NotificacoesAtivas ? "checked" : "") />
-
-                    <span>Receber notificações</span>
-                </label>
-
-                <span class="visita-data">
-                    Avisar quando surgirem novos anúncios destas marcas
-                </span>
-            </div>
-
-            <!-- BOTÃO -->
             <div style="margin-top:32px">
-                <button class="btn">
-                    Guardar Preferências
-                </button>
+                <button class="btn">Guardar Preferências</button>
             </div>
 
         </form>
+
 
     </section>
 </div>

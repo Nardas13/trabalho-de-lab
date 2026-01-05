@@ -7,9 +7,8 @@ public partial class Comprador
 {
     public int IdComprador { get; set; }
 
-    public string? MarcaFavorita { get; set; }
-
-    public bool NotificacoesAtivas { get; set; }
+    public virtual ICollection<MarcaFavorita> MarcasFavoritas { get; set; }
+        = new List<MarcaFavorita>();
 
     public string? FiltroFavorito { get; set; }
 

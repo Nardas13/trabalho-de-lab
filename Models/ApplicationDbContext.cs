@@ -24,6 +24,8 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Compra> Compras { get; set; }
 
     public virtual DbSet<Comprador> Compradors { get; set; }
+    public DbSet<MarcaFavorita> MarcasFavoritas { get; set; }
+
 
     public virtual DbSet<LogAdministrativo> LogAdministrativos { get; set; }
 
@@ -135,8 +137,6 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.IdComprador).ValueGeneratedNever();
             entity.Property(e => e.FiltroFavorito).HasMaxLength(400);
-            entity.Property(e => e.MarcaFavorita).HasMaxLength(100);
-            entity.Property(e => e.NotificacoesAtivas).HasDefaultValue(true);
 
             entity.HasOne(d => d.IdCompradorNavigation).WithOne(p => p.Comprador)
                 .HasForeignKey<Comprador>(d => d.IdComprador)
@@ -320,6 +320,27 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(e => e.IdComprador)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Filtro_Comprador");
+        });
+
+        modelBuilder.Entity<MarcaFavorita>(entity =>
+        {
+            entity.ToTable("MarcaFavorita");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Marca)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.DataCriacao)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(e => e.Comprador)
+                .WithMany(c => c.MarcasFavoritas)
+                .HasForeignKey(e => e.IdComprador)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_MarcaFavorita_Comprador");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -1129,7 +1129,9 @@ namespace AutoHubProjeto.Controllers
 
                     // regras
                     TemReserva = a.Reservas.Any(r =>
-                        r.Estado == "ativa" && r.ExpiraEm > DateTime.Now),
+                        (r.Estado == "pendente" || r.Estado == "ativa")
+                        && r.ExpiraEm > DateTime.Now),
+
 
                     TemVisitas = a.Visita.Any(v =>
                         v.Estado == "pendente" || v.Estado == "confirmada"),
@@ -1383,6 +1385,164 @@ namespace AutoHubProjeto.Controllers
                 TempData["Toast"] = "Anúncio criado com sucesso.";
                 return RedirectToAction("MeusAnuncios");
             }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAnuncio(int id)
+        {
+            var email = User.Identity!.Name;
+
+            var anuncio = await _db.Anuncios
+                .Include(a => a.IdVendedorNavigation)
+                    .ThenInclude(v => v.IdVendedorNavigation)
+                .Include(a => a.IdVeiculoNavigation)
+                .Include(a => a.AnuncioImagems)
+                .Include(a => a.Reservas)
+                .Include(a => a.Visita)
+                .Include(a => a.Compras)
+                .FirstOrDefaultAsync(a => a.IdAnuncio == id);
+
+            if (anuncio == null)
+                return NotFound();
+
+            
+            if (anuncio.IdVendedorNavigation.IdVendedorNavigation.Email != email)
+                return Forbid();
+
+            bool bloqueado =
+                anuncio.Reservas.Any(r => r.Estado != "cancelada" && r.ExpiraEm > DateTime.Now) ||
+                anuncio.Visita.Any(v => v.Estado == "pendente" || v.Estado == "confirmada") ||
+                anuncio.Compras.Any(c => c.EstadoPagamento == "pendente" || c.EstadoPagamento == "paga");
+
+            if (bloqueado)
+                return Forbid();
+
+            return Json(new
+            {
+                anuncio.IdAnuncio,
+                anuncio.Titulo,
+                anuncio.Preco,
+
+                anuncio.IdVeiculoNavigation.Marca,
+                anuncio.IdVeiculoNavigation.Modelo,
+                anuncio.IdVeiculoNavigation.Categoria,
+                anuncio.IdVeiculoNavigation.Ano,
+                anuncio.IdVeiculoNavigation.Quilometragem,
+                anuncio.IdVeiculoNavigation.Combustivel,
+                anuncio.IdVeiculoNavigation.Caixa,
+                anuncio.IdVeiculoNavigation.Localizacao,
+                anuncio.IdVeiculoNavigation.Descricao,
+
+                Imagens = anuncio.AnuncioImagems
+                    .OrderBy(i => i.Ordem)
+                .Select(i => "/" + i.Url + "?v=" +
+                    (anuncio.DataAtualizacao ?? anuncio.DataPublicacao).Ticks)
+            });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> EditarAnuncio(EditarAnuncioVM vm)
+        {
+            var email = User.Identity!.Name;
+
+            var anuncio = await _db.Anuncios
+                .Include(a => a.IdVendedorNavigation)
+                    .ThenInclude(v => v.IdVendedorNavigation)
+                .Include(a => a.IdVeiculoNavigation)
+                .Include(a => a.Reservas)
+                .Include(a => a.Visita)
+                .Include(a => a.Compras)
+                .Include(a => a.AnuncioImagems)
+                .FirstOrDefaultAsync(a => a.IdAnuncio == vm.IdAnuncio);
+
+            if (anuncio == null)
+                return NotFound();
+
+            if (anuncio.IdVendedorNavigation.IdVendedorNavigation.Email != email)
+                return Forbid();
+
+            bool bloqueado =
+                anuncio.Reservas.Any(r => r.Estado != "cancelada" && r.ExpiraEm > DateTime.Now) ||
+                anuncio.Visita.Any(v => v.Estado == "pendente" || v.Estado == "confirmada") ||
+                anuncio.Compras.Any(c => c.EstadoPagamento == "pendente" || c.EstadoPagamento == "paga");
+
+            if (bloqueado)
+                return Forbid();
+
+            // VEÍCULO
+            var v = anuncio.IdVeiculoNavigation;
+            v.Marca = vm.Marca;
+            v.Modelo = vm.Modelo;
+            v.Categoria = vm.Categoria;
+            v.Ano = vm.Ano;
+            v.Quilometragem = vm.Quilometragem;
+            v.Combustivel = vm.Combustivel;
+            v.Caixa = vm.Caixa;
+            v.Localizacao = vm.Localizacao;
+            v.Descricao = vm.Descricao;
+
+            // ANÚNCIO
+            anuncio.Titulo = vm.Titulo;
+            anuncio.Preco = vm.Preco;
+            anuncio.DataAtualizacao = DateTime.Now;
+
+            // =========================
+            // IMAGENS 
+            // =========================
+            var files = Request.Form.Files.ToList();
+
+            if (files.Any())
+            {
+                if (files.Count != 4)
+                {
+                    TempData["Toast"] = "Tens de selecionar exatamente 4 imagens.";
+                    return RedirectToAction("MeusAnuncios");
+                }
+
+                // apagar antigas (db)
+                _db.AnuncioImagems.RemoveRange(anuncio.AnuncioImagems);
+
+                // apagar ficheiros físicos
+                var pasta = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "imgs",
+                    "veiculos",
+                    anuncio.IdVeiculo.ToString()
+                );
+
+                if (Directory.Exists(pasta))
+                    Directory.Delete(pasta, true);
+
+                Directory.CreateDirectory(pasta);
+
+                int ordem = 1;
+                foreach (var img in files)
+                {
+                    var fileName = $"{ordem}.jpg";
+                    var path = Path.Combine(pasta, fileName);
+
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await img.CopyToAsync(stream);
+
+                    _db.AnuncioImagems.Add(new AnuncioImagem
+                    {
+                        IdAnuncio = anuncio.IdAnuncio,
+                        Url = $"imgs/veiculos/{anuncio.IdVeiculo}/{fileName}",
+                        Ordem = ordem
+                    });
+
+                    ordem++;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+
+            TempData["Toast"] = "Anúncio atualizado com sucesso.";
+            return RedirectToAction("MeusAnuncios");
+        }
+
 
         public async Task<IActionResult> Reservas()
         {

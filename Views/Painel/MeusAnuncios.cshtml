@@ -73,6 +73,15 @@
                                     Ver
                                 </a>
 
+                                <button class="btn-view open-editar-modal"
+                                        data-id="@a.Anuncio.IdAnuncio"
+                                        data-tem-reserva="@a.TemReserva"
+                                        data-tem-visitas="@a.TemVisitas"
+                                        data-tem-compras="@a.TemCompras">
+                                    Editar
+                                </button>
+
+
                                 @* AÇÕES POR ESTADO *@
                         @if (a.Anuncio.Estado == "ativo"
                                                 || a.Anuncio.Estado == "pausado"

@@ -4,8 +4,6 @@ const imageBox = document.getElementById("imageBox");
 const imageInput = document.getElementById("imageInput");
 const submitBtn = document.getElementById("submitAnuncio");
 
-
-
 function setErro(input, mostrar) {
     const error = input.parentElement.querySelector(".form-error");
 
@@ -18,6 +16,27 @@ function setErro(input, mostrar) {
     }
 }
 
+function resetCriarModal() {
+
+    form.reset();
+    form.action = "/Painel/CriarAnuncio";
+
+    document.querySelector("#criarAnuncioModal h2").textContent = "Novo Anúncio";
+    submitBtn.textContent = "Publicar Anúncio";
+
+    imagensExistentes = [];
+    imagensNovas = [];
+    renderImages();
+
+    form.querySelector("input[name='IdAnuncio']")?.remove();
+
+    document.querySelectorAll(".custom-select").forEach(sel => {
+        sel.querySelector(".selected").textContent = "Selecionar";
+    });
+
+    tentouSubmeter = false;
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -27,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!openBtn || !modal) return;
 
     openBtn.addEventListener("click", () => {
+        resetCriarModal();    
 
         const tipo = openBtn.dataset.tipo;          // "empresa" | "particular"
         const nif = openBtn.dataset.nif;
@@ -94,22 +114,47 @@ window.addEventListener("click", () => {
 
 
 let imagens = [];
+let imagensExistentes = [];
+let imagensNovas = [];
 
 function renderImages() {
     imageBox.innerHTML = "";
 
-    imagens.forEach(file => {
+    // existentes
+    imagensExistentes.forEach((url, index) => {
+        const slot = document.createElement("div");
+        slot.className = "image-slot";
+
+        const img = document.createElement("img");
+        img.src = url;
+
+        slot.onclick = () => {
+            imagensExistentes.splice(index, 1);
+            renderImages();
+        };
+
+        slot.appendChild(img);
+        imageBox.appendChild(slot);
+    });
+
+    // novas
+    imagensNovas.forEach((file, index) => {
         const slot = document.createElement("div");
         slot.className = "image-slot";
 
         const img = document.createElement("img");
         img.src = URL.createObjectURL(file);
 
+        slot.onclick = () => {
+            imagensNovas.splice(index, 1);
+            renderImages();
+        };
+
         slot.appendChild(img);
         imageBox.appendChild(slot);
     });
 
-    if (imagens.length < 4) {
+    if (imagensExistentes.length + imagensNovas.length < 4) {
         const plus = document.createElement("div");
         plus.className = "image-slot plus";
         plus.textContent = "+";
@@ -120,14 +165,19 @@ function renderImages() {
     validarFormulario();
 }
 
+
 imageInput.addEventListener("change", e => {
     const file = e.target.files[0];
-    if (!file || imagens.length >= 4) return;
+    if (!file) return;
 
-    imagens.push(file);
+    if (imagensExistentes.length + imagensNovas.length >= 4) return;
+
+    imagensNovas.push(file);
     renderImages();
     imageInput.value = "";
 });
+
+
 function validarPreco() {
     const input = form.querySelector("input[name='Preco']");
     const valor = parseFloat(input.value);
@@ -138,12 +188,11 @@ function validarPreco() {
     return !invalido;
 }
 
-
 function validarFormulario() {
     let valido = true;
 
     // Só mostrar erros se tentou submeter
-    if (!tentouSubmeter) return false;
+    if (!tentouSubmeter) return true;
 
     // inputs required
     form.querySelectorAll("input[required]").forEach(input => {
@@ -172,12 +221,15 @@ function validarFormulario() {
 
     // Imagens
     const imageError = document.getElementById("imageError");
-    if (imagens.length !== 4) {
-        imageError?.classList.add("show");
+    const total = imagensExistentes.length + imagensNovas.length;
+
+    if (total !== 4) {
+        imageError.classList.add("show");
         valido = false;
     } else {
-        imageError?.classList.remove("show");
+        imageError.classList.remove("show");
     }
+
 
     return valido;
 }
@@ -198,7 +250,7 @@ form.addEventListener("submit", e => {
     // se chegou aqui, está tudo válido -> preparar imagens
     form.querySelectorAll("input[name='Imagens']").forEach(i => i.remove());
 
-    imagens.forEach(file => {
+    imagensNovas.forEach(file => {
         const input = document.createElement("input");
         input.type = "file";
         input.name = "Imagens";
@@ -209,6 +261,7 @@ form.addEventListener("submit", e => {
 
         form.appendChild(input);
     });
+
 });
 
 
@@ -286,3 +339,72 @@ removerModal?.addEventListener("click", e => {
         removerModal.classList.add("hidden");
     }
 });
+
+
+
+
+document.querySelectorAll('.open-editar-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+
+        const temReserva = btn.dataset.temReserva === "True";
+        const temVisitas = btn.dataset.temVisitas === "True";
+        const temCompras = btn.dataset.temCompras === "True";
+
+        if (temReserva || temVisitas || temCompras) {
+            showToast(
+                "Este anúncio não pode ser editado porque tem visitas, reservas ou compras associadas."
+            );
+            return;
+        }
+
+        abrirEditarModal(btn.dataset.id);
+    });
+});
+function abrirEditarModal(id) {
+
+    fetch(`/Painel/GetAnuncio?id=${id}`)
+        .then(r => {
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(a => {
+
+            form.action = "/Painel/EditarAnuncio";
+            document.querySelector("#criarAnuncioModal h2").textContent = "Editar Anúncio";
+            submitBtn.textContent = "Guardar alterações";
+
+            form.querySelector("input[name='Titulo']").value = a.titulo;
+            form.querySelector("input[name='Preco']").value = a.preco;
+            form.querySelector("input[name='Modelo']").value = a.modelo;
+            form.querySelector("input[name='Ano']").value = a.ano;
+            form.querySelector("input[name='Quilometragem']").value = a.quilometragem;
+            form.querySelector("input[name='Localizacao']").value = a.localizacao ?? "";
+            form.querySelector("textarea[name='Descricao']").value = a.descricao ?? "";
+
+            ["Marca", "Categoria", "Combustivel", "Caixa"].forEach(campo => {
+                const input = form.querySelector(`input[name='${campo}']`);
+                input.value = a[campo.toLowerCase()];
+                input.parentElement.querySelector(".selected").textContent = input.value;
+            });
+
+            let idInput = form.querySelector("input[name='IdAnuncio']");
+            if (!idInput) {
+                idInput = document.createElement("input");
+                idInput.type = "hidden";
+                idInput.name = "IdAnuncio";
+                form.appendChild(idInput);
+            }
+            idInput.value = a.idAnuncio;
+
+            
+            imagensExistentes = [...a.imagens];
+            imagensNovas = [];
+            renderImages();
+
+            tentouSubmeter = false;
+            modal.classList.remove("hidden");
+        })
+        .catch(() => {
+            showToast("Não foi possível editar este anúncio.");
+        });
+}

@@ -73,19 +73,21 @@
                                     Ver
                                 </a>
 
-                                <button class="btn-view open-editar-modal"
-                                        data-id="@a.Anuncio.IdAnuncio"
-                                        data-tem-reserva="@a.TemReserva"
-                                        data-tem-visitas="@a.TemVisitas"
-                                        data-tem-compras="@a.TemCompras">
-                                    Editar
-                                </button>
+                        @if (a.Anuncio.Estado != "vendido")
+                                {
+                                    <button class="btn-view open-editar-modal"
+                                            data-id="@a.Anuncio.IdAnuncio"
+                                            data-tem-reserva="@a.TemReserva"
+                                            data-tem-visitas="@a.TemVisitas"
+                                            data-tem-compras="@a.TemCompras">
+                                        Editar
+                                    </button>
+                                }
 
 
                                 @* AÇÕES POR ESTADO *@
                         @if (a.Anuncio.Estado == "ativo"
-                                                || a.Anuncio.Estado == "pausado"
-                                                || a.Anuncio.Estado == "vendido")
+                                                || a.Anuncio.Estado == "pausado")
                                 {
                                     @* Pausar / Ativar *@
                                     if (a.Anuncio.Estado == "ativo")
